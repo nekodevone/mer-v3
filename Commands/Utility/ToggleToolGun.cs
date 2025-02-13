@@ -4,7 +4,7 @@ using ProjectMER.Features;
 
 namespace ProjectMER.Commands;
 
-public class ToolGunCommand : ICommand
+public class ToggleToolGun : ICommand
 {
 	public string Command => "toolgun";
 

@@ -3,10 +3,10 @@ using CommandSystem;
 using NorthwoodLib.Pools;
 using ProjectMER.Features;
 
-namespace ProjectMER.Commands;
+namespace ProjectMER.Commands.Utility;
 
 /// <summary>
-/// Command used for listing all saved maps.
+/// Command used for listing all saved maps and schematics.
 /// </summary>
 public class List : ICommand
 {

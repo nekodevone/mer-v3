@@ -5,6 +5,7 @@ using LabApi.Features.Wrappers;
 using MEC;
 using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
+using ProjectMER.Features.Objects;
 
 namespace ProjectMER.Events;
 
@@ -23,13 +24,13 @@ public class ToolGunEvents : CustomEventsHandler
 
 			foreach (Player player in Player.List)
 			{
-				if (!player.CurrentItem.IsToolGun(out ToolGun toolGun))
+				if (!player.CurrentItem.IsToolGun(out ToolGun _) && !ToolGun.TryGetSelectedMapObject(player, out MapEditorObject _))
 					continue;
 
 				string hud;
 				try
 				{
-					hud = toolGun.GetHintHUD(player);
+					hud = ToolGun.GetHintHUD(player);
 				}
 				catch (Exception e)
 				{

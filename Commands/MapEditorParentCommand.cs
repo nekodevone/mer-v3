@@ -3,6 +3,7 @@ using CommandSystem;
 using ProjectMER.Commands.Map;
 using ProjectMER.Commands.Modifying.Position;
 using ProjectMER.Commands.Modifying.Rotation;
+using ProjectMER.Commands.ToolGunLike;
 
 namespace ProjectMER.Commands;
 
@@ -25,12 +26,14 @@ public class MapEditorParentCommand : ParentCommand
         RegisterCommand(new Save());
         RegisterCommand(new Load());
         RegisterCommand(new Unload());
-        RegisterCommand(new ToolGunCommand());
-        RegisterCommand(new List());
+        RegisterCommand(new ToggleToolGun());
+        RegisterCommand(new Utility.List());
 
         RegisterCommand(new Position());
         RegisterCommand(new Rotation());
         // RegisterCommand(new Scale());
+
+        RegisterCommand(new Select());
     }
 
     protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)

@@ -89,6 +89,7 @@ using CommandSystem;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
+using ProjectMER.Features.Objects;
 using UnityEngine;
 using static ProjectMER.Features.Extensions.VectorExtensions;
 
@@ -118,7 +119,7 @@ public class Add : ICommand
 			return false;
 		}
 
-		if (!player.CurrentItem.IsToolGun(out ToolGun toolGun) || toolGun.SelectedObject == null)
+		if (!ToolGun.PlayerSelectedObjectDict.TryGetValue(player, out MapEditorObject mapEditorObject) || mapEditorObject == null)
 		{
 			response = "You need to select an object first!";
 			return false;
@@ -126,10 +127,10 @@ public class Add : ICommand
 
 		if (arguments.Count >= 3 && TryGetVector(arguments.At(0), arguments.At(1), arguments.At(2), out Vector3 newPosition))
 		{
-			toolGun.SelectedObject.Base.Rotation = (toolGun.SelectedObject.Base.Rotation.ToVector3() + newPosition).ToString("G");
-			toolGun.SelectedObject.UpdateObjectAndCopies();
+			mapEditorObject.Base.Rotation = (mapEditorObject.Base.Rotation.ToVector3() + newPosition).ToString("G");
+			mapEditorObject.UpdateObjectAndCopies();
 
-			response = toolGun.SelectedObject.Base.Rotation;
+			response = mapEditorObject.Base.Rotation;
 			return true;
 		}
 

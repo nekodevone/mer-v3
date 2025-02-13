@@ -6,6 +6,7 @@ using InventorySystem.Items.Firearms.Attachments;
 using InventorySystem.Items.Firearms.Modules;
 using LabApi.Features.Wrappers;
 using MapGeneration;
+using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
@@ -26,11 +27,10 @@ public class ToolGun
 	};
 
 	public static Dictionary<ushort, ToolGun> Dictionary { get; private set; } = [];
-	// public static Dictionary<Player, MapEditorObject> SelectedObject = [];
+	public static Dictionary<Player, MapEditorObject> PlayerSelectedObjectDict = [];
 
 	private readonly Firearm Firearm;
 	private readonly IAdsModule AdsModule;
-	private readonly StringBuilder sb = new();
 
 	public bool CreateMode => Firearm.IsEmittingLight && !AdsModule.AdsTarget;
 	public bool DeleteMode => !Firearm.IsEmittingLight && !AdsModule.AdsTarget;
@@ -56,10 +56,6 @@ public class ToolGun
 			}
 		}
 	}
-
-	// public Player Player => Player.Get(Firearm.Owner);
-	// public bool Equiped => Player.CurrentItem != null && Player.CurrentItem.Serial == Firearm.ItemSerial;
-	public MapEditorObject? SelectedObject { get; private set; }
 
 	private ToolGun(Firearm firearm)
 	{
@@ -134,6 +130,17 @@ public class ToolGun
 		return mapEditorObject;
 	}
 
+	public static bool TryGetSelectedMapObject(Player player, out MapEditorObject mapEditorObject)
+	{
+		if (!PlayerSelectedObjectDict.ContainsKey(player))
+		{
+			mapEditorObject = null!;
+			return false;
+		}
+
+		return PlayerSelectedObjectDict.TryGetValue(player, out mapEditorObject) && mapEditorObject != null;
+	}
+
 	public void Shot(Player player)
 	{
 		if (CreateMode)
@@ -142,20 +149,13 @@ public class ToolGun
 			return;
 		}
 
-		if (!TryGetMapObject(player, out MapEditorObject mapEditorObject))
-			return;
-
-		if (DeleteMode)
+		if (TryGetMapObject(player, out MapEditorObject mapEditorObject) && DeleteMode)
 		{
 			Delete(mapEditorObject);
 			return;
 		}
 
-		if (SelectMode)
-		{
-			Select(mapEditorObject);
-			return;
-		}
+		Select(player, mapEditorObject);
 	}
 
 	private void Create(Player player)
@@ -200,31 +200,38 @@ public class ToolGun
 		}
 	}
 
-	private void Delete(MapEditorObject mapEditorObject)
+	public static void Delete(MapEditorObject mapEditorObject)
 	{
 		MapSchematic map = MapUtils.LoadedMaps[mapEditorObject.MapName];
 		if (map.TryRemoveElement(mapEditorObject.Id))
 			map.DestroyObject(mapEditorObject.Id);
 	}
 
-	private void Select(MapEditorObject mapEditorObject)
+	public static void Select(Player player, MapEditorObject mapEditorObject)
 	{
-		SelectedObject = mapEditorObject;
+		// SelectedObject = mapEditorObject;
+		if (!PlayerSelectedObjectDict.ContainsKey(player))
+		{
+			PlayerSelectedObjectDict.Add(player, mapEditorObject);
+			return;
+		}
+
+		PlayerSelectedObjectDict[player] = mapEditorObject;
 	}
 
-	public string GetHintHUD(Player player)
+	public static string GetHintHUD(Player player)
 	{
+		StringBuilder sb = StringBuilderPool.Shared.Rent();
+
 		int offset = 0;
 		object instance = null!;
 		List<PropertyInfo> properties = [];
-		if (SelectedObject != null)
+		if (PlayerSelectedObjectDict.TryGetValue(player, out MapEditorObject mapEditorObject) && mapEditorObject != null)
 		{
-			instance = SelectedObject.GetType().GetField("Base").GetValue(SelectedObject);
+			instance = mapEditorObject.GetType().GetField("Base").GetValue(mapEditorObject);
 			properties = instance.GetType().GetProperties().ToList();
 			offset = properties.Count;
 		}
-
-		sb.Clear();
 
 		for (int i = 0; i < 34 - offset; i++)
 		{
@@ -240,35 +247,18 @@ public class ToolGun
 			sb.AppendLine();
 		}
 
-		/*
-		sb.Append("<size=75%>OTHER POS");
-		for (int i = 0; i < 30; i++)
-			sb.Append(" ");
-		sb.Append("PLAYER POS");
-		for (int i = 0; i < 30; i++)
-			sb.Append(" ");
-		sb.Append("OTHER POS</size>");
-		*/
+		if (!player.CurrentItem.IsToolGun(out ToolGun toolGun))
+			return StringBuilderPool.Shared.ToStringReturn(sb);
 
 		sb.Append($"<size=50%>");
-		sb.Append(GetToolGunModeString(player));
+		sb.Append(toolGun.GetToolGunModeString(player));
 		sb.Append("</size>");
 
 		sb.AppendLine();
 
 
 		sb.Append($"<size=50%>");
-		/*
-		sb.Append("(900.000, 1000.000, -700.000)");
-		for (int i = 0; i < 30; i++)
-			sb.Append(" ");
-			*/
 		sb.Append($"{player.Position:F3}");
-		/*
-		for (int i = 0; i < 30; i++)
-			sb.Append(" ");
-		sb.Append("(900.000, 1000.000, -700.000)");
-		*/
 		sb.Append("</size>");
 
 		sb.AppendLine();
@@ -277,7 +267,7 @@ public class ToolGun
 		sb.Append(Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room) ? $"{room.Zone}_{room.Shape}_{room.Name}" : "Unknown");
 		sb.Append("</size>");
 
-		return sb.ToString();
+		return StringBuilderPool.Shared.ToStringReturn(sb);
 	}
 
 	private string GetToolGunModeString(Player player)
