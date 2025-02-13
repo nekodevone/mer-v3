@@ -1,5 +1,7 @@
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.CustomHandlers;
+using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
 using MEC;
 using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
@@ -17,28 +19,26 @@ public class ToolGunEvents : CustomEventsHandler
 	{
 		while (true)
 		{
-			// string output = File.ReadAllText(Path.Combine(ProjectMER.SchematicsDir, "hint.txt"));
-
 			yield return Timing.WaitForSeconds(0.1f);
-			foreach(ToolGun toolGun in ToolGun.Dictionary.Values)
+
+			foreach (Player player in Player.List)
 			{
-				if (!toolGun.Equiped)
+				if (!player.CurrentItem.IsToolGun(out ToolGun toolGun))
 					continue;
 
-				toolGun.Player.SendHint(toolGun.GetHintHUD(), 0.25f);
+				string hud;
+				try
+				{
+					hud = toolGun.GetHintHUD(player);
+				}
+				catch (Exception e)
+				{
+					Logger.Error(e);
+					hud = "ERROR: Check server console";
+				}
+
+				player.SendHint(hud, 0.25f);
 			}
-			// foreach (Player player in Player.List)
-			// {
-				// if (!player.CurrentItem.IsToolGun(out ToolGun toolGun))
-					//continue;
-
-				// if (!Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room))
-					// continue;
-
-				//player.SendHint(toolGun.GetHintHUD(), 0.25f);
-				// player.SendHint(output, 1f);
-				// player.SendHint($"{(ToolGun.List[toolGun.ObjectToSpawnIndex].Replace("Serializable", ""))}\n{room.Zone}_{room.Shape}_{room.Name}", 0.25f);
-			// }
 		}
 	}
 
@@ -61,7 +61,7 @@ public class ToolGunEvents : CustomEventsHandler
 		toolGun.ObjectToSpawnIndex--;
 	}
 
-    public override void OnPlayerDroppingItem(PlayerDroppingItemEventArgs ev)
+	public override void OnPlayerDroppingItem(PlayerDroppingItemEventArgs ev)
 	{
 		if (!ev.Item.IsToolGun(out ToolGun toolGun))
 			return;

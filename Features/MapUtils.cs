@@ -74,21 +74,28 @@ public static class MapUtils
 		return true;
 	}
 
-	public static SchematicObjectDataList GetSchematicDataByName(string schematicName)
+	public static bool TryGetSchematicDataByName(string schematicName, out SchematicObjectDataList data)
 	{
+		data = null!;
 		string dirPath = Path.Combine(ProjectMER.SchematicsDir, schematicName);
 		if (!Directory.Exists(dirPath))
-			return null!;
+		{
+			Logger.Error($"Failed to load schematic data: Directory {schematicName} does not exist!");
+			return false;
+		}
 
 		string schematicPath = Path.Combine(dirPath, $"{schematicName}.json");
 		if (!File.Exists(schematicPath))
-			return null!;
+		{
+			Logger.Error($"Failed to load schematic data: File {schematicName}.json does not exist!");
+			return false;
+		}
 
-		SchematicObjectDataList data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicPath));
+		data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicPath));
 		data.Path = dirPath;
 
-		return data;
+		return true;
 	}
 
-    public static string[] GetAvailableSchematicNames() => Directory.GetDirectories(ProjectMER.SchematicsDir).Select(Path.GetFileName).ToArray();
+	public static string[] GetAvailableSchematicNames() => Directory.GetDirectories(ProjectMER.SchematicsDir).Select(Path.GetFileName).ToArray();
 }

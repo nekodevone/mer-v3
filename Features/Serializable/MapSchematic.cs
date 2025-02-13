@@ -52,7 +52,9 @@ public class MapSchematic
 	{
 		if (serializableObject is SerializableSchematic serializableSchematic)
 		{
-			SchematicObjectDataList data = MapUtils.GetSchematicDataByName(serializableSchematic.SchematicName);
+			if (!MapUtils.TryGetSchematicDataByName(serializableSchematic.SchematicName, out SchematicObjectDataList data))
+				return;
+
 			foreach (Room room in serializableObject.GetRooms())
 			{
 				GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);

@@ -57,8 +57,8 @@ public class ToolGun
 		}
 	}
 
-	public Player Player => Player.Get(Firearm.Owner);
-	public bool Equiped => Player.CurrentItem != null && Player.CurrentItem.Serial == Firearm.ItemSerial;
+	// public Player Player => Player.Get(Firearm.Owner);
+	// public bool Equiped => Player.CurrentItem != null && Player.CurrentItem.Serial == Firearm.ItemSerial;
 	public MapEditorObject? SelectedObject { get; private set; }
 
 	private ToolGun(Firearm firearm)
@@ -68,15 +68,6 @@ public class ToolGun
 		{
 			throw new Exception("Module not found. This error should never occur.");
 		}
-
-		ServerSpecificSettingsSync.SendOnJoinFilter = (_) => false; // Prevent all users from receiving the tools after joining the server.
-		ServerSpecificSettingsSync.DefinedSettings =
-		[
-			new SSGroupHeader("MapEditorReborn"),
-			new SSDropdownSetting(0, "Schematic Name", MapUtils.GetAvailableSchematicNames())
-		];
-
-		ServerSpecificSettingsSync.SendToPlayersConditionally(x => x == Player.ReferenceHub);
 	}
 
 	public static bool TryAdd(Player player)
@@ -102,6 +93,16 @@ public class ToolGun
 		player.AddAmmo(ItemType.Ammo9x19, 1);
 
 		Dictionary.Add(toolgun.ItemSerial, new ToolGun(toolgun));
+
+		ServerSpecificSettingsSync.SendOnJoinFilter = (_) => false; // Prevent all users from receiving the tools after joining the server.
+		ServerSpecificSettingsSync.DefinedSettings =
+		[
+			new SSGroupHeader("MapEditorReborn"),
+			new SSDropdownSetting(0, "Schematic Name", MapUtils.GetAvailableSchematicNames())
+		];
+
+		ServerSpecificSettingsSync.SendToPlayersConditionally(x => x.inventory.UserInventory.Items.Values.Any(x => x.IsToolGun(out ToolGun _)));
+
 		return true;
 	}
 
@@ -187,10 +188,11 @@ public class ToolGun
 				return;
 
 			default:
-				if (!ServerSpecificSettingsSync.TryGetSettingOfUser(Player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) || dropdownSetting.Options.Length == 0)
+				if (!ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) ||
+				 	!dropdownSetting.TryGetSyncSelectionText(out string schematicName))
 					return;
 
-				SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = dropdownSetting.SyncSelectionText };
+				SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = schematicName };
 				KeyValuePair<string, SerializableSchematic> kvp3 = new(Guid.NewGuid().ToString(), serializableSchematic);
 				if (map.TryAddElement(kvp3.Key, kvp3.Value))
 					map.SpawnObject(kvp3.Key, kvp3.Value);
@@ -210,7 +212,7 @@ public class ToolGun
 		SelectedObject = mapEditorObject;
 	}
 
-	public string GetHintHUD()
+	public string GetHintHUD(Player player)
 	{
 		int offset = 0;
 		object instance = null!;
@@ -249,7 +251,7 @@ public class ToolGun
 		*/
 
 		sb.Append($"<size=50%>");
-		sb.Append(GetToolGunModeString());
+		sb.Append(GetToolGunModeString(player));
 		sb.Append("</size>");
 
 		sb.AppendLine();
@@ -261,7 +263,7 @@ public class ToolGun
 		for (int i = 0; i < 30; i++)
 			sb.Append(" ");
 			*/
-		sb.Append($"{Player.Position:F3}");
+		sb.Append($"{player.Position:F3}");
 		/*
 		for (int i = 0; i < 30; i++)
 			sb.Append(" ");
@@ -272,21 +274,21 @@ public class ToolGun
 		sb.AppendLine();
 
 		sb.Append($"<size=50%>");
-		sb.Append(Room.TryGetRoomAtPosition(Player.Camera.transform.position, out Room? room) ? $"{room.Zone}_{room.Shape}_{room.Name}" : "Unknown");
+		sb.Append(Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room) ? $"{room.Zone}_{room.Shape}_{room.Name}" : "Unknown");
 		sb.Append("</size>");
 
 		return sb.ToString();
 	}
 
-	private string GetToolGunModeString()
+	private string GetToolGunModeString(Player player)
 	{
 		if (CreateMode)
 		{
 			string output = List[ObjectToSpawnIndex].Replace("Serializable", "").ToUpper();
 			if (output == "SCHEMATIC")
 			{
-				if (ServerSpecificSettingsSync.TryGetSettingOfUser(Player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) && dropdownSetting.Options.Length > 0)
-					output = dropdownSetting.SyncSelectionText.ToUpper();
+				if (ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) && dropdownSetting.TryGetSyncSelectionText(out string schematicName))
+					output = schematicName.ToUpper();
 				else
 					output = "Please select schematic in options";
 			}
@@ -294,9 +296,9 @@ public class ToolGun
 			return $"<color=green>CREATE</color>\n<color=yellow>{output}</color>";
 		}
 
-		Vector3 forward = Player.Camera.forward;
+		Vector3 forward = player.Camera.forward;
 		string name = " ";
-		if (Physics.Raycast(Player.Camera.position + forward, forward, out RaycastHit hit, 100f))
+		if (Physics.Raycast(player.Camera.position + forward, forward, out RaycastHit hit, 100f))
 		{
 			if (hit.transform.TryGetComponentInParent(out MapEditorObject mapEditorObject))
 			{
