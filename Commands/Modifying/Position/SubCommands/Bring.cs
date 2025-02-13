@@ -32,7 +32,7 @@ public class Bring : ICommand
 			return false;
 		}
 
-		if (!ToolGun.PlayerSelectedObjectDict.TryGetValue(player, out MapEditorObject mapEditorObject) || mapEditorObject == null)
+		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
 		{
 			response = "You need to select an object first!";
 			return false;
