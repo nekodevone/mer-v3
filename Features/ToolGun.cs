@@ -174,29 +174,35 @@ public class ToolGun
 		switch (List[ObjectToSpawnIndex])
 		{
 			case nameof(SerializablePrimitive):
+			{
 				SerializablePrimitive serializablePrimitive = new() { Position = position, Room = roomId };
 				KeyValuePair<string, SerializablePrimitive> kvp = new(Guid.NewGuid().ToString(), serializablePrimitive);
 				if (map.TryAddElement(kvp.Key, kvp.Value))
 					map.SpawnObject(kvp.Key, kvp.Value);
 				return;
+			}
 
 			case nameof(SerializableLight):
+			{
 				SerializableLight serializableLight = new() { Position = position, Room = roomId };
-				KeyValuePair<string, SerializableLight> kvp2 = new(Guid.NewGuid().ToString(), serializableLight);
-				if (map.TryAddElement(kvp2.Key, kvp2.Value))
-					map.SpawnObject(kvp2.Key, kvp2.Value);
+				KeyValuePair<string, SerializableLight> kvp = new(Guid.NewGuid().ToString(), serializableLight);
+				if (map.TryAddElement(kvp.Key, kvp.Value))
+					map.SpawnObject(kvp.Key, kvp.Value);
 				return;
+			}
 
 			default:
+			{
 				if (!ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) ||
 				 	!dropdownSetting.TryGetSyncSelectionText(out string schematicName))
 					return;
 
 				SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = schematicName };
-				KeyValuePair<string, SerializableSchematic> kvp3 = new(Guid.NewGuid().ToString(), serializableSchematic);
-				if (map.TryAddElement(kvp3.Key, kvp3.Value))
-					map.SpawnObject(kvp3.Key, kvp3.Value);
+				KeyValuePair<string, SerializableSchematic> kvp = new(Guid.NewGuid().ToString(), serializableSchematic);
+				if (map.TryAddElement(kvp.Key, kvp.Value))
+					map.SpawnObject(kvp.Key, kvp.Value);
 				return;
+			}
 		}
 	}
 
