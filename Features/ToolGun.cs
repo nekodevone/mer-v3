@@ -318,13 +318,9 @@ public class ToolGun
 		return "\n ";
 	}
 
-	private static bool Raycast(Player player, out RaycastHit hit)
-	{
-		Vector3 forward = player.Camera.forward;
-		return Raycast(player.Camera.position - forward, forward, out hit);
-	}
+    private static bool Raycast(Player player, out RaycastHit hit) => Raycast(player.Camera.position, player.Camera.forward, out hit);
 
-	private static bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit hit) => Physics.Raycast(origin, direction, out hit, 100f, ToolGunMask.Mask);
+    private static bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit hit) => Physics.Raycast(origin, direction, out hit, 100f, ToolGunMask.Mask);
 
 	private static readonly CachedLayerMask ToolGunMask = new("Default", "Door");
 }
