@@ -189,7 +189,7 @@ public class ToolGun
 					return;
 				}
 
-			default:
+			case nameof(SerializableSchematic):
 				{
 					if (!ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) ||
 						 !dropdownSetting.TryGetSyncSelectionText(out string schematicName))
@@ -227,6 +227,8 @@ public class ToolGun
 	{
 		StringBuilder sb = StringBuilderPool.Shared.Rent();
 
+		sb.Append("<font=\"LiberationSans SDF\">");
+
 		int offset = 0;
 		object instance = null!;
 		List<PropertyInfo> properties = [];
@@ -237,16 +239,16 @@ public class ToolGun
 			offset = properties.Count;
 		}
 
-		for (int i = 0; i < 34 - offset; i++)
+		for (int i = 0; i < 36 - offset; i++)
 		{
 			sb.Append("<size=50%> </size>");
 			sb.AppendLine();
 		}
 
-		foreach (PropertyInfo property in properties)
+		foreach (string property in properties.GetColoredProperties(instance))
 		{
 			sb.Append($"<size=50%>");
-			sb.Append($"{property.Name}: {property.GetValue(instance)}");
+			sb.Append(property);
 			sb.Append("</size>");
 			sb.AppendLine();
 		}
@@ -270,6 +272,7 @@ public class ToolGun
 		sb.Append($"<size=50%>");
 		sb.Append(Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room) ? $"{room.Zone}_{room.Shape}_{room.Name}" : "Unknown");
 		sb.Append("</size>");
+		sb.Append("</font>");
 
 		return StringBuilderPool.Shared.ToStringReturn(sb);
 	}
