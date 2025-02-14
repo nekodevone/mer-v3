@@ -91,8 +91,16 @@ public static class MapUtils
 			return false;
 		}
 
-		data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicPath));
-		data.Path = dirPath;
+		try
+		{
+			data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicPath));
+			data.Path = dirPath;
+		}
+		catch (JsonParsingException e)
+		{
+			Logger.Error($"Failed to load schematic data: File {schematicName}.json has JSON errors!\n{e.ToString().Split('\n')[0]}");
+			return false;
+		}
 
 		return true;
 	}
