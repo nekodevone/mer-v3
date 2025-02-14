@@ -28,8 +28,8 @@ public class Position : ParentCommand
     {
         RegisterCommand(new Add());
         RegisterCommand(new Set());
-        // RegisterCommand(new Bring());
-        // RegisterCommand(new Grab());
+        RegisterCommand(new Bring());
+        RegisterCommand(new Grab());
     }
 
     /// <inheritdoc/>

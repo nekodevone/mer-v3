@@ -14,10 +14,10 @@ public class Bring : ICommand
 	public string Command => "bring";
 
 	/// <inheritdoc/>
-	public string[] Aliases { get; } = Array.Empty<string>();
+	public string[] Aliases { get; } = [];
 
 	/// <inheritdoc/>
-	public string Description => string.Empty;
+	public string Description => "Brings an object to player's position.";
 
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
@@ -35,7 +35,7 @@ public class Bring : ICommand
 			return false;
 		}
 
-		mapEditorObject.Base.Position = player.Position.ToString("G");
+		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position).ToString("G");
 		mapEditorObject.UpdateObjectAndCopies();
 
 		response = mapEditorObject.Base.Position;

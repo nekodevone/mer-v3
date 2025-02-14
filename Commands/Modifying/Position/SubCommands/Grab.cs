@@ -1,138 +1,88 @@
-﻿/*
-// -----------------------------------------------------------------------
-// <copyright file="Grab.cs" company="MapEditorReborn">
-// Copyright (c) MapEditorReborn. All rights reserved.
-// Licensed under the CC BY-SA 3.0 license.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿using CommandSystem;
+using LabApi.Features.Wrappers;
+using MEC;
+using ProjectMER.Features;
+using ProjectMER.Features.Objects;
+using UnityEngine;
 
-namespace MapEditorReborn.Commands.ModifyingCommands.Position.SubCommands
+namespace ProjectMER.Commands.Modifying.Position.SubCommands;
+
+/// <summary>
+/// Grabs a specific <see cref="MapEditorObject"/>.
+/// </summary>
+public class Grab : ICommand
 {
-    using System;
-    using System.Collections.Generic;
-    using API.Extensions;
-    using API.Features.Objects;
-    using CommandSystem;
-    using Events.EventArgs;
-    using Events.Handlers.Internal;
-    using Exiled.API.Features;
-    using Exiled.Permissions.Extensions;
-    using MEC;
-    using UnityEngine;
-    using static API.API;
+	public string Command => "grab";
 
-    /// <summary>
-    /// Grabs a specific <see cref="MapEditorObject"/>.
-    /// </summary>
-    public class Grab : ICommand
-    {
-        /// <inheritdoc/>
-        public string Command => "grab";
+	public string[] Aliases => [];
 
-        /// <inheritdoc/>
-        public string[] Aliases { get; } = Array.Empty<string>();
+	public string Description => "Grabs an object.";
 
-        /// <inheritdoc/>
-        public string Description => "Grabs an object.";
+	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+	{
+		Player? player = Player.Get(sender);
+		if (player is null)
+		{
+			response = "This command can't be run from the server console.";
+			return false;
+		}
 
-        /// <inheritdoc/>
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            if (!sender.CheckPermission($"mpr.{Command}"))
-            {
-                response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
-                return false;
-            }
+		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+		{
+			response = "You need to select an object first!";
+			return false;
+		}
 
-            Player player = Player.Get(sender);
-            if (!player.TryGetSessionVariable(SelectedObjectSessionVarName, out MapEditorObject mapObject) || mapObject == null)
-            {
-                if (!ToolGunHandler.TryGetMapObject(player, out mapObject))
-                {
-                    response = "You haven't selected any object!";
-                    return false;
-                }
+		if (GrabbingPlayers.ContainsKey(player))
+		{
+			Timing.KillCoroutines(GrabbingPlayers[player]);
+			GrabbingPlayers.Remove(player);
 
-                ToolGunHandler.SelectObject(player, mapObject);
-            }
+			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
+			mapEditorObject.UpdateObjectAndCopies();
 
-            if (GrabbingPlayers.ContainsKey(player))
-            {
-                ReleasingObjectEventArgs releasingEv = new(player, mapObject);
-                Events.Handlers.MapEditorObject.OnReleasingObject(releasingEv);
+			response = "Ungrabbed";
+			return true;
+		}
 
-                if (!releasingEv.IsAllowed)
-                {
-                    response = releasingEv.Response;
-                    return true;
-                }
+		GrabbingPlayers.Add(player, Timing.RunCoroutine(GrabbingCoroutine(player, mapEditorObject)));
 
-                Timing.KillCoroutines(GrabbingPlayers[player]);
-                GrabbingPlayers.Remove(player);
-                response = "Ungrabbed";
-                return true;
-            }
+		response = "Grabbed";
+		return true;
+	}
 
-            GrabbingObjectEventArgs grabbingEv = new(player, mapObject);
-            Events.Handlers.MapEditorObject.OnGrabbingObject(grabbingEv);
+	private IEnumerator<float> GrabbingCoroutine(Player player, MapEditorObject mapEditorObject)
+	{
+		Vector3 position = player.Camera.position;
+		float multiplier = Vector3.Distance(position, mapEditorObject.transform.position);
+		Vector3 prevPos = position + (player.Camera.forward * multiplier);
 
-            if (!grabbingEv.IsAllowed)
-            {
-                response = grabbingEv.Response;
-                return true;
-            }
+		while (true)
+		{
+			yield return Timing.WaitForOneFrame;
 
-            GrabbingPlayers.Add(player, Timing.RunCoroutine(GrabbingCoroutine(player, grabbingEv.Object)));
+			if (mapEditorObject == null || !ToolGun.TryGetSelectedMapObject(player, out _))
+				break;
 
-            response = "Grabbed";
-            return true;
-        }
+			Vector3 newPos = mapEditorObject.transform.position = player.Camera.position + (player.Camera.forward * multiplier);
 
-        private IEnumerator<float> GrabbingCoroutine(Player player, MapEditorObject mapObject)
-        {
-            Vector3 position = player.CameraTransform.position;
-            float multiplier = Vector3.Distance(position, mapObject.Position);
-            Vector3 prevPos = position + (player.CameraTransform.forward * multiplier);
-            int i = 0;
+			if (prevPos == newPos)
+				continue;
 
-            while (!RoundSummary.singleton._roundEnded)
-            {
-                yield return Timing.WaitForOneFrame;
+			prevPos = newPos;
+			mapEditorObject.transform.position = prevPos;
+		}
 
-                if (mapObject == null && !player.TryGetSessionVariable(SelectedObjectSessionVarName, out mapObject))
-                    break;
+		GrabbingPlayers.Remove(player);
+		if (mapEditorObject != null)
+		{
+			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
+			mapEditorObject.UpdateObjectAndCopies();
+		}
+	}
 
-                Vector3 newPos = mapObject.Position = player.CameraTransform.position + (player.CameraTransform.forward * multiplier);
-
-                i++;
-                if (i == 60)
-                {
-                    i = 0;
-                    player.ShowGameObjectHint(mapObject);
-                }
-
-                if (prevPos == newPos)
-                    continue;
-
-                prevPos = newPos;
-
-                ChangingObjectPositionEventArgs ev = new(player, mapObject, prevPos);
-                Events.Handlers.MapEditorObject.OnChangingObjectPosition(ev);
-
-                if (!ev.IsAllowed)
-                    break;
-
-                mapObject.Position = prevPos;
-                mapObject.UpdateIndicator();
-            }
-
-            GrabbingPlayers.Remove(player);
-        }
-
-        /// <summary>
-        /// The <see cref="Dictionary{TKey, TValue}"/> which contains all <see cref="Player"/> and <see cref="CoroutineHandle"/> pairs.
-        /// </summary>
-        private static readonly Dictionary<Player, CoroutineHandle> GrabbingPlayers = new();
-    }
+	/// <summary>
+	/// The <see cref="Dictionary{TKey, TValue}"/> which contains all <see cref="Player"/> and <see cref="CoroutineHandle"/> pairs.
+	/// </summary>
+	private static readonly Dictionary<Player, CoroutineHandle> GrabbingPlayers = [];
 }
-*/
