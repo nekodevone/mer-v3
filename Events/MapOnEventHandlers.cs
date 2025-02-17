@@ -1,6 +1,7 @@
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
+using ProjectMER.Configs;
 using ProjectMER.Features;
 using Utils.NonAllocLINQ;
 
@@ -8,12 +9,14 @@ namespace ProjectMER.Events;
 
 public class MapOnEventHandlers : CustomEventsHandler
 {
-	public override void OnServerWaitingForPlayers() => HandleActionList(ProjectMER.Singleton.Config!.OnWaitingForPlayers);
-	public override void OnServerRoundStarted() => HandleActionList(ProjectMER.Singleton.Config!.OnRoundStarted);
-	public override void OnServerLczDecontaminationStarted() => HandleActionList(ProjectMER.Singleton.Config!.OnLczDecontaminationStarted);
-    public override void OnWarheadStarted(WarheadStartedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadStarted);
-    public override void OnWarheadStopped(WarheadStoppedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadStopped);
-    public override void OnWarheadDetonated(WarheadDetonatedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadDetonated);
+	private static Config Config => ProjectMER.Singleton.Config!;
+
+	public override void OnServerWaitingForPlayers() => HandleActionList(Config.OnWaitingForPlayers);
+	public override void OnServerRoundStarted() => HandleActionList(Config.OnRoundStarted);
+	public override void OnServerLczDecontaminationStarted() => HandleActionList(Config.OnLczDecontaminationStarted);
+    public override void OnWarheadStarted(WarheadStartedEventArgs ev) => HandleActionList(Config.OnWarheadStarted);
+    public override void OnWarheadStopped(WarheadStoppedEventArgs ev) => HandleActionList(Config.OnWarheadStopped);
+    public override void OnWarheadDetonated(WarheadDetonatedEventArgs ev) => HandleActionList(Config.OnWarheadDetonated);
 
 	private void HandleActionList(List<string> list)
 	{
