@@ -11,7 +11,9 @@ public class MapOnEventHandlers : CustomEventsHandler
 	public override void OnServerWaitingForPlayers() => HandleActionList(ProjectMER.Singleton.Config!.OnWaitingForPlayers);
 	public override void OnServerRoundStarted() => HandleActionList(ProjectMER.Singleton.Config!.OnRoundStarted);
 	public override void OnServerLczDecontaminationStarted() => HandleActionList(ProjectMER.Singleton.Config!.OnLczDecontaminationStarted);
-	public override void OnWarheadDetonated(WarheadDetonatedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadDetonated);
+    public override void OnWarheadStarted(WarheadStartedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadStarted);
+    public override void OnWarheadStopped(WarheadStoppedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadStopped);
+    public override void OnWarheadDetonated(WarheadDetonatedEventArgs ev) => HandleActionList(ProjectMER.Singleton.Config!.OnWarheadDetonated);
 
 	private void HandleActionList(List<string> list)
 	{
