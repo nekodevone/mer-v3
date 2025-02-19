@@ -1,6 +1,7 @@
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
+using MEC;
 using ProjectMER.Configs;
 using ProjectMER.Features;
 using Utils.NonAllocLINQ;
@@ -11,7 +12,7 @@ public class MapOnEventHandlers : CustomEventsHandler
 {
 	private static Config Config => ProjectMER.Singleton.Config!;
 
-	public override void OnServerWaitingForPlayers() => HandleActionList(Config.OnWaitingForPlayers);
+	public override void OnServerWaitingForPlayers() => Timing.CallDelayed(0.1f, () => HandleActionList(Config.OnWaitingForPlayers));
 	public override void OnServerRoundStarted() => HandleActionList(Config.OnRoundStarted);
 	public override void OnServerLczDecontaminationStarted() => HandleActionList(Config.OnLczDecontaminationStarted);
 	public override void OnWarheadStarted(WarheadStartedEventArgs ev) => HandleActionList(Config.OnWarheadStarted);
