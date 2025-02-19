@@ -29,16 +29,22 @@ public class MapOnEventHandlers : CustomEventsHandler
 			switch (action)
 			{
 				case "load":
+				{
 					LoadMap(argument);
-					return;
+					continue;
+				}
 
 				case "unload":
+				{
 					UnloadMap(argument);
-					return;
+					continue;
+				}
 
 				default:
+				{
 					Logger.Error($"Unknown action: {action}");
-					return;
+					continue;
+				}
 			}
 		}
 	}
