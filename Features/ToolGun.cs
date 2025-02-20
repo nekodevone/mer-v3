@@ -23,6 +23,7 @@ public class ToolGun
 	{
 		nameof(SerializablePrimitive),
 		nameof(SerializableLight),
+		nameof(SerializablePlayerSpawnpoint),
 		nameof(SerializableSchematic),
 	};
 
@@ -184,6 +185,15 @@ public class ToolGun
 				{
 					SerializableLight serializableLight = new() { Position = position, Room = roomId };
 					KeyValuePair<string, SerializableLight> kvp = new(Guid.NewGuid().ToString(), serializableLight);
+					if (map.TryAddElement(kvp.Key, kvp.Value))
+						map.SpawnObject(kvp.Key, kvp.Value);
+					return;
+				}
+
+			case nameof(SerializablePlayerSpawnpoint):
+				{
+					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = position, Room = roomId };
+					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(Guid.NewGuid().ToString(), serializablePlayerSpawnpoint);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
 					return;

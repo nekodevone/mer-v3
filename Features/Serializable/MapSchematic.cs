@@ -21,6 +21,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableLight> Lights { get; set; } = [];
 
+	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnPoints { get; set; } = [];
+
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
 
 	public List<MapEditorObject> SpawnedObjects = [];
@@ -38,6 +40,11 @@ public class MapSchematic
 		}
 
 		foreach (KeyValuePair<string, SerializableLight> kVP in Lights)
+		{
+			SpawnObject(kVP.Key, kVP.Value);
+		}
+
+		foreach (KeyValuePair<string, SerializablePlayerSpawnpoint> kVP in PlayerSpawnPoints)
 		{
 			SpawnObject(kVP.Key, kVP.Value);
 		}
@@ -73,7 +80,6 @@ public class MapSchematic
 
 	public void DestroyObject(string id)
 	{
-
 		foreach (MapEditorObject mapEditorObject in SpawnedObjects.ToList())
 		{
 			if (mapEditorObject.Id != id)
@@ -104,6 +110,15 @@ public class MapSchematic
 			return true;
 		}
 
+		if (serializableObject is SerializablePlayerSpawnpoint playerSpawnPoint)
+		{
+			if (PlayerSpawnPoints.ContainsKey(id))
+				return false;
+
+			PlayerSpawnPoints.Add(id, playerSpawnPoint);
+			return true;
+		}
+
 		if (serializableObject is SerializableSchematic schematic)
 		{
 			if (Schematics.ContainsKey(id))
@@ -122,6 +137,9 @@ public class MapSchematic
 			return true;
 
 		if (Lights.Remove(id))
+			return true;
+
+		if (PlayerSpawnPoints.Remove(id))
 			return true;
 
 		if (Schematics.Remove(id))
