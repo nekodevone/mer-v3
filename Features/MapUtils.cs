@@ -18,8 +18,10 @@ public static class MapUtils
 
 	public static void SaveMap(string mapName)
 	{
-		if (!LoadedMaps.TryGetValue(mapName, out MapSchematic map))
-			map = LoadedMaps.GetOrAdd(UntitledMapName, () => new MapSchematic(UntitledMapName));
+		if (LoadedMaps.TryGetValue(mapName, out MapSchematic map))
+			map.Merge(UntitledMap);
+		else
+			map = UntitledMap;
 
 		string path = Path.Combine(ProjectMER.MapsDir, $"{mapName}.yml");
 		File.WriteAllText(path, YamlParser.Serializer.Serialize(map));

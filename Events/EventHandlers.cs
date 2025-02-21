@@ -27,12 +27,12 @@ public class EventsHandler : CustomEventsHandler
 		List<MapEditorObject> list = [];
 		foreach (MapSchematic map in MapUtils.LoadedMaps.Values)
 		{
-			foreach (KeyValuePair<string, SerializablePlayerSpawnpoint> spawnPoint in map.PlayerSpawnPoints)
+			foreach (KeyValuePair<string, SerializablePlayerSpawnpoint> spawnpoint in map.PlayerSpawnpoints)
 			{
-				if (!spawnPoint.Value.Roles.Contains(ev.Role.RoleTypeId))
+				if (!spawnpoint.Value.Roles.Contains(ev.Role.RoleTypeId))
 					continue;
 
-				list.AddRange(map.SpawnedObjects.Where(x => x.Id == spawnPoint.Key));
+				list.AddRange(map.SpawnedObjects.Where(x => x.Id == spawnpoint.Key));
 			}
 		}
 

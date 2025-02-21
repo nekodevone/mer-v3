@@ -1,8 +1,10 @@
 using LabApi.Features.Wrappers;
+using MonoMod.Utils;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Features.Serializable;
 
@@ -21,11 +23,21 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableLight> Lights { get; set; } = [];
 
-	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnPoints { get; set; } = [];
+	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnpoints { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
 
 	public List<MapEditorObject> SpawnedObjects = [];
+
+	public MapSchematic Merge(MapSchematic other)
+	{
+		Primitives.AddRange(other.Primitives);
+		Lights.AddRange(other.Lights);
+		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
+		Schematics.AddRange(other.Schematics);
+
+		return this;
+	}
 
 	public void Reload()
 	{
@@ -34,25 +46,10 @@ public class MapSchematic
 
 		SpawnedObjects.Clear();
 
-		foreach (KeyValuePair<string, SerializablePrimitive> kVP in Primitives)
-		{
-			SpawnObject(kVP.Key, kVP.Value);
-		}
-
-		foreach (KeyValuePair<string, SerializableLight> kVP in Lights)
-		{
-			SpawnObject(kVP.Key, kVP.Value);
-		}
-
-		foreach (KeyValuePair<string, SerializablePlayerSpawnpoint> kVP in PlayerSpawnPoints)
-		{
-			SpawnObject(kVP.Key, kVP.Value);
-		}
-
-		foreach (KeyValuePair<string, SerializableSchematic> kVP in Schematics)
-		{
-			SpawnObject(kVP.Key, kVP.Value);
-		}
+		Primitives.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Lights.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Schematics.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -92,41 +89,17 @@ public class MapSchematic
 
 	public bool TryAddElement<T>(string id, T serializableObject) where T : SerializableObject
 	{
-		if (serializableObject is SerializablePrimitive primitive)
-		{
-			if (Primitives.ContainsKey(id))
-				return false;
-
-			Primitives.Add(id, primitive);
+		if (Primitives.TryAdd(id, serializableObject))
 			return true;
-		}
 
-		if (serializableObject is SerializableLight light)
-		{
-			if (Lights.ContainsKey(id))
-				return false;
-
-			Lights.Add(id, light);
+		if (Lights.TryAdd(id, serializableObject))
 			return true;
-		}
 
-		if (serializableObject is SerializablePlayerSpawnpoint playerSpawnPoint)
-		{
-			if (PlayerSpawnPoints.ContainsKey(id))
-				return false;
-
-			PlayerSpawnPoints.Add(id, playerSpawnPoint);
+		if (PlayerSpawnpoints.TryAdd(id, serializableObject))
 			return true;
-		}
 
-		if (serializableObject is SerializableSchematic schematic)
-		{
-			if (Schematics.ContainsKey(id))
-				return false;
-
-			Schematics.Add(id, schematic);
+		if (Schematics.TryAdd(id, serializableObject))
 			return true;
-		}
 
 		return false;
 	}
@@ -139,7 +112,7 @@ public class MapSchematic
 		if (Lights.Remove(id))
 			return true;
 
-		if (PlayerSpawnPoints.Remove(id))
+		if (PlayerSpawnpoints.Remove(id))
 			return true;
 
 		if (Schematics.Remove(id))
