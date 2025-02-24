@@ -13,6 +13,7 @@ using ProjectMER.Features.Serializable;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using UserSettings.ServerSpecific;
+using YamlDotNet.Serialization;
 using Logger = LabApi.Features.Console.Logger;
 
 namespace ProjectMER.Features;
@@ -127,6 +128,9 @@ public class ToolGun
 		if (!hit.transform.TryGetComponentInParent(out mapEditorObject))
 			return false;
 
+		if (mapEditorObject is IndicatorObject indicatorObject)
+			mapEditorObject = IndicatorObject.Dictionary[indicatorObject];
+
 		return mapEditorObject;
 	}
 
@@ -155,7 +159,8 @@ public class ToolGun
 			return;
 		}
 
-		Select(player, mapEditorObject);
+		if (SelectMode)
+			Select(player, mapEditorObject);
 	}
 
 	private void Create(Player player)
@@ -178,7 +183,7 @@ public class ToolGun
 					KeyValuePair<string, SerializablePrimitive> kvp = new(Guid.NewGuid().ToString(), serializablePrimitive);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
-					return;
+					break;
 				}
 
 			case nameof(SerializableLight):
@@ -187,16 +192,16 @@ public class ToolGun
 					KeyValuePair<string, SerializableLight> kvp = new(Guid.NewGuid().ToString(), serializableLight);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
-					return;
+					break;
 				}
 
 			case nameof(SerializablePlayerSpawnpoint):
 				{
-					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = position, Room = roomId };
+					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("G"), Room = roomId };
 					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(Guid.NewGuid().ToString(), serializablePlayerSpawnpoint);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
-					return;
+					break;
 				}
 
 			case nameof(SerializableSchematic):
@@ -209,9 +214,11 @@ public class ToolGun
 					KeyValuePair<string, SerializableSchematic> kvp = new(Guid.NewGuid().ToString(), serializableSchematic);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
-					return;
+					break;
 				}
 		}
+
+		IndicatorObject.RefreshIndicators();
 	}
 
 	public static void Delete(MapEditorObject mapEditorObject)
@@ -219,6 +226,8 @@ public class ToolGun
 		MapSchematic map = MapUtils.LoadedMaps[mapEditorObject.MapName];
 		if (map.TryRemoveElement(mapEditorObject.Id))
 			map.DestroyObject(mapEditorObject.Id);
+
+		IndicatorObject.RefreshIndicators();
 	}
 
 	public static void Select(Player player, MapEditorObject mapEditorObject)
@@ -246,7 +255,7 @@ public class ToolGun
 		{
 			instance = mapEditorObject.GetType().GetField("Base").GetValue(mapEditorObject);
 			properties = instance.GetType().GetProperties().ToList();
-			offset = properties.Count;
+			offset = properties.Count - properties.Count(x => Attribute.IsDefined(x, typeof(YamlIgnoreAttribute))) + 2;
 		}
 
 		for (int i = 0; i < 36 - offset; i++)
@@ -262,6 +271,9 @@ public class ToolGun
 			sb.Append("</size>");
 			sb.AppendLine();
 		}
+
+		if (offset > 0)
+			sb.AppendLine();
 
 		if (!player.CurrentItem.IsToolGun(out ToolGun toolGun))
 			return StringBuilderPool.Shared.ToStringReturn(sb);
@@ -308,6 +320,9 @@ public class ToolGun
 		{
 			if (hit.transform.TryGetComponentInParent(out MapEditorObject mapEditorObject))
 			{
+				if (mapEditorObject is IndicatorObject indicatorObject)
+					mapEditorObject = IndicatorObject.Dictionary[indicatorObject];
+
 				if (mapEditorObject is SchematicObject schematicObject)
 				{
 					name = schematicObject.name.Split('-').Last().ToUpper();

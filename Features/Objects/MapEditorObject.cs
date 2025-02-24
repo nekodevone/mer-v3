@@ -1,6 +1,7 @@
 using LabApi.Features.Wrappers;
 using Mirror;
 using ProjectMER.Features.Extensions;
+using ProjectMER.Features.Interfaces;
 using ProjectMER.Features.Serializable;
 using UnityEngine;
 
@@ -24,7 +25,6 @@ public class MapEditorObject : MonoBehaviour
 		Room = room;
 
 		NetworkServer.Spawn(gameObject);
-		// UpdateObject();
 		return this;
 	}
 
@@ -39,16 +39,32 @@ public class MapEditorObject : MonoBehaviour
 		}
 	}
 
-	private void UpdateCopy() => Base.SpawnOrUpdateObject(Room, gameObject);
+    private void UpdateCopy()
+    {
+        Base.SpawnOrUpdateObject(Room, gameObject);
 
-	public Vector3 RelativePosition
+		if (Base is IIndicatorDefinition indicatorDefinition)
+			indicatorDefinition.SpawnOrUpdateIndicator(Room, IndicatorObject.Dictionary.First(x => x.Value == this).Key.gameObject);
+    }
+
+    public Vector3 RelativePosition
 	{
 		get => Base.Position.ToVector3();
 		set => Base.Position = value.ToString("G");
 	}
 
-	/// <summary>
-	/// Destroys the object.
-	/// </summary>
-	public void Destroy() => Destroy(gameObject);
+    /// <summary>
+    /// Destroys the object.
+    /// </summary>
+    public void Destroy()
+    {
+		if (Base is IIndicatorDefinition _)
+		{
+            IndicatorObject indicator = IndicatorObject.Dictionary.First(x => x.Value == this).Key;
+			IndicatorObject.Dictionary.Remove(indicator);
+			indicator.Destroy();
+		}
+
+        Destroy(gameObject);
+    }
 }

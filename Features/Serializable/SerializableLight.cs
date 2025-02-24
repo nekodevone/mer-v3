@@ -1,12 +1,13 @@
 using AdminToys;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Extensions;
+using ProjectMER.Features.Interfaces;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
 namespace ProjectMER.Features.Serializable;
 
-public class SerializableLight : SerializableObject
+public class SerializableLight : SerializableObject, IIndicatorDefinition
 {
 	public string Color { get; set; } = "white";
 
@@ -15,7 +16,7 @@ public class SerializableLight : SerializableObject
 	public float Range { get; set; } = 1f;
 
 	public LightShadows Shadows { get; set; } = LightShadows.Hard;
-	
+
 	public float Strength { get; set; } = 0f;
 
 	public LightType Type { get; set; } = LightType.Point;
@@ -57,5 +58,31 @@ public class SerializableLight : SerializableObject
 		light.NetworkInnerSpotAngle = InnerSpotAngle;
 
 		return light.gameObject;
+	}
+
+	public GameObject SpawnOrUpdateIndicator(Room room, GameObject? instance = null)
+	{
+		PrimitiveObjectToy primitive;
+		Vector3 position = room.GetRelativePosition(Position);
+
+		if (instance == null)
+			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab, position, Quaternion.identity);
+		else
+		{
+			primitive = instance.GetComponent<PrimitiveObjectToy>();
+			primitive.transform.position = position;
+		}
+
+		primitive.NetworkPrimitiveType = PrimitiveType.Sphere;
+		primitive.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
+		primitive.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+
+		if (ColorUtility.TryParseHtmlString(Color, out Color color))
+		{
+			Color transparentColor = new Color(color.r, color.g, color.b, 0.9f);
+			primitive.NetworkMaterialColor = transparentColor;
+		}
+
+		return primitive.gameObject;
 	}
 }
