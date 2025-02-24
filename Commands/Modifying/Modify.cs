@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using CommandSystem;
@@ -68,28 +69,88 @@ public class Modify : ICommand
 			return false;
 		}
 
-		try
+		if (typeof(ICollection).IsAssignableFrom(foundProperty.PropertyType))
 		{
-			if (foundProperty.PropertyType != typeof(string))
+			if (arguments.Count < 2)
+			{
+				response = "Not enough arguments!";
+				return false;
+			}
+
+			object listInstance = foundProperty.GetValue(instance);
+			Type listType = foundProperty.PropertyType.GetInterfaces().First(x => x.IsGenericType).GetGenericArguments()[0];
+
+			switch (arguments.At(1).ToLower())
+			{
+				case "a":
+				case "add":
+					{
+						for (int i = 2; i < arguments.Count; i++)
+						{
+							try
+							{
+								object value = TypeDescriptor.GetConverter(listType).ConvertFromInvariantString(arguments.At(i));
+								foundProperty.PropertyType.GetMethod("Add").Invoke(listInstance, [value]);
+							}
+							catch (Exception)
+							{
+								response = $"\"{arguments.At(i)}\" is not a valid argument! The value should be a {listType} type.";
+								return false;
+							}
+						}
+						break;
+					}
+
+				case "rm":
+				case "remove":
+					{
+						for (int i = 2; i < arguments.Count; i++)
+						{
+							try
+							{
+								object value = TypeDescriptor.GetConverter(listType).ConvertFromInvariantString(arguments.At(i));
+								foundProperty.PropertyType.GetMethod("Remove").Invoke(listInstance, [value]);
+							}
+							catch (Exception)
+							{
+								response = $"\"{arguments.At(i)}\" is not a valid argument! The value should be a {listType} type.";
+								return false;
+							}
+						}
+						break;
+					}
+			}
+		}
+		else if (foundProperty.PropertyType != typeof(string))
+		{
+			try
 			{
 				object value = TypeDescriptor.GetConverter(foundProperty.PropertyType).ConvertFromInvariantString(arguments.At(1));
 				foundProperty.SetValue(instance, value);
 			}
-			else
+			catch (Exception)
 			{
-				string spacedString = arguments.At(1);
-				for (int i = 1; i < arguments.Count - 1; i++)
-				{
-					spacedString += $" {arguments.At(1 + i)}";
-				}
-
-				foundProperty.SetValue(instance, TypeDescriptor.GetConverter(foundProperty.PropertyType).ConvertFromInvariantString(spacedString));
+				response = $"\"{arguments.At(1)}\" is not a valid argument! The value should be a {foundProperty.PropertyType} type.";
+				return false;
 			}
 		}
-		catch (Exception)
+		else // Property is a string
 		{
-			response = $"\"{arguments.At(1)}\" is not a valid argument! The value should be a {foundProperty.PropertyType} type.";
-			return false;
+			string spacedString = arguments.At(1);
+			for (int i = 1; i < arguments.Count - 1; i++)
+			{
+				spacedString += $" {arguments.At(1 + i)}";
+			}
+
+			try
+			{
+				foundProperty.SetValue(instance, TypeDescriptor.GetConverter(foundProperty.PropertyType).ConvertFromInvariantString(spacedString));
+			}
+			catch (Exception)
+			{
+				response = $"\"{arguments.At(1)}\" is not a valid argument! The value should be a {foundProperty.PropertyType} type.";
+				return false;
+			}
 		}
 
 		mapEditorObject.UpdateObjectAndCopies();
