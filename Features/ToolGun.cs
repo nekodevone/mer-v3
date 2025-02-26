@@ -24,6 +24,7 @@ public class ToolGun
 	{
 		nameof(SerializablePrimitive),
 		nameof(SerializableLight),
+		nameof(SerializableDoor),
 		nameof(SerializablePlayerSpawnpoint),
 		nameof(SerializableSchematic),
 	};
@@ -175,12 +176,14 @@ public class ToolGun
 		string roomId = room.GetRoomStringId();
 
 		MapSchematic map = MapUtils.UntitledMap;
+		string id = Guid.NewGuid().ToString();
+
 		switch (List[ObjectToSpawnIndex])
 		{
 			case nameof(SerializablePrimitive):
 				{
 					SerializablePrimitive serializablePrimitive = new() { Position = position, Room = roomId };
-					KeyValuePair<string, SerializablePrimitive> kvp = new(Guid.NewGuid().ToString(), serializablePrimitive);
+					KeyValuePair<string, SerializablePrimitive> kvp = new(id, serializablePrimitive);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
 					break;
@@ -189,7 +192,16 @@ public class ToolGun
 			case nameof(SerializableLight):
 				{
 					SerializableLight serializableLight = new() { Position = position, Room = roomId };
-					KeyValuePair<string, SerializableLight> kvp = new(Guid.NewGuid().ToString(), serializableLight);
+					KeyValuePair<string, SerializableLight> kvp = new(id, serializableLight);
+					if (map.TryAddElement(kvp.Key, kvp.Value))
+						map.SpawnObject(kvp.Key, kvp.Value);
+					break;
+				}
+
+			case nameof(SerializableDoor):
+				{
+					SerializableDoor serializableDoor = new() { Position = position, Room = roomId };
+					KeyValuePair<string, SerializableDoor> kvp = new(id, serializableDoor);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
 					break;
@@ -198,7 +210,7 @@ public class ToolGun
 			case nameof(SerializablePlayerSpawnpoint):
 				{
 					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("G"), Room = roomId };
-					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(Guid.NewGuid().ToString(), serializablePlayerSpawnpoint);
+					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(id, serializablePlayerSpawnpoint);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
 					break;
@@ -211,28 +223,33 @@ public class ToolGun
 						return;
 
 					SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = schematicName };
-					KeyValuePair<string, SerializableSchematic> kvp = new(Guid.NewGuid().ToString(), serializableSchematic);
+					KeyValuePair<string, SerializableSchematic> kvp = new(id, serializableSchematic);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
 					break;
 				}
 		}
 
-		IndicatorObject.RefreshIndicators();
+		foreach (MapEditorObject mapEditorObject in map.SpawnedObjects)
+		{
+			if (mapEditorObject.Id != id)
+				continue;
+
+			IndicatorObject.TrySpawnOrUpdateIndicator(mapEditorObject);
+		}
 	}
 
 	public static void Delete(MapEditorObject mapEditorObject)
 	{
+		IndicatorObject.TryDestroyIndicator(mapEditorObject);
+
 		MapSchematic map = MapUtils.LoadedMaps[mapEditorObject.MapName];
 		if (map.TryRemoveElement(mapEditorObject.Id))
 			map.DestroyObject(mapEditorObject.Id);
-
-		IndicatorObject.RefreshIndicators();
 	}
 
 	public static void Select(Player player, MapEditorObject mapEditorObject)
 	{
-		// SelectedObject = mapEditorObject;
 		if (!PlayerSelectedObjectDict.ContainsKey(player))
 		{
 			PlayerSelectedObjectDict.Add(player, mapEditorObject);
@@ -343,9 +360,9 @@ public class ToolGun
 		return "\n ";
 	}
 
-    private static bool Raycast(Player player, out RaycastHit hit) => Raycast(player.Camera.position, player.Camera.forward, out hit);
+	private static bool Raycast(Player player, out RaycastHit hit) => Raycast(player.Camera.position, player.Camera.forward, out hit);
 
-    private static bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit hit) => Physics.Raycast(origin, direction, out hit, 100f, ToolGunMask.Mask);
+	private static bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit hit) => Physics.Raycast(origin, direction, out hit, 100f, ToolGunMask.Mask);
 
 	private static readonly CachedLayerMask ToolGunMask = new("Default", "Door");
 }

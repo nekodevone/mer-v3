@@ -5,6 +5,7 @@ using ProjectMER.Commands.Modifying.Position;
 using ProjectMER.Commands.Modifying.Rotation;
 using ProjectMER.Commands.Modifying.Scale;
 using ProjectMER.Commands.ToolGunLike;
+using ProjectMER.Commands.Utility;
 
 namespace ProjectMER.Commands;
 
@@ -28,7 +29,8 @@ public class MapEditorParentCommand : ParentCommand
         RegisterCommand(new Load());
         RegisterCommand(new Unload());
         RegisterCommand(new ToggleToolGun());
-        RegisterCommand(new Utility.List());
+        RegisterCommand(new List());
+        RegisterCommand(new Indicators());
 
         RegisterCommand(new Position());
         RegisterCommand(new Rotation());

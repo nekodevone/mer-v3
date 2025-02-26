@@ -1,7 +1,7 @@
 using LabApi.Features.Wrappers;
+using MEC;
 using Mirror;
 using ProjectMER.Features.Extensions;
-using ProjectMER.Features.Interfaces;
 using ProjectMER.Features.Serializable;
 using UnityEngine;
 
@@ -30,7 +30,18 @@ public class MapEditorObject : MonoBehaviour
 
 	public virtual void UpdateObjectAndCopies()
 	{
-		foreach (MapEditorObject copy in MapUtils.LoadedMaps[MapName].SpawnedObjects)
+		if (Base is SerializableDoor serializableDoor && serializableDoor._prevType != serializableDoor.Type)
+		{
+			if (MapUtils.LoadedMaps.TryGetValue(MapName, out MapSchematic map))
+			{
+				map.DestroyObject(Id);
+			}
+
+			Timing.CallDelayed(0.1f, () => map.SpawnObject(Id, Base));
+			return;
+		}
+
+		foreach (MapEditorObject copy in MapUtils.LoadedMaps[MapName].SpawnedObjects.ToList())
 		{
 			if (copy.Id != Id)
 				continue;
@@ -39,32 +50,24 @@ public class MapEditorObject : MonoBehaviour
 		}
 	}
 
-    private void UpdateCopy()
-    {
-        Base.SpawnOrUpdateObject(Room, gameObject);
+	private void UpdateCopy()
+	{
+		IndicatorObject.TrySpawnOrUpdateIndicator(this);
+		Base.SpawnOrUpdateObject(Room, gameObject);
+	}
 
-		if (Base is IIndicatorDefinition indicatorDefinition)
-			indicatorDefinition.SpawnOrUpdateIndicator(Room, IndicatorObject.Dictionary.First(x => x.Value == this).Key.gameObject);
-    }
-
-    public Vector3 RelativePosition
+	public Vector3 RelativePosition
 	{
 		get => Base.Position.ToVector3();
 		set => Base.Position = value.ToString("G");
 	}
 
-    /// <summary>
-    /// Destroys the object.
-    /// </summary>
-    public void Destroy()
-    {
-		if (Base is IIndicatorDefinition _)
-		{
-            IndicatorObject indicator = IndicatorObject.Dictionary.First(x => x.Value == this).Key;
-			IndicatorObject.Dictionary.Remove(indicator);
-			indicator.Destroy();
-		}
-
-        Destroy(gameObject);
-    }
+	/// <summary>
+	/// Destroys the object.
+	/// </summary>
+	public void Destroy()
+	{
+		IndicatorObject.TryDestroyIndicator(this);
+		Destroy(gameObject);
+	}
 }

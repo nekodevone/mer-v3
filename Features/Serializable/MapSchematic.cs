@@ -23,6 +23,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableLight> Lights { get; set; } = [];
 
+	public Dictionary<string, SerializableDoor> Doors {get; set; } = [];
+
 	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnpoints { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
@@ -33,6 +35,7 @@ public class MapSchematic
 	{
 		Primitives.AddRange(other.Primitives);
 		Lights.AddRange(other.Lights);
+		Doors.AddRange(other.Doors);
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Schematics.AddRange(other.Schematics);
 
@@ -48,6 +51,7 @@ public class MapSchematic
 
 		Primitives.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Lights.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Doors.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Schematics.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
@@ -62,7 +66,8 @@ public class MapSchematic
 			foreach (Room room in serializableObject.GetRooms())
 			{
 				GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
-				SpawnedObjects.Add(gameObject.AddComponent<SchematicObject>().Init(serializableSchematic, data, Name, id, room));
+                SchematicObject schematicObject = gameObject.AddComponent<SchematicObject>().Init(serializableSchematic, data, Name, id, room);
+				SpawnedObjects.Add(schematicObject);
 			}
 
 			return;
@@ -71,7 +76,8 @@ public class MapSchematic
 		foreach (Room room in serializableObject.GetRooms())
 		{
 			GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
-			SpawnedObjects.Add(gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room));
+			MapEditorObject mapEditorObject = gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room);
+			SpawnedObjects.Add(mapEditorObject);
 		}
 	}
 
@@ -95,6 +101,9 @@ public class MapSchematic
 		if (Lights.TryAdd(id, serializableObject))
 			return true;
 
+		if (Doors.TryAdd(id, serializableObject))
+			return true;
+
 		if (PlayerSpawnpoints.TryAdd(id, serializableObject))
 			return true;
 
@@ -110,6 +119,9 @@ public class MapSchematic
 			return true;
 
 		if (Lights.Remove(id))
+			return true;
+
+		if (Doors.Remove(id))
 			return true;
 
 		if (PlayerSpawnpoints.Remove(id))

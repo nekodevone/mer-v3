@@ -1,8 +1,10 @@
 ﻿using CommandSystem;
 using LabApi.Features.Wrappers;
 using MEC;
+using Mirror;
 using ProjectMER.Features;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.Serializable;
 using UnityEngine;
 
 namespace ProjectMER.Commands.Modifying.Position.SubCommands;
@@ -38,7 +40,8 @@ public class Grab : ICommand
 			Timing.KillCoroutines(GrabbingPlayers[player]);
 			GrabbingPlayers.Remove(player);
 
-			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
+			Room room = mapEditorObject.Room;
+			mapEditorObject.Base.Position = room.Name == MapGeneration.RoomName.Outside ? mapEditorObject.transform.position.ToString("G") : mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
 			mapEditorObject.UpdateObjectAndCopies();
 
 			response = "Ungrabbed";
@@ -59,7 +62,7 @@ public class Grab : ICommand
 
 		while (true)
 		{
-			yield return Timing.WaitForOneFrame;
+			yield return Timing.WaitForSeconds(0.1f);
 
 			if (mapEditorObject == null || !ToolGun.TryGetSelectedMapObject(player, out _))
 				break;
@@ -71,6 +74,11 @@ public class Grab : ICommand
 
 			prevPos = newPos;
 			mapEditorObject.transform.position = prevPos;
+			if (mapEditorObject.Base is SerializableDoor _)
+			{
+				NetworkServer.UnSpawn(mapEditorObject.gameObject);
+				NetworkServer.Spawn(mapEditorObject.gameObject);
+			}
 		}
 
 		GrabbingPlayers.Remove(player);
