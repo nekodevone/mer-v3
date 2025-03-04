@@ -76,7 +76,7 @@ public class ToolGun
 			return false;
 
 		Firearm toolgun = (Firearm)item.Base;
-		toolgun.ApplyAttachmentsCode(390, true);
+		toolgun.ApplyAttachmentsCode(454, false);
 		if (!toolgun.TryGetModules(out MagazineModule magazineModule, out AutomaticActionModule automaticActionModule))
 		{
 			Logger.Error("Modules not found. This error should never occur.");
