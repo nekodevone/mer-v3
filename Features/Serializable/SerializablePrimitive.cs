@@ -30,14 +30,14 @@ public class SerializablePrimitive : SerializableObject
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
 
 		if (instance == null)
-			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab, position, rotation);
+			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
 		else
 		{
 			primitive = instance.GetComponent<PrimitiveObjectToy>();
-			primitive.transform.position = position;
-			primitive.transform.rotation = rotation;
 		}
 
+		primitive.transform.position = position;
+		primitive.transform.rotation = rotation;
 		primitive.transform.localScale = Scale.ToVector3();
 
 		if (ColorUtility.TryParseHtmlString(Color, out Color color))

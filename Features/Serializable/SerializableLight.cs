@@ -37,13 +37,14 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
 
 		if (instance == null)
-			light = UnityEngine.Object.Instantiate(PrefabManager.LightSourcePrefab, position, rotation);
+			light = UnityEngine.Object.Instantiate(PrefabManager.LightSourcePrefab);
 		else
 		{
 			light = instance.GetComponent<LightSourceToy>();
-			light.transform.position = position;
-			light.transform.rotation = rotation;
 		}
+
+		light.transform.position = position;
+		light.transform.rotation = rotation;
 
 		if (ColorUtility.TryParseHtmlString(Color, out Color color))
 			light.NetworkLightColor = color;
@@ -66,13 +67,13 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 		Vector3 position = room.GetRelativePosition(Position);
 
 		if (instance == null)
-			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab, position, Quaternion.identity);
+			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
 		else
 		{
 			primitive = instance.GetComponent<PrimitiveObjectToy>();
-			primitive.transform.position = position;
 		}
 
+		primitive.transform.position = position;
 		primitive.NetworkPrimitiveType = PrimitiveType.Sphere;
 		primitive.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
 		primitive.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
