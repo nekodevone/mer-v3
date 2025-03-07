@@ -1,3 +1,4 @@
+using ProjectMER.Features.Enums;
 using UnityEngine;
 
 namespace ProjectMER.Features.Serializable.Schematics;
@@ -18,7 +19,7 @@ public class SchematicBlockData
 
 	public virtual Vector3 Scale { get; set; }
 
-	public virtual int BlockType { get; set; }
+	public virtual BlockType BlockType { get; set; }
 
 	public virtual Dictionary<string, object> Properties { get; set; }
 }

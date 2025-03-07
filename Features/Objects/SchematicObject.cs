@@ -1,6 +1,7 @@
 using AdminToys;
 using LabApi.Features.Wrappers;
 using Mirror;
+using ProjectMER.Features.Enums;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Logger = LabApi.Features.Console.Logger;
@@ -44,7 +45,7 @@ public class SchematicObject : MapEditorObject
 	private void CreateRecursiveFromID(int id, List<SchematicBlockData> blocks, Transform parentGameObject)
 	{
 		Transform childGameObjectTransform = CreateObject(blocks.Find(c => c.ObjectId == id), parentGameObject) ?? transform; // Create the object first before creating children.
-		int[] parentSchematics = blocks.Where(bl => bl.BlockType == 5).Select(bl => bl.ObjectId).ToArray();
+		int[] parentSchematics = blocks.Where(bl => bl.BlockType == BlockType.Schematic).Select(bl => bl.ObjectId).ToArray();
 
 		// Gets all the ObjectIds of all the schematic blocks inside "blocks" argument.
 		foreach (SchematicBlockData block in blocks.FindAll(c => c.ParentId == id))
@@ -66,7 +67,7 @@ public class SchematicObject : MapEditorObject
 
 		switch (block.BlockType)
 		{
-			case 0:
+			case BlockType.Empty:
 				{
 					gameObject = new GameObject(block.Name)
 					{
@@ -82,7 +83,7 @@ public class SchematicObject : MapEditorObject
 					break;
 				}
 
-			case 1:
+			case BlockType.Primitive:
 				{
 					PrimitiveObjectToy primitive = Instantiate(PrefabManager.PrimitiveObjectPrefab, parentTransform);
 
@@ -116,7 +117,7 @@ public class SchematicObject : MapEditorObject
 					break;
 				}
 
-			case 2:
+			case BlockType.Light:
 				{
 					LightSourceToy light = Instantiate(PrefabManager.LightSourcePrefab, parentTransform);
 
@@ -267,7 +268,7 @@ public class SchematicObject : MapEditorObject
 		// AttachedBlocks.Add(gameObject);
 		ObjectFromId.Add(block.ObjectId, gameObject.transform);
 
-		if (block.BlockType != 2 && TryGetAnimatorController(block.AnimatorName, out animatorController))
+		if (block.BlockType != BlockType.Light && TryGetAnimatorController(block.AnimatorName, out animatorController))
 			_animators.Add(gameObject, animatorController);
 
 		return gameObject.transform;
