@@ -309,7 +309,7 @@ public class ToolGun
 		sb.AppendLine();
 
 		sb.Append($"<size=50%>");
-		sb.Append(Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room) ? $"{room.Zone}_{room.Shape}_{room.Name}" : "Unknown");
+		sb.Append(GetRoomString(player));
 		sb.Append("</size>");
 		sb.Append("</font>");
 
@@ -358,6 +358,27 @@ public class ToolGun
 			return $"<color=yellow>SELECT</color>\n<color=yellow>{name}</color>";
 
 		return "\n ";
+	}
+
+	private static string GetRoomString(Player player)
+	{
+		if (!Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room))
+			return "Unknown";
+
+        List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
+
+		string roomString;
+		if (list.Count == 1)
+		{
+			roomString = room.GetRoomStringId();
+		}
+		else
+		{
+			roomString = $"{room.GetRoomStringId()} ({list.IndexOf(room)}) ({list.Count})";
+		}
+		
+		ListPool<Room>.Shared.Return(list);
+		return roomString;
 	}
 
 	private static bool Raycast(Player player, out RaycastHit hit) => Raycast(player.Camera.position, player.Camera.forward, out hit);
