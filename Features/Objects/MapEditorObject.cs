@@ -9,6 +9,7 @@ namespace ProjectMER.Features.Objects;
 
 public class MapEditorObject : MonoBehaviour
 {
+	private int _prevIndex;
 	public SerializableObject Base;
 
 	public string MapName { get; protected set; }
@@ -20,6 +21,7 @@ public class MapEditorObject : MonoBehaviour
 	public MapEditorObject Init(SerializableObject serializableObject, string mapName, string id, Room room)
 	{
 		Base = serializableObject;
+		_prevIndex = Base.Index;
 		MapName = mapName;
 		Id = id;
 		Room = room;
@@ -41,6 +43,17 @@ public class MapEditorObject : MonoBehaviour
 			return;
 		}
 
+		if (_prevIndex != Base.Index)
+		{
+			if (MapUtils.LoadedMaps.TryGetValue(MapName, out MapSchematic map))
+			{
+				map.DestroyObject(Id);
+			}
+
+			Timing.CallDelayed(0.1f, () => map.SpawnObject(Id, Base));
+			return;
+		}
+
 		foreach (MapEditorObject copy in MapUtils.LoadedMaps[MapName].SpawnedObjects.ToList())
 		{
 			if (copy.Id != Id)
@@ -48,6 +61,8 @@ public class MapEditorObject : MonoBehaviour
 
 			copy.UpdateCopy();
 		}
+
+		_prevIndex = Base.Index;
 	}
 
 	private void UpdateCopy()

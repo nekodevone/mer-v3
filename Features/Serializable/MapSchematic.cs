@@ -1,5 +1,7 @@
 using LabApi.Features.Wrappers;
+using MapGeneration;
 using MonoMod.Utils;
+using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable.Schematics;
@@ -23,7 +25,7 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableLight> Lights { get; set; } = [];
 
-	public Dictionary<string, SerializableDoor> Doors {get; set; } = [];
+	public Dictionary<string, SerializableDoor> Doors { get; set; } = [];
 
 	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnpoints { get; set; } = [];
 
@@ -58,27 +60,38 @@ public class MapSchematic
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
 	{
+		List<Room> rooms;
 		if (serializableObject is SerializableSchematic serializableSchematic)
 		{
 			if (!MapUtils.TryGetSchematicDataByName(serializableSchematic.SchematicName, out SchematicObjectDataList data))
 				return;
 
-			foreach (Room room in serializableObject.GetRooms())
+			rooms = serializableObject.GetRooms();
+			foreach (Room room in rooms)
 			{
-				GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
-                SchematicObject schematicObject = gameObject.AddComponent<SchematicObject>().Init(serializableSchematic, data, Name, id, room);
-				SpawnedObjects.Add(schematicObject);
+				if (serializableObject.Index < 0 || serializableObject.Index == room.GetRoomIndex())
+				{
+					GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
+					SchematicObject schematicObject = gameObject.AddComponent<SchematicObject>().Init(serializableSchematic, data, Name, id, room);
+					SpawnedObjects.Add(schematicObject);
+				}
 			}
 
 			return;
 		}
 
-		foreach (Room room in serializableObject.GetRooms())
+		rooms = serializableObject.GetRooms();
+		foreach (Room room in rooms)
 		{
-			GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
-			MapEditorObject mapEditorObject = gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room);
-			SpawnedObjects.Add(mapEditorObject);
+			if (serializableObject.Index < 0 || serializableObject.Index == room.GetRoomIndex())
+			{
+				GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
+				MapEditorObject mapEditorObject = gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room);
+				SpawnedObjects.Add(mapEditorObject);
+			}
 		}
+
+		ListPool<Room>.Shared.Return(rooms);
 	}
 
 	public void DestroyObject(string id)

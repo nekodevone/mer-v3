@@ -182,7 +182,7 @@ public class ToolGun
 		{
 			case nameof(SerializablePrimitive):
 				{
-					SerializablePrimitive serializablePrimitive = new() { Position = position, Room = roomId };
+					SerializablePrimitive serializablePrimitive = new() { Position = position, Room = roomId, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializablePrimitive> kvp = new(id, serializablePrimitive);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
@@ -191,7 +191,7 @@ public class ToolGun
 
 			case nameof(SerializableLight):
 				{
-					SerializableLight serializableLight = new() { Position = position, Room = roomId };
+					SerializableLight serializableLight = new() { Position = position, Room = roomId, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializableLight> kvp = new(id, serializableLight);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
@@ -200,7 +200,7 @@ public class ToolGun
 
 			case nameof(SerializableDoor):
 				{
-					SerializableDoor serializableDoor = new() { Position = position, Room = roomId };
+					SerializableDoor serializableDoor = new() { Position = position, Room = roomId, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializableDoor> kvp = new(id, serializableDoor);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
@@ -209,7 +209,7 @@ public class ToolGun
 
 			case nameof(SerializablePlayerSpawnpoint):
 				{
-					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("G"), Room = roomId };
+					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("G"), Room = roomId, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(id, serializablePlayerSpawnpoint);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);
@@ -222,7 +222,7 @@ public class ToolGun
 						 !dropdownSetting.TryGetSyncSelectionText(out string schematicName))
 						return;
 
-					SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = schematicName };
+					SerializableSchematic serializableSchematic = new() { Position = position, Room = roomId, SchematicName = schematicName, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializableSchematic> kvp = new(id, serializableSchematic);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);

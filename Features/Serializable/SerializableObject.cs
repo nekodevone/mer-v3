@@ -23,5 +23,7 @@ public abstract class SerializableObject
 
 	public virtual string Room { get; set; } = "Unknown";
 
-    public virtual GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null) => throw new NotSupportedException();
+	public virtual int Index { get; set; } = -1;
+
+	public virtual GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null) => throw new NotSupportedException();
 }
