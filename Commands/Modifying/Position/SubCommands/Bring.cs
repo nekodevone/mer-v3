@@ -35,7 +35,7 @@ public class Bring : ICommand
 			return false;
 		}
 
-		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position).ToString("G");
+		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position).ToString("F3");
 		mapEditorObject.UpdateObjectAndCopies();
 
 		response = mapEditorObject.Base.Position;

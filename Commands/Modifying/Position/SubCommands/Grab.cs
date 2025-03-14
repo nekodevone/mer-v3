@@ -41,7 +41,7 @@ public class Grab : ICommand
 			GrabbingPlayers.Remove(player);
 
 			Room room = mapEditorObject.Room;
-			mapEditorObject.Base.Position = room.Name == MapGeneration.RoomName.Outside ? mapEditorObject.transform.position.ToString("G") : mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
+			mapEditorObject.Base.Position = room.Name == MapGeneration.RoomName.Outside ? mapEditorObject.transform.position.ToString("F3") : mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("F3");
 			mapEditorObject.UpdateObjectAndCopies();
 
 			response = "Ungrabbed";
@@ -84,7 +84,7 @@ public class Grab : ICommand
 		GrabbingPlayers.Remove(player);
 		if (mapEditorObject != null)
 		{
-			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("G");
+			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position).ToString("F3");
 			mapEditorObject.UpdateObjectAndCopies();
 		}
 	}

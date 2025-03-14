@@ -172,7 +172,7 @@ public class ToolGun
 		if (!Room.TryGetRoomAtPosition(hit.point, out Room? room))
 			room = Room.List.First(x => x.Name == RoomName.Outside);
 
-		string position = room.Name == RoomName.Outside ? hit.point.ToString("G") : room.Transform.InverseTransformPoint(hit.point).ToString("G");
+		string position = room.Name == RoomName.Outside ? hit.point.ToString("F3") : room.Transform.InverseTransformPoint(hit.point).ToString("F3");
 		string roomId = room.GetRoomStringId();
 
 		MapSchematic map = MapUtils.UntitledMap;
@@ -209,7 +209,7 @@ public class ToolGun
 
 			case nameof(SerializablePlayerSpawnpoint):
 				{
-					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("G"), Room = roomId, Index = room.GetRoomIndex() };
+					SerializablePlayerSpawnpoint serializablePlayerSpawnpoint = new() { Position = (position.ToVector3() + Vector3.up * 0.01f).ToString("F3"), Room = roomId, Index = room.GetRoomIndex() };
 					KeyValuePair<string, SerializablePlayerSpawnpoint> kvp = new(id, serializablePlayerSpawnpoint);
 					if (map.TryAddElement(kvp.Key, kvp.Value))
 						map.SpawnObject(kvp.Key, kvp.Value);

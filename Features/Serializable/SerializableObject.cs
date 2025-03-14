@@ -9,17 +9,17 @@ public abstract class SerializableObject
 	/// <summary>
 	/// Gets or sets the objects's position.
 	/// </summary>
-	public virtual string Position { get; set; } = Vector3.zero.ToString("G");
+	public virtual string Position { get; set; } = Vector3.zero.ToString("F3");
 
 	/// <summary>
 	/// Gets or sets the objects's rotation.
 	/// </summary>
-	public virtual string Rotation { get; set; } = Vector3.zero.ToString("G");
+	public virtual string Rotation { get; set; } = Vector3.zero.ToString("F3");
 
 	/// <summary>
 	/// Gets or sets the objects's scale.
 	/// </summary>
-	public virtual string Scale { get; set; } = Vector3.one.ToString("G");
+	public virtual string Scale { get; set; } = Vector3.one.ToString("F3");
 
 	public virtual string Room { get; set; } = "Unknown";
 

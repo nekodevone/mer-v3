@@ -74,7 +74,7 @@ public class MapEditorObject : MonoBehaviour
 	public Vector3 RelativePosition
 	{
 		get => Base.Position.ToVector3();
-		set => Base.Position = value.ToString("G");
+		set => Base.Position = value.ToString("F3");
 	}
 
 	/// <summary>
