@@ -40,8 +40,7 @@ public class SerializablePrimitive : SerializableObject
 		primitive.transform.rotation = rotation;
 		primitive.transform.localScale = Scale.ToVector3();
 
-		if (ColorUtility.TryParseHtmlString(Color, out Color color))
-			primitive.NetworkMaterialColor = color;
+		primitive.NetworkMaterialColor = Color.GetColorFromString();
 
 		primitive.NetworkPrimitiveType = Type;
 		primitive.NetworkPrimitiveFlags = Flags;

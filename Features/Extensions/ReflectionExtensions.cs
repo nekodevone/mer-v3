@@ -19,6 +19,11 @@ public static class ReflectionExtensions
 			{
 				yield return $"{property.Name}: {((bool)property.GetValue(instance) ? "<color=green><b>TRUE</b></color>" : "<color=red><b>FALSE</b></color>")}";
 			}
+			else if (property.Name.Contains("Color"))
+			{
+				string colorString = property.GetValue(instance).ToString();
+				yield return $"{property.Name}: <color={colorString.GetColorFromString().ToHex()}><b>{colorString}</b></color>";
+			}
 			else if (typeof(ICollection).IsAssignableFrom(property.PropertyType))
 			{
 				StringBuilder sb = StringBuilderPool.Shared.Rent();
