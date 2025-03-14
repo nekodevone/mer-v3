@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using System.Text;
+using LabApi.Features.Console;
 using NorthwoodLib.Pools;
 using YamlDotNet.Serialization;
 
@@ -8,13 +9,27 @@ namespace ProjectMER.Features.Extensions;
 
 public static class ReflectionExtensions
 {
+	public static IEnumerable<PropertyInfo> GetModifiableProperties(this Type type)
+	{
+		foreach (PropertyInfo property in type.GetProperties())
+		{
+			if (!property.CanWrite)
+				continue;
+
+			if (Attribute.IsDefined(property, typeof(YamlIgnoreAttribute)))
+				continue;
+
+			if (property.Name == "Position" || property.Name == "Rotation" || property.Name == "Scale")
+				continue;
+			
+			yield return property;
+		}
+	}
+
 	public static IEnumerable<string> GetColoredProperties(this List<PropertyInfo> properties, object instance)
 	{
 		foreach (PropertyInfo property in properties)
 		{
-			if (Attribute.IsDefined(property, typeof(YamlIgnoreAttribute)))
-				continue;
-
 			if (property.PropertyType == typeof(bool))
 			{
 				yield return $"{property.Name}: {((bool)property.GetValue(instance) ? "<color=green><b>TRUE</b></color>" : "<color=red><b>FALSE</b></color>")}";

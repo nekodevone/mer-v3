@@ -42,7 +42,7 @@ public class Modify : ICommand
 		}
 
 		object instance = mapEditorObject.GetType().GetField("Base").GetValue(mapEditorObject);
-		List<PropertyInfo> properties = instance.GetType().GetProperties().ToList();
+		List<PropertyInfo> properties = instance.GetType().GetModifiableProperties().ToList();
 
 		if (arguments.Count == 0)
 		{
