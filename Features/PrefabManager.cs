@@ -1,5 +1,6 @@
 using AdminToys;
 using Interactables.Interobjects.DoorUtils;
+using InventorySystem.Items.Firearms.Attachments;
 using Mirror;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public static class PrefabManager
 	public static DoorVariant HczDoorPrefab { get; private set; }
 	public static DoorVariant EzDoorPrefab { get; private set; }
 	public static DoorVariant BulkDoorPrefab { get; private set; }
+
+	public static WorkstationController WorkstationPrefab { get; private set; }
 
 	public static void RegisterPrefabs()
 	{
@@ -49,6 +52,12 @@ public static class PrefabManager
 						BulkDoorPrefab = doorVariant;
 						continue;
 				}
+			}
+
+			if (gameObject.TryGetComponent(out WorkstationController workstationController))
+			{
+				WorkstationPrefab = workstationController;
+				continue;
 			}
 		}
 	}

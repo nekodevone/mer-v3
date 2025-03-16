@@ -1,9 +1,11 @@
 using AdminToys;
 using LabApi.Features.Wrappers;
+using MEC;
 using Mirror;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
+using Utf8Json;
 using Logger = LabApi.Features.Console.Logger;
 using Object = UnityEngine.Object;
 
@@ -15,16 +17,58 @@ public class SchematicObject : MapEditorObject
 	public SchematicObjectDataList SchematicData { get; private set; }
 
 	/// <summary>
+	/// Gets the schematic name.
+	/// </summary>
+	public string Name { get; private set; }
+
+	/// <summary>
 	/// Gets a schematic directory path.
 	/// </summary>
 	public string DirectoryPath { get; private set; }
 
-	internal Dictionary<int, Transform> ObjectFromId = new();
+	public IReadOnlyList<GameObject> AttachedBlocks => _attachedBlocks;
+
+	public IReadOnlyList<NetworkIdentity> NetworkIdentities
+	{
+		get
+		{
+			if (_networkIdentities.Count > 0)
+				return _networkIdentities;
+
+			foreach (GameObject block in AttachedBlocks)
+			{
+				if (block.TryGetComponent(out NetworkIdentity networkIdentity))
+					_networkIdentities.Add(networkIdentity);
+			}
+
+			return _networkIdentities;
+		}
+	}
+
+	public IReadOnlyList<AdminToyBase> AdminToyBases
+	{
+		get
+		{
+			if (_adminToyBases.Count > 0)
+				return _adminToyBases;
+
+			foreach (NetworkIdentity netId in NetworkIdentities)
+			{
+				if (netId.TryGetComponent(out AdminToyBase adminToyBase))
+					_adminToyBases.Add(adminToyBase);
+			}
+
+			return _adminToyBases;
+		}
+	}
+
+	public AnimationController AnimationController => AnimationController.Get(this);
 
 	public SchematicObject Init(SerializableSchematic serializableSchematic, SchematicObjectDataList data, string mapName, string id, Room room)
 	{
 		Base = serializableSchematic;
 		SchematicData = data;
+		Name = Path.GetFileNameWithoutExtension(data.Path);
 		DirectoryPath = data.Path;
 		MapName = mapName;
 		Id = id;
@@ -37,7 +81,8 @@ public class SchematicObject : MapEditorObject
 
 		CreateRecursiveFromID(data.RootObjectId, data.Blocks, transform);
 
-		bool isAnimated = AddAnimators();
+		AddRigidbodies();
+		AddAnimators();
 
 		return this;
 	}
@@ -62,213 +107,28 @@ public class SchematicObject : MapEditorObject
 		if (block == null)
 			return null;
 
-		GameObject gameObject = null!;
-		RuntimeAnimatorController animatorController;
-
-		switch (block.BlockType)
+		GameObject gameObject = block.Create(parentTransform);
+		if (block.BlockType != BlockType.Empty)
 		{
-			case BlockType.Empty:
+			NetworkServer.Spawn(gameObject);
+			if (gameObject.TryGetComponent(out AdminToyBase adminToyBase))
+			{
+				bool isStatic = block.Properties.TryGetValue("Static", out object value) && Convert.ToBoolean(value);
+				if (isStatic)
 				{
-					gameObject = new GameObject(block.Name)
-					{
-						transform =
-						{
-							parent = parentTransform,
-							localPosition = block.Position,
-							localEulerAngles = block.Rotation,
-							localScale = Vector3.one,
-						},
-					};
-
-					break;
+					Timing.CallDelayed(0.1f, () => adminToyBase.NetworkIsStatic = true);
 				}
-
-			case BlockType.Primitive:
+				else
 				{
-					PrimitiveObjectToy primitive = Instantiate(PrefabManager.PrimitiveObjectPrefab, parentTransform);
-
-					primitive.name = block.Name;
-					primitive.transform.localPosition = block.Position;
-					primitive.transform.localEulerAngles = block.Rotation;
-					primitive.transform.localScale = block.Scale;
-
-					primitive.NetworkPrimitiveType = (PrimitiveType)Enum.Parse(typeof(PrimitiveType), block.Properties["PrimitiveType"].ToString());
-
-					if (ColorUtility.TryParseHtmlString("#" + block.Properties["Color"].ToString(), out Color color))
-						primitive.NetworkMaterialColor = color;
-
-					PrimitiveFlags primitiveFlags;
-					if (block.Properties.TryGetValue("PrimitiveFlags", out object flags))
-					{
-						primitiveFlags = (PrimitiveFlags)Enum.Parse(typeof(PrimitiveFlags), flags.ToString());
-					}
-					else
-					{
-						// Backward compatibility
-						primitiveFlags = PrimitiveFlags.Visible;
-						if (block.Scale.x >= 0f)
-							primitiveFlags |= PrimitiveFlags.Collidable;
-					}
-
-					primitive.NetworkPrimitiveFlags = primitiveFlags;
-					NetworkServer.Spawn(primitive.gameObject);
-
-					gameObject = primitive.gameObject;
-					break;
+					Timing.CallDelayed(0.1f, () => adminToyBase.NetworkMovementSmoothing = 60);
 				}
-
-			case BlockType.Light:
-				{
-					LightSourceToy light = Instantiate(PrefabManager.LightSourcePrefab, parentTransform);
-
-					light.name = block.Name;
-					light.transform.localPosition = block.Position;
-					light.transform.localEulerAngles = block.Rotation;
-					light.transform.localScale = block.Scale;
-
-					if (ColorUtility.TryParseHtmlString("#" + block.Properties["Color"].ToString(), out Color color))
-						light.NetworkLightColor = color;
-
-					light.NetworkLightIntensity = float.Parse(block.Properties["Intensity"].ToString());
-					light.NetworkLightRange = float.Parse(block.Properties["Range"].ToString());
-					light.NetworkShadowType = bool.Parse(block.Properties["Shadows"].ToString()) ? LightShadows.Soft : LightShadows.None;
-
-					NetworkServer.Spawn(light.gameObject);
-
-					if (TryGetAnimatorController(block.AnimatorName, out animatorController))
-						_animators.Add(light.gameObject, animatorController);
-
-					gameObject = light.gameObject;
-					break;
-
-					/*
-					if (Instantiate(PrefabManager.LightSourcePrefab, parentTransform).TryGetComponent(out LightSourceToy lightSourceToy))
-					{
-						gameObject = lightSourceToy.gameObject.AddComponent<LightSourceObject>().Init(block).gameObject;
-
-
-					}
-					*/
-
-					break;
-				}
-
-				/*
-				case BlockType.Pickup:
-					{
-						Pickup pickup = null;
-
-						if (block.Properties.TryGetValue("Chance", out object property) && Random.Range(0, 101) > float.Parse(property.ToString()))
-						{
-							gameObject = new("Empty Pickup")
-							{
-								transform = { parent = parentTransform, localPosition = block.Position, localEulerAngles = block.Rotation, localScale = block.Scale },
-							};
-							break;
-						}
-
-						if (block.Properties.TryGetValue("CustomItem", out property) && !string.IsNullOrEmpty(property.ToString()))
-						{
-							string customItemName = property.ToString();
-
-							if (!CustomItem.TryGet(customItemName, out CustomItem customItem))
-							{
-								Log.Error($"CustomItem with the name {customItemName} does not exist!");
-								gameObject = new("Invalid Pickup")
-								{
-									transform = { parent = parentTransform, localPosition = block.Position, localEulerAngles = block.Rotation, localScale = block.Scale },
-								};
-
-								AttachedBlocks.Add(gameObject);
-								ObjectFromId.Add(block.ObjectId, gameObject.transform);
-							}
-							else
-							{
-								pickup = customItem.Spawn(Vector3.zero);
-							}
-						}
-						else
-						{
-							Item item = Item.Create((ItemType)Enum.Parse(typeof(ItemType), block.Properties["ItemType"].ToString()));
-
-							if (item is Firearm firearm && block.Properties.TryGetValue("Attachements", out property))
-								firearm.AddAttachment(property as List<AttachmentName>);
-
-							pickup = item.CreatePickup(Vector3.zero);
-						}
-
-						gameObject = pickup.Base.gameObject;
-						gameObject.name = block.Name;
-
-						NetworkServer.UnSpawn(gameObject);
-
-						gameObject.transform.parent = parentTransform;
-						gameObject.transform.localPosition = block.Position;
-						gameObject.transform.localEulerAngles = block.Rotation;
-						gameObject.transform.localScale = block.Scale;
-
-						NetworkServer.Spawn(gameObject);
-
-						if (block.Properties.ContainsKey("Locked"))
-							API.PickupsLocked.Add(pickup.Serial);
-
-						if (block.Properties.TryGetValue("Uses", out property))
-							API.PickupsUsesLeft.Add(pickup.Serial, int.Parse(property.ToString()));
-
-						break;
-					}
-
-				case BlockType.Workstation:
-					{
-						if (Instantiate(ObjectType.WorkStation.GetObjectByMode(), parentTransform).TryGetComponent(out WorkstationController workstation))
-						{
-							gameObject = workstation.gameObject.AddComponent<WorkstationObject>().Init(block).gameObject;
-
-							gameObject.transform.parent = null;
-							NetworkServer.Spawn(gameObject);
-
-							_transformProperties.Add(gameObject.transform.GetInstanceID(), block.ObjectId);
-						}
-
-						break;
-					}
-
-				case BlockType.Locker:
-					{
-						if (block.Properties.TryGetValue("Chance", out object property) && Random.Range(0, 101) > float.Parse(property.ToString()))
-						{
-							gameObject = new("Empty Locker")
-							{
-								transform = { localPosition = block.Position, localEulerAngles = block.Rotation, localScale = block.Scale },
-							};
-						}
-						else
-						{
-							LockerType lockerType = (LockerType)Enum.Parse(typeof(LockerType), block.Properties["LockerType"].ToString());
-							gameObject = Instantiate(lockerType.GetLockerObjectByType(), parentTransform).AddComponent<LockerObject>().Init(block).gameObject;
-						}
-
-						break;
-					}
-
-				case BlockType.Schematic:
-					{
-						string schematicName = block.Properties["SchematicName"].ToString();
-
-						gameObject = ObjectSpawner.SpawnSchematic(schematicName, transform.position + block.Position, Quaternion.Euler(transform.eulerAngles + block.Rotation), null, null, true).gameObject;
-						gameObject.transform.parent = parentTransform;
-
-						gameObject.name = schematicName;
-
-						break;
-					}
-					*/
+			}
 		}
 
-		// AttachedBlocks.Add(gameObject);
+		_attachedBlocks.Add(gameObject);
 		ObjectFromId.Add(block.ObjectId, gameObject.transform);
 
-		if (block.BlockType != BlockType.Light && TryGetAnimatorController(block.AnimatorName, out animatorController))
+		if (block.BlockType != BlockType.Light && TryGetAnimatorController(block.AnimatorName, out RuntimeAnimatorController animatorController))
 			_animators.Add(gameObject, animatorController);
 
 		return gameObject.transform;
@@ -281,7 +141,7 @@ public class SchematicObject : MapEditorObject
 		if (string.IsNullOrEmpty(animatorName))
 			return false;
 
-		Object animatorObject = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(x => x.mainAsset.name == animatorName)?.LoadAllAssets().First(x => x is RuntimeAnimatorController);
+		Object? animatorObject = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(x => x.mainAsset.name == animatorName)?.LoadAllAssets().First(x => x is RuntimeAnimatorController);
 
 		if (animatorObject is null)
 		{
@@ -310,10 +170,41 @@ public class SchematicObject : MapEditorObject
 				pair.Key.AddComponent<Animator>().runtimeAnimatorController = pair.Value;
 		}
 
-		_animators = null;
+		_animators.Clear();
 		AssetBundle.UnloadAllAssetBundles(false);
 		return isAnimated;
 	}
 
+	private bool AddRigidbodies()
+	{
+		bool hasRigidbodies = false;
+		string rigidbodyPath = Path.Combine(DirectoryPath, $"{Name}-Rigidbodies.json");
+		if (!File.Exists(rigidbodyPath))
+			return false;
+
+		foreach (KeyValuePair<int, SerializableRigidbody> dict in JsonSerializer.Deserialize<Dictionary<int, SerializableRigidbody>>(File.ReadAllText(rigidbodyPath)))
+		{
+			if (!ObjectFromId.TryGetValue(dict.Key, out Transform transform))
+				continue;
+
+			if (!transform.gameObject.TryGetComponent(out Rigidbody rigidbody))
+				rigidbody = transform.gameObject.AddComponent<Rigidbody>();
+
+			rigidbody.isKinematic = dict.Value.IsKinematic;
+			rigidbody.useGravity = dict.Value.UseGravity;
+			rigidbody.constraints = dict.Value.Constraints;
+			rigidbody.mass = dict.Value.Mass;
+
+			hasRigidbodies = true;
+		}
+
+		return hasRigidbodies;
+	}
+
+	internal Dictionary<int, Transform> ObjectFromId = new();
+
+	private List<GameObject> _attachedBlocks = new();
+	private List<NetworkIdentity> _networkIdentities = new();
+	private List<AdminToyBase> _adminToyBases = new();
 	private Dictionary<GameObject, RuntimeAnimatorController> _animators = new();
 }
