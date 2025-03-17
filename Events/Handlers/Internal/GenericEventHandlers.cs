@@ -6,9 +6,9 @@ using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using Logger = LabApi.Features.Console.Logger;
 
-namespace ProjectMER.Events;
+namespace ProjectMER.Events.Handlers.Internal;
 
-public class EventsHandler : CustomEventsHandler
+public class GenericEventsHandler : CustomEventsHandler
 {
     public override void OnServerWaitingForPlayers()
 	{

@@ -1,7 +1,11 @@
+using System.Collections.ObjectModel;
 using AdminToys;
+using LabApi.Events;
+using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
+using ProjectMER.Events.Handlers;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
@@ -84,6 +88,8 @@ public class SchematicObject : MapEditorObject
 		AddRigidbodies();
 		AddAnimators();
 
+		Schematic.OnSchematicSpawned(new(this, Name));
+
 		return this;
 	}
 
@@ -107,7 +113,7 @@ public class SchematicObject : MapEditorObject
 		if (block == null)
 			return null;
 
-		GameObject gameObject = block.Create(parentTransform);
+		GameObject gameObject = block.Create(this, parentTransform);
 		if (block.BlockType != BlockType.Empty)
 		{
 			NetworkServer.Spawn(gameObject);
@@ -199,6 +205,12 @@ public class SchematicObject : MapEditorObject
 		}
 
 		return hasRigidbodies;
+	}
+
+	private void OnDestroy()
+	{
+		AnimationController.Dictionary.Remove(this);
+		Schematic.OnSchematicDestroyed(new(this, Name));
 	}
 
 	internal Dictionary<int, Transform> ObjectFromId = new();

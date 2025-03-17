@@ -4,7 +4,7 @@ using LabApi.Features.Console;
 using LabApi.Loader.Features.Paths;
 using LabApi.Loader.Features.Plugins;
 using ProjectMER.Configs;
-using ProjectMER.Events;
+using ProjectMER.Events.Handlers.Internal;
 
 namespace ProjectMER;
 
@@ -27,11 +27,13 @@ public class ProjectMER : Plugin<Config>
 
 	public static ProjectMER Singleton { get; private set; }
 
-	public EventsHandler EventsHandler { get; } = new();
+	public GenericEventsHandler GenericEventsHandler { get; } = new();
 
-	public ToolGunEvents ToolGunEvents { get; } = new();
+	public ToolGunEventsHandler ToolGunEventsHandler { get; } = new();
 
 	public MapOnEventHandlers MapOnEventHandlers { get; } = new();
+
+	public PickupEventsHandler PickupEventsHandler { get; } = new();
 
 	public override void Enable()
 	{
@@ -49,18 +51,20 @@ public class ProjectMER : Plugin<Config>
 			Directory.CreateDirectory(SchematicsDir);
 		}
 
-		CustomHandlersManager.RegisterEventsHandler(EventsHandler);
-		CustomHandlersManager.RegisterEventsHandler(ToolGunEvents);
+		CustomHandlersManager.RegisterEventsHandler(GenericEventsHandler);
+		CustomHandlersManager.RegisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.RegisterEventsHandler(MapOnEventHandlers);
+		CustomHandlersManager.RegisterEventsHandler(PickupEventsHandler);
 	}
 
 	public override void Disable()
 	{
 		Singleton = null!;
 
-		CustomHandlersManager.UnregisterEventsHandler(EventsHandler);
-		CustomHandlersManager.UnregisterEventsHandler(ToolGunEvents);
+		CustomHandlersManager.UnregisterEventsHandler(GenericEventsHandler);
+		CustomHandlersManager.UnregisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.UnregisterEventsHandler(MapOnEventHandlers);
+		CustomHandlersManager.UnregisterEventsHandler(PickupEventsHandler);
 	}
 
 	public override string Name => "ProjectMER";

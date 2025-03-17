@@ -7,9 +7,9 @@ using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 
-namespace ProjectMER.Events;
+namespace ProjectMER.Events.Handlers.Internal;
 
-public class ToolGunEvents : CustomEventsHandler
+public class ToolGunEventsHandler : CustomEventsHandler
 {
 	public override void OnServerRoundStarted()
 	{

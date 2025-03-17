@@ -1,8 +1,10 @@
 using AdminToys;
 using InventorySystem.Items.Firearms.Attachments;
 using LabApi.Features.Wrappers;
+using ProjectMER.Events.Handlers.Internal;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
+using ProjectMER.Features.Objects;
 using UnityEngine;
 
 namespace ProjectMER.Features.Serializable.Schematics;
@@ -27,14 +29,14 @@ public class SchematicBlockData
 
 	public virtual Dictionary<string, object> Properties { get; set; }
 
-	public GameObject Create(Transform parentTransform)
+	public GameObject Create(SchematicObject schematicObject, Transform parentTransform)
 	{
 		GameObject gameObject = BlockType switch
 		{
 			BlockType.Empty => new GameObject(),
 			BlockType.Primitive => CreatePrimitive(),
 			BlockType.Light => CreateLight(),
-			BlockType.Pickup => CreatePickup(),
+			BlockType.Pickup => CreatePickup(schematicObject),
 			BlockType.Workstation => CreateWorkstation(),
 			_ => throw new NotImplementedException(),
 		};
@@ -100,12 +102,14 @@ public class SchematicBlockData
 		return light.gameObject;
 	}
 
-	private GameObject CreatePickup()
+	private GameObject CreatePickup(SchematicObject schematicObject)
 	{
 		if (Properties.TryGetValue("Chance", out object property) && UnityEngine.Random.Range(0, 101) > Convert.ToSingle(property))
 			return new("Empty Pickup");
 
 		Pickup pickup = Pickup.Create((ItemType)Convert.ToInt32(Properties["ItemType"]), Vector3.zero)!;
+		if (Properties.ContainsKey("Locked"))
+			PickupEventsHandler.ButtonPickups.Add(pickup.Serial, schematicObject);
 
 		return pickup.GameObject;
 	}

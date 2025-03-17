@@ -6,7 +6,7 @@ using ProjectMER.Configs;
 using ProjectMER.Features;
 using Utils.NonAllocLINQ;
 
-namespace ProjectMER.Events;
+namespace ProjectMER.Events.Handlers.Internal;
 
 public class MapOnEventHandlers : CustomEventsHandler
 {
