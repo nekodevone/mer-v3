@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectMER.Features.Extensions;
 
-public static class VectorExtensions
+public static class StructExtensions
 {
 	/// <summary>
 	/// Gets the corresponding <see cref="Color"/> given a specified <see cref="string"/>.

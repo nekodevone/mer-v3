@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ProjectMER.Features.Extensions;
 
-public static class SerializableObjectExtensions
+public static class RoomExtensions
 {
 	public static string GetRoomStringId(this Room room) => $"{room.Zone}_{room.Shape}_{room.Name}";
 

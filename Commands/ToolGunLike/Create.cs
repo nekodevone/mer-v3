@@ -6,7 +6,7 @@ using ProjectMER.Features;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
-using static ProjectMER.Features.Extensions.VectorExtensions;
+using static ProjectMER.Features.Extensions.StructExtensions;
 
 namespace ProjectMER.Commands.ToolGunLike;
 

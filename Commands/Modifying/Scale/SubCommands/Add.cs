@@ -4,7 +4,7 @@ using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
-using static ProjectMER.Features.Extensions.VectorExtensions;
+using static ProjectMER.Features.Extensions.StructExtensions;
 
 namespace ProjectMER.Commands.Modifying.Scale.SubCommands;
 
