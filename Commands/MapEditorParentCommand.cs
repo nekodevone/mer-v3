@@ -37,6 +37,8 @@ public class MapEditorParentCommand : ParentCommand
         RegisterCommand(new Scale());
         RegisterCommand(new Modify());
 
+        RegisterCommand(new Create());
+        RegisterCommand(new Delete());
         RegisterCommand(new Select());
     }
 

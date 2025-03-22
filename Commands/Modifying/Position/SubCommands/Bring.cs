@@ -1,7 +1,7 @@
 ﻿using CommandSystem;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Commands.Modifying.Position.SubCommands;
 
@@ -29,7 +29,7 @@ public class Bring : ICommand
 			return false;
 		}
 
-		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+		if (!ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
 		{
 			response = "You need to select an object first!";
 			return false;

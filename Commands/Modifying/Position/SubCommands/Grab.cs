@@ -2,9 +2,9 @@
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
-using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
+using ProjectMER.Features.ToolGun;
 using UnityEngine;
 
 namespace ProjectMER.Commands.Modifying.Position.SubCommands;
@@ -29,7 +29,7 @@ public class Grab : ICommand
 			return false;
 		}
 
-		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+		if (!ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
 		{
 			response = "You need to select an object first!";
 			return false;
@@ -64,7 +64,7 @@ public class Grab : ICommand
 		{
 			yield return Timing.WaitForSeconds(0.1f);
 
-			if (mapEditorObject == null || !ToolGun.TryGetSelectedMapObject(player, out _))
+			if (mapEditorObject == null || !ToolGunHandler.TryGetSelectedMapObject(player, out _))
 				break;
 
 			Vector3 newPos = mapEditorObject.transform.position = player.Camera.position + (player.Camera.forward * multiplier);

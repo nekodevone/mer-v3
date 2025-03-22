@@ -82,15 +82,17 @@ public static class MapUtils
 		string dirPath = Path.Combine(ProjectMER.SchematicsDir, schematicName);
 		if (!Directory.Exists(dirPath))
 		{
-			Logger.Error($"Failed to load schematic data: Directory {schematicName} does not exist!");
-			return false;
+			string error = $"Failed to load schematic data: Directory {schematicName} does not exist!";
+			Logger.Error(error);
+			throw new DirectoryNotFoundException(error);
 		}
 
 		string schematicPath = Path.Combine(dirPath, $"{schematicName}.json");
 		if (!File.Exists(schematicPath))
 		{
-			Logger.Error($"Failed to load schematic data: File {schematicName}.json does not exist!");
-			return false;
+			string error = $"Failed to load schematic data: File {schematicName}.json does not exist!";
+			Logger.Error(error);
+			throw new FileNotFoundException(error);
 		}
 
 		try
@@ -100,8 +102,9 @@ public static class MapUtils
 		}
 		catch (JsonParsingException e)
 		{
-			Logger.Error($"Failed to load schematic data: File {schematicName}.json has JSON errors!\n{e.ToString().Split('\n')[0]}");
-			return false;
+			string error = $"Failed to load schematic data: File {schematicName}.json has JSON errors!\n{e.ToString().Split('\n')[0]}";
+			Logger.Error(error);
+			throw new JsonParsingException(error);
 		}
 
 		return true;

@@ -4,6 +4,7 @@ using MEC;
 using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
+using ProjectMER.Features.ToolGun;
 using Logger = LabApi.Features.Console.Logger;
 
 namespace ProjectMER.Events.Handlers.Internal;
@@ -15,8 +16,8 @@ public class GenericEventsHandler : CustomEventsHandler
 		PrefabManager.RegisterPrefabs();
 
 		MapUtils.LoadedMaps.Clear();
-		ToolGun.Dictionary.Clear();
-		ToolGun.PlayerSelectedObjectDict.Clear();
+		ToolGunItem.ItemDictionary.Clear();
+		ToolGunHandler.PlayerSelectedObjectDict.Clear();
 	}
 
 	public override void OnPlayerSpawning(PlayerSpawningEventArgs ev)

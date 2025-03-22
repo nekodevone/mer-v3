@@ -1,7 +1,7 @@
 ﻿using CommandSystem;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.ToolGun;
 using UnityEngine;
 using static ProjectMER.Features.Extensions.VectorExtensions;
 
@@ -28,7 +28,7 @@ public class Set : ICommand
 			return false;
 		}
 
-		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+		if (!ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
 		{
 			response = "You need to select an object first!";
 			return false;

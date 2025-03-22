@@ -1,7 +1,7 @@
 using CommandSystem;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Commands.ToolGunLike;
 
@@ -10,7 +10,6 @@ namespace ProjectMER.Commands.ToolGunLike;
 /// </summary>
 public class Select : ICommand
 {
-
 	/// <inheritdoc/>
 	public string Command => "select";
 
@@ -30,17 +29,17 @@ public class Select : ICommand
 		}
 
 		// Try getting and selecting the object.
-		if (ToolGun.TryGetMapObject(player, out MapEditorObject mapEditorObject))
+		if (ToolGunHandler.TryGetMapObject(player, out MapEditorObject mapEditorObject))
 		{
-			ToolGun.Select(player, mapEditorObject);
+			ToolGunHandler.SelectObject(player, mapEditorObject);
 			response = "You've successfully selected the object!";
 			return true;
 		}
 
 		// If object wasn't found deselect currently selected object.
-		if (ToolGun.TryGetSelectedMapObject(player, out MapEditorObject _))
+		if (ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject _))
 		{
-			ToolGun.Select(player, null!);
+			ToolGunHandler.SelectObject(player, null!);
 			response = "You've successfully unselected the object!";
 			return false;
 		}

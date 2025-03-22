@@ -3,9 +3,9 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using MEC;
-using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Events.Handlers.Internal;
 
@@ -24,13 +24,13 @@ public class ToolGunEventsHandler : CustomEventsHandler
 
 			foreach (Player player in Player.List)
 			{
-				if (!player.CurrentItem.IsToolGun(out ToolGun _) && !ToolGun.TryGetSelectedMapObject(player, out MapEditorObject _))
+				if (!player.CurrentItem.IsToolGun(out ToolGunItem _) && !ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject _))
 					continue;
 
 				string hud;
 				try
 				{
-					hud = ToolGun.GetHintHUD(player);
+					hud = ToolGunUI.GetHintHUD(player);
 				}
 				catch (Exception e)
 				{
@@ -43,10 +43,9 @@ public class ToolGunEventsHandler : CustomEventsHandler
 		}
 	}
 
-	// public override void OnPlayerShootingWeapon(PlayerShootingWeaponEventArgs ev)
 	public override void OnPlayerDryFiringWeapon(PlayerDryFiringWeaponEventArgs ev)
 	{
-		if (!ev.Weapon.IsToolGun(out ToolGun toolGun))
+		if (!ev.Weapon.IsToolGun(out ToolGunItem toolGun))
 			return;
 
 		ev.IsAllowed = false;
@@ -55,19 +54,19 @@ public class ToolGunEventsHandler : CustomEventsHandler
 
 	public override void OnPlayerReloadingWeapon(PlayerReloadingWeaponEventArgs ev)
 	{
-		if (!ev.Weapon.IsToolGun(out ToolGun toolGun))
+		if (!ev.Weapon.IsToolGun(out ToolGunItem toolGun))
 			return;
 
 		ev.IsAllowed = false;
-		toolGun.ObjectToSpawnIndex--;
+		toolGun.SelectedObjectToSpawn--;
 	}
 
 	public override void OnPlayerDroppingItem(PlayerDroppingItemEventArgs ev)
 	{
-		if (!ev.Item.IsToolGun(out ToolGun toolGun))
+		if (!ev.Item.IsToolGun(out ToolGunItem toolGun))
 			return;
 
 		ev.IsAllowed = false;
-		toolGun.ObjectToSpawnIndex++;
+		toolGun.SelectedObjectToSpawn++;
 	}
 }

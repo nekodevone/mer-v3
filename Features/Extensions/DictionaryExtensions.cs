@@ -4,7 +4,7 @@ public static class DictionaryExtensions
 {
 	public static bool TryAdd<DictKey, DictValue, T>(this Dictionary<DictKey, DictValue> dictionary, DictKey key, T value)
 	{
-		if (typeof(DictValue) == typeof(T))
+		if (value is DictValue)
 		{
 			if (dictionary.ContainsKey(key))
 				return false;

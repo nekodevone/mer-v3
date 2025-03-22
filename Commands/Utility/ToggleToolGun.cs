@@ -1,6 +1,6 @@
 using CommandSystem;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features;
+using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Commands;
 
@@ -21,13 +21,13 @@ public class ToggleToolGun : ICommand
 			return false;
 		}
 
-		if (ToolGun.Remove(player))
+		if (ToolGunItem.Remove(player))
 		{
 			response = "You no longer have a Tool Gun!";
 			return true;
 		}
 
-		if (ToolGun.TryAdd(player))
+		if (ToolGunItem.TryAdd(player))
 		{
 			response = "You now have the Tool Gun!";
 			return true;

@@ -5,9 +5,9 @@ using System.Text;
 using CommandSystem;
 using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
-using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Commands.Modifying;
 
@@ -35,7 +35,7 @@ public class Modify : ICommand
 			return false;
 		}
 
-		if (!ToolGun.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+		if (!ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
 		{
 			response = "You haven't selected any object!";
 			return false;
