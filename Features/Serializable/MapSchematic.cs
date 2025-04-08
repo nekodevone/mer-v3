@@ -77,6 +77,7 @@ public class MapSchematic
 				}
 			}
 
+			ListPool<Room>.Shared.Return(rooms);
 			return;
 		}
 
