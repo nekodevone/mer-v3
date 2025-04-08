@@ -22,8 +22,9 @@ public class ToolGunItem
 		{ ToolGunObjectType.Primitive, typeof(SerializablePrimitive) },
 		{ ToolGunObjectType.Light, typeof(SerializableLight) },
 		{ ToolGunObjectType.Door, typeof(SerializableDoor) },
+		{ ToolGunObjectType.Workstation, typeof(SerializableWorkstation) },
 		{ ToolGunObjectType.PlayerSpawnpoint, typeof(SerializablePlayerSpawnpoint) },
-		{ ToolGunObjectType.Capybara, typeof(SerializableCapybara)},
+		{ ToolGunObjectType.Capybara, typeof(SerializableCapybara) },
 		{ ToolGunObjectType.Schematic, typeof(SerializableSchematic) },
 	};
 
