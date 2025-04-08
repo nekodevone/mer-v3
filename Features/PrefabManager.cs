@@ -19,6 +19,8 @@ public static class PrefabManager
 
 	public static WorkstationController WorkstationPrefab { get; private set; }
 
+	public static CapybaraToy CapybaraPrefab { get; private set; }
+
 	public static void RegisterPrefabs()
 	{
 		foreach (GameObject gameObject in NetworkClient.prefabs.Values)
@@ -57,6 +59,12 @@ public static class PrefabManager
 			if (gameObject.TryGetComponent(out WorkstationController workstationController))
 			{
 				WorkstationPrefab = workstationController;
+				continue;
+			}
+
+			if (gameObject.TryGetComponent(out CapybaraToy capybaraToy))
+			{
+				CapybaraPrefab = capybaraToy;
 				continue;
 			}
 		}

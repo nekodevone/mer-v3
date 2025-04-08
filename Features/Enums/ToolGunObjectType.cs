@@ -6,5 +6,6 @@ public enum ToolGunObjectType
 	Light = 1,
 	Door = 2,
 	PlayerSpawnpoint = 3,
-	Schematic = 4
+	Capybara = 4,
+	Schematic = 5
 }

@@ -1,5 +1,4 @@
 using LabApi.Features.Wrappers;
-using MapGeneration;
 using MonoMod.Utils;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
@@ -29,6 +28,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnpoints { get; set; } = [];
 
+	public Dictionary<string, SerializableCapybara> Capybaras { get; set; } = [];
+
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
 
 	public List<MapEditorObject> SpawnedObjects = [];
@@ -39,6 +40,7 @@ public class MapSchematic
 		Lights.AddRange(other.Lights);
 		Doors.AddRange(other.Doors);
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
+		Capybaras.AddRange(other.Capybaras);
 		Schematics.AddRange(other.Schematics);
 
 		return this;
@@ -55,6 +57,7 @@ public class MapSchematic
 		Lights.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Doors.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Capybaras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Schematics.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
@@ -121,6 +124,9 @@ public class MapSchematic
 		if (PlayerSpawnpoints.TryAdd(id, serializableObject))
 			return true;
 
+		if (Capybaras.TryAdd(id, serializableObject))
+			return true;
+
 		if (Schematics.TryAdd(id, serializableObject))
 			return true;
 
@@ -141,29 +147,12 @@ public class MapSchematic
 		if (PlayerSpawnpoints.Remove(id))
 			return true;
 
+		if (Capybaras.Remove(id))
+			return true;
+
 		if (Schematics.Remove(id))
 			return true;
 
 		return false;
 	}
-
-	/*
-	public bool TryGetElement<T>(string id, out T serializableObject) where T : SerializableObject
-	{
-		if (Primitives.TryGetValue(id, out SerializablePrimitive primitive))
-		{
-			serializableObject = (T)(object)primitive;
-			return true;
-		}
-
-		if (Lights.TryGetValue(id, out SerializableLight light))
-		{
-			serializableObject = (T)(object)light;
-			return true;
-		}
-
-		serializableObject = null!;
-		return false;
-	}
-	*/
 }
