@@ -1,7 +1,6 @@
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.Serializable.Schematics;
-using Serialization;
 using Utf8Json;
 using YamlDotNet.Core;
 using Logger = LabApi.Features.Console.Logger;
@@ -78,18 +77,34 @@ public static class MapUtils
 	public static SchematicObjectDataList GetSchematicDataByName(string schematicName)
 	{
 		SchematicObjectDataList data;
+		string schematicDirPath = Path.Combine(ProjectMER.SchematicsDir, schematicName);
+		string schematicJsonPath = Path.Combine(schematicDirPath, $"{schematicName}.json");
+		string misplacedSchematicJsonPath = schematicDirPath + ".json";
 
-		string dirPath = Path.Combine(ProjectMER.SchematicsDir, schematicName);
-		if (!Directory.Exists(dirPath))
+		if (!Directory.Exists(schematicDirPath))
 		{
+			// Some users may throw a single JSON file into Schematics folder, this automatically creates and moved the file to the correct schematic directory.
+			if (File.Exists(misplacedSchematicJsonPath))
+			{
+				Directory.CreateDirectory(schematicDirPath);
+				File.Move(misplacedSchematicJsonPath, schematicJsonPath);
+				return GetSchematicDataByName(schematicName);
+			}
+
 			string error = $"Failed to load schematic data: Directory {schematicName} does not exist!";
 			Logger.Error(error);
 			throw new DirectoryNotFoundException(error);
 		}
 
-		string schematicPath = Path.Combine(dirPath, $"{schematicName}.json");
-		if (!File.Exists(schematicPath))
+		if (!File.Exists(schematicJsonPath))
 		{
+			// Same as above but with the folder existing and file not being there for some reason.
+			if (File.Exists(misplacedSchematicJsonPath))
+			{
+				File.Move(misplacedSchematicJsonPath, schematicJsonPath);
+				return GetSchematicDataByName(schematicName);
+			}
+
 			string error = $"Failed to load schematic data: File {schematicName}.json does not exist!";
 			Logger.Error(error);
 			throw new FileNotFoundException(error);
@@ -97,8 +112,8 @@ public static class MapUtils
 
 		try
 		{
-			data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicPath));
-			data.Path = dirPath;
+			data = JsonSerializer.Deserialize<SchematicObjectDataList>(File.ReadAllText(schematicJsonPath));
+			data.Path = schematicDirPath;
 		}
 		catch (JsonParsingException e)
 		{
@@ -110,5 +125,5 @@ public static class MapUtils
 		return data;
 	}
 
-	public static string[] GetAvailableSchematicNames() => Directory.GetDirectories(ProjectMER.SchematicsDir).Select(Path.GetFileName).ToArray();
+	public static string[] GetAvailableSchematicNames() => Directory.GetFiles(ProjectMER.SchematicsDir, "*.json", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension).Where(x => !x.Contains('-')).ToArray();
 }
