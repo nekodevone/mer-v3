@@ -38,7 +38,7 @@ public class SerializablePrimitive : SerializableObject
 
 		primitive.transform.position = position;
 		primitive.transform.rotation = rotation;
-		primitive.transform.localScale = Scale.ToVector3();
+		primitive.transform.localScale = Scale;
 
 		primitive.NetworkMaterialColor = Color.GetColorFromString();
 

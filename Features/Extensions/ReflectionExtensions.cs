@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
+using UnityEngine;
 using YamlDotNet.Serialization;
 
 namespace ProjectMER.Features.Extensions;
@@ -33,6 +34,10 @@ public static class ReflectionExtensions
 			if (property.PropertyType == typeof(bool))
 			{
 				yield return $"{property.Name}: {((bool)property.GetValue(instance) ? "<color=green><b>TRUE</b></color>" : "<color=red><b>FALSE</b></color>")}";
+			}
+			else if (property.PropertyType == typeof(Vector3))
+			{
+				yield return $"{property.Name}: <color=yellow><b>{(Vector3)property.GetValue(instance):F3}</b></color>";
 			}
 			else if (property.Name.Contains("Color"))
 			{

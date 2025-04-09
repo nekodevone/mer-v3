@@ -35,10 +35,10 @@ public class Bring : ICommand
 			return false;
 		}
 
-		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position).ToString("F3");
+		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position);
 		mapEditorObject.UpdateObjectAndCopies();
 
-		response = mapEditorObject.Base.Position;
+		response = mapEditorObject.Base.Position.ToString("F3");
 		return true;
 	}
 }

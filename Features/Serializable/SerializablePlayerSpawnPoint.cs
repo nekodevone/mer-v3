@@ -14,7 +14,7 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 	public List<RoleTypeId> Roles { get; set; } = [];
 
 	[YamlIgnore]
-	public override string Scale { get; set; }
+	public override Vector3 Scale { get; set; }
 
 	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
 	{

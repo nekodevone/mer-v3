@@ -71,12 +71,6 @@ public class MapEditorObject : MonoBehaviour
 		Base.SpawnOrUpdateObject(Room, gameObject);
 	}
 
-	public Vector3 RelativePosition
-	{
-		get => Base.Position.ToVector3();
-		set => Base.Position = value.ToString("F3");
-	}
-
 	/// <summary>
 	/// Destroys the object.
 	/// </summary>

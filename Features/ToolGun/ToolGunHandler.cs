@@ -40,19 +40,19 @@ public static class ToolGunHandler
 		{
 			case SerializablePlayerSpawnpoint _:
 				{
-					serializableObject.Position = (position + Vector3.up * 0.01f).ToString("F3");
+					serializableObject.Position += Vector3.up;
 					break;
 				}
 
 			case SerializableSchematic serializableSchematic:
 				{
-					serializableObject.Position = position.ToString("F3");
+					serializableObject.Position = position;
 					serializableSchematic.SchematicName = schematicName!;
 					break;
 				}
 
 			default:
-				serializableObject.Position = position.ToString("F3");
+				serializableObject.Position = position;
 				break;
 		}
 

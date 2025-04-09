@@ -79,17 +79,21 @@ public class Create : ICommand
 		if (Enum.TryParse(objectName, true, out ToolGunObjectType parsedEnum) && Enum.IsDefined(typeof(ToolGunObjectType), parsedEnum))
 		{
 			ToolGunHandler.CreateObject(position, parsedEnum);
+			response = $"{objectName} has been successfully spawned!";
+			return true;
 		}
-		else if (MapUtils.TryGetSchematicDataByName(objectName, out _))
+
+		try
 		{
-			ToolGunHandler.CreateObject(position, ToolGunObjectType.Schematic, objectName);
+			_ = MapUtils.GetSchematicDataByName(objectName);
 		}
-		else
+		catch (Exception e)
 		{
-			response = $"\"{objectName}\" is an invalid object/schematic name!";
+			response = e.Message.ToString();
 			return false;
 		}
 
+		ToolGunHandler.CreateObject(position, ToolGunObjectType.Schematic, objectName);
 		response = $"{objectName} has been successfully spawned!";
 		return true;
 	}

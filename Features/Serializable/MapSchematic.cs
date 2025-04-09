@@ -70,8 +70,15 @@ public class MapSchematic
 		List<Room> rooms;
 		if (serializableObject is SerializableSchematic serializableSchematic)
 		{
-			if (!MapUtils.TryGetSchematicDataByName(serializableSchematic.SchematicName, out SchematicObjectDataList data))
+			SchematicObjectDataList data;
+			try
+			{
+				data = MapUtils.GetSchematicDataByName(serializableSchematic.SchematicName);
+			}
+			catch (Exception)
+			{
 				return;
+			}
 
 			rooms = serializableObject.GetRooms();
 			foreach (Room room in rooms)

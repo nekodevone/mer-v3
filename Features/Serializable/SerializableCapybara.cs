@@ -22,8 +22,8 @@ public class SerializableCapybara : SerializableObject
 		}
 
 		capybara.transform.SetPositionAndRotation(position, rotation);
-		capybara.transform.localScale = Scale.ToVector3();
-
+		capybara.transform.localScale = Scale;
+		
 		capybara.Network_collisionsEnabled = true;
 
 		return capybara.gameObject;

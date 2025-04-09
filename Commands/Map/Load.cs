@@ -19,15 +19,19 @@ public class Load : ICommand
 			return false;
 		}
 
-		if (MapUtils.LoadMap(arguments.At(0)))
+		string mapName = arguments.At(0);
+		
+		try
 		{
-			response = $"{arguments.At(0)} map has been loaded!";
-			return true;
+			MapUtils.LoadMap(mapName);
 		}
-		else
+		catch (Exception e)
 		{
-			response = $"{arguments.At(0)} map could not be loaded. Please check server console.";
+			response = e.Message;
 			return false;
 		}
+
+		response = $"{mapName} map has been loaded!";
+		return true;
 	}
 }

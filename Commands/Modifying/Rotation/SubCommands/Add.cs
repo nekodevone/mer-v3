@@ -38,12 +38,12 @@ public class Add : ICommand
 			return false;
 		}
 
-		if (arguments.Count >= 3 && TryGetVector(arguments.At(0), arguments.At(1), arguments.At(2), out Vector3 newPosition))
+		if (arguments.Count >= 3 && TryGetVector(arguments.At(0), arguments.At(1), arguments.At(2), out Vector3 newRotation))
 		{
-			mapEditorObject.Base.Rotation = (mapEditorObject.Base.Rotation.ToVector3() + newPosition).ToString("F3");
+			mapEditorObject.Base.Rotation += newRotation;
 			mapEditorObject.UpdateObjectAndCopies();
 
-			response = mapEditorObject.Base.Rotation;
+			response = mapEditorObject.Base.Rotation.ToString("F3");
 			return true;
 		}
 

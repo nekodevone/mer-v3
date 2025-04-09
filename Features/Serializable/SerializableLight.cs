@@ -28,7 +28,7 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 	public float InnerSpotAngle { get; set; } = 0f;
 
 	[YamlIgnore]
-	public override string Scale { get; set; }
+	public override Vector3 Scale { get; set; }
 
 	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
 	{

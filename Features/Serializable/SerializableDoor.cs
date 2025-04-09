@@ -37,7 +37,7 @@ public class SerializableDoor : SerializableObject
 
 		doorVariant.transform.position = position;
 		doorVariant.transform.rotation = rotation;
-		doorVariant.transform.localScale = Scale.ToVector3();
+		doorVariant.transform.localScale = Scale;
 
 		_prevType = Type;
 		doorVariant.NetworkTargetState = Open;

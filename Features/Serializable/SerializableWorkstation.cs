@@ -26,7 +26,7 @@ public class SerializableWorkstation : SerializableObject
 		}
 
 		workstation.transform.SetPositionAndRotation(position, rotation);
-		workstation.transform.localScale = Scale.ToVector3();
+		workstation.transform.localScale = Scale;
 
 		workstation.NetworkStatus = (byte)(IsInteractable ? 0 : 4);
 

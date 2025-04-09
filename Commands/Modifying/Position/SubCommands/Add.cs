@@ -40,10 +40,10 @@ public class Add : ICommand
 
 		if (arguments.Count >= 3 && TryGetVector(arguments.At(0), arguments.At(1), arguments.At(2), out Vector3 newPosition))
 		{
-			mapEditorObject.Base.Position = (mapEditorObject.Base.Position.ToVector3() + newPosition).ToString("F3");
+			mapEditorObject.Base.Position += newPosition;
 			mapEditorObject.UpdateObjectAndCopies();
 
-			response = mapEditorObject.Base.Position;
+			response = mapEditorObject.Base.Position.ToString("F3");
 			return true;
 		}
 

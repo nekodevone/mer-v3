@@ -25,15 +25,13 @@ public static class RoomExtensions
 
 	public static int GetRoomIndex(this Room room)
 	{
-        List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
+		List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
 		int index = list.IndexOf(room);
 		ListPool<Room>.Shared.Return(list);
 		return index;
 	}
 
-    public static Vector3 GetRelativePosition(this Room room, string position) => GetRelativePosition(room, position.ToVector3());
-
-    public static Vector3 GetRelativePosition(this Room room, Vector3 position)
+	public static Vector3 GetRelativePosition(this Room room, Vector3 position)
 	{
 		if (room.Name == RoomName.Outside)
 			return position;
@@ -41,11 +39,11 @@ public static class RoomExtensions
 		return room.Transform.TransformPoint(position);
 	}
 
-	public static Quaternion GetRelativeRotation(this Room room, string rotation)
+	public static Quaternion GetRelativeRotation(this Room room, Vector3 rotation)
 	{
 		if (room.Name == RoomName.Outside)
-			return Quaternion.Euler(rotation.ToVector3());
+			return Quaternion.Euler(rotation);
 
-		return room.Transform.rotation * Quaternion.Euler(rotation.ToVector3());
+		return room.Transform.rotation * Quaternion.Euler(rotation);
 	}
 }

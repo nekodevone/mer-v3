@@ -27,16 +27,13 @@ public static class MapUtils
 		File.WriteAllText(path, YamlParser.Serializer.Serialize(map));
 	}
 
-	public static bool LoadMap(string mapName)
+	public static void LoadMap(string mapName)
 	{
-		if (!TryGetMapData(mapName, out MapSchematic map))
-			return false;
-
+		MapSchematic map = GetMapData(mapName);
 		UnloadMap(mapName);
 		map.Reload();
 
 		LoadedMaps.Add(mapName, map);
-		return true;
 	}
 
 	public static bool UnloadMap(string mapName)
@@ -51,15 +48,16 @@ public static class MapUtils
 		return true;
 	}
 
-	public static bool TryGetMapData(string mapName, out MapSchematic map)
+	public static MapSchematic GetMapData(string mapName)
 	{
-		map = null!;
-		string path = Path.Combine(ProjectMER.MapsDir, $"{mapName}.yml");
+		MapSchematic map;
 
+		string path = Path.Combine(ProjectMER.MapsDir, $"{mapName}.yml");
 		if (!File.Exists(path))
 		{
-			Logger.Error($"Failed to load map data: File {mapName}.yml does not exist!");
-			return false;
+			string error = $"Failed to load map data: File {mapName}.yml does not exist!";
+			Logger.Error(error);
+			throw new FileNotFoundException(error);
 		}
 
 		try
@@ -69,16 +67,18 @@ public static class MapUtils
 		}
 		catch (YamlException e)
 		{
-			Logger.Error($"Failed to load map data: File {mapName}.yml has YAML errors!\n{e.ToString().Split('\n')[0]}");
-			return false;
+			string error = $"Failed to load map data: File {mapName}.yml has YAML errors!\n{e.ToString().Split('\n')[0]}";
+			Logger.Error(error);
+			throw new YamlException(error);
 		}
 
-		return true;
+		return map;
 	}
 
-	public static bool TryGetSchematicDataByName(string schematicName, out SchematicObjectDataList data)
+	public static SchematicObjectDataList GetSchematicDataByName(string schematicName)
 	{
-		data = null!;
+		SchematicObjectDataList data;
+
 		string dirPath = Path.Combine(ProjectMER.SchematicsDir, schematicName);
 		if (!Directory.Exists(dirPath))
 		{
@@ -107,7 +107,7 @@ public static class MapUtils
 			throw new JsonParsingException(error);
 		}
 
-		return true;
+		return data;
 	}
 
 	public static string[] GetAvailableSchematicNames() => Directory.GetDirectories(ProjectMER.SchematicsDir).Select(Path.GetFileName).ToArray();

@@ -37,10 +37,10 @@ public class Add : ICommand
 
 		if (arguments.Count >= 3 && TryGetVector(arguments.At(0), arguments.At(1), arguments.At(2), out Vector3 newScale))
 		{
-			mapEditorObject.Base.Scale = (mapEditorObject.Base.Scale.ToVector3() + newScale).ToString("F3");
+			mapEditorObject.Base.Scale += newScale;
 			mapEditorObject.UpdateObjectAndCopies();
 
-			response = mapEditorObject.Base.Scale;
+			response = mapEditorObject.Base.Scale.ToString("F3");
 			return true;
 		}
 
