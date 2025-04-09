@@ -1,7 +1,6 @@
-
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
-using LabApi.Loader.Features.Paths;
+using LabApi.Loader;
 using LabApi.Loader.Features.Plugins;
 using ProjectMER.Configs;
 using ProjectMER.Events.Handlers.Internal;
@@ -10,22 +9,22 @@ namespace ProjectMER;
 
 public class ProjectMER : Plugin<Config>
 {
+	public static ProjectMER Singleton { get; private set; }
+
 	/// <summary>
 	/// Gets the MapEditorReborn parent folder path.
 	/// </summary>
-	public static string PluginDir { get; } = Path.Combine(PathManager.Configs.ToString(), "ProjectMER");
+	public static string PluginDir { get; private set; }
 
 	/// <summary>
 	/// Gets the folder path in which the maps are stored.
 	/// </summary>
-	public static string MapsDir { get; } = Path.Combine(PluginDir, "Maps");
+	public static string MapsDir { get; private set; }
 
 	/// <summary>
 	/// Gets the folder path in which the schematics are stored.
 	/// </summary>
-	public static string SchematicsDir { get; } = Path.Combine(PluginDir, "Schematics");
-
-	public static ProjectMER Singleton { get; private set; }
+	public static string SchematicsDir { get; private set; }
 
 	public GenericEventsHandler GenericEventsHandler { get; } = new();
 
@@ -38,6 +37,10 @@ public class ProjectMER : Plugin<Config>
 	public override void Enable()
 	{
 		Singleton = this;
+
+		PluginDir = Singleton.GetConfigDirectory().ToString();
+		MapsDir = Path.Combine(PluginDir, "Maps");
+		SchematicsDir = Path.Combine(PluginDir, "Schematics");
 
 		if (!Directory.Exists(MapsDir))
 		{
