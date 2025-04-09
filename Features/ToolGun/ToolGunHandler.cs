@@ -40,7 +40,7 @@ public static class ToolGunHandler
 		{
 			case SerializablePlayerSpawnpoint _:
 				{
-					serializableObject.Position += Vector3.up;
+					serializableObject.Position = position + Vector3.up * 0.01f;
 					break;
 				}
 
