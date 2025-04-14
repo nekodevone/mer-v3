@@ -1,21 +1,15 @@
-using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
-using MEC;
 using Mirror;
+using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
-using ProjectMER.Features.Objects;
 using UnityEngine;
-using YamlDotNet.Serialization;
-using CheckpointDoor = Interactables.Interobjects.CheckpointDoor;
-using Logger = LabApi.Features.Console.Logger;
 
 namespace ProjectMER.Features.Serializable;
 
 public class SerializableDoor : SerializableObject
 {
-	public string DoorType { get; set; } = "LCZ";
+	public DoorType DoorType { get; set; } = DoorType.Lcz;
 	public bool IsOpen { get; set; } = false;
 	public bool IsLocked { get; set; } = false;
 
@@ -54,12 +48,12 @@ public class SerializableDoor : SerializableObject
 	{
 		get
 		{
-			DoorVariant prefab = DoorType.ToUpperInvariant() switch
+			DoorVariant prefab = DoorType switch
 			{
-				"LCZ" => PrefabManager.LczDoorPrefab,
-				"HCZ" => PrefabManager.HczDoorPrefab,
-				"EZ" => PrefabManager.EzDoorPrefab,
-				"BULKDOOR" => PrefabManager.BulkDoorPrefab,
+				DoorType.Lcz => PrefabManager.LczDoorPrefab,
+				DoorType.Hcz => PrefabManager.HczDoorPrefab,
+				DoorType.Ez => PrefabManager.EzDoorPrefab,
+				DoorType.Bulkdoor => PrefabManager.BulkDoorPrefab,
 				_ => throw new InvalidOperationException(),
 			};
 
@@ -69,5 +63,5 @@ public class SerializableDoor : SerializableObject
 
 	public override bool RequiresReloading => DoorType != _prevType || base.RequiresReloading;
 
-	internal string _prevType;
+	internal DoorType _prevType;
 }
