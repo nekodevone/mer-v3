@@ -7,6 +7,7 @@ using Mirror;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using UnityEngine;
+using YamlDotNet.Serialization;
 using CheckpointDoor = Interactables.Interobjects.CheckpointDoor;
 using Logger = LabApi.Features.Console.Logger;
 
@@ -14,15 +15,16 @@ namespace ProjectMER.Features.Serializable;
 
 public class SerializableDoor : SerializableObject
 {
-	public string Type { get; set; } = "LCZ";
-	public bool Open { get; set; } = false;
-	public bool Locked { get; set; } = false;
+	public string DoorType { get; set; } = "LCZ";
+	public bool IsOpen { get; set; } = false;
+	public bool IsLocked { get; set; } = false;
 
-	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
+	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		DoorVariant doorVariant;
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		_prevIndex = Index;
 
 		if (instance == null)
 		{
@@ -35,19 +37,15 @@ public class SerializableDoor : SerializableObject
 			doorVariant = instance.GetComponent<DoorVariant>();
 		}
 
-		doorVariant.transform.position = position;
-		doorVariant.transform.rotation = rotation;
+		doorVariant.transform.SetPositionAndRotation(position, rotation);
 		doorVariant.transform.localScale = Scale;
 
-		_prevType = Type;
-		doorVariant.NetworkTargetState = Open;
-		doorVariant.ServerChangeLock(DoorLockReason.SpecialDoorFeature, Locked);
+		_prevType = DoorType;
+		doorVariant.NetworkTargetState = IsOpen;
+		doorVariant.ServerChangeLock(DoorLockReason.SpecialDoorFeature, IsLocked);
 
-		if (instance != null)
-		{
-			NetworkServer.UnSpawn(instance);
-			NetworkServer.Spawn(instance);
-		}
+		NetworkServer.UnSpawn(doorVariant.gameObject);
+		NetworkServer.Spawn(doorVariant.gameObject);
 
 		return doorVariant.gameObject;
 	}
@@ -56,7 +54,7 @@ public class SerializableDoor : SerializableObject
 	{
 		get
 		{
-			DoorVariant prefab = Type.ToUpperInvariant() switch
+			DoorVariant prefab = DoorType.ToUpperInvariant() switch
 			{
 				"LCZ" => PrefabManager.LczDoorPrefab,
 				"HCZ" => PrefabManager.HczDoorPrefab,
@@ -68,6 +66,8 @@ public class SerializableDoor : SerializableObject
 			return prefab;
 		}
 	}
+
+	public override bool RequiresReloading => DoorType != _prevType || base.RequiresReloading;
 
 	internal string _prevType;
 }

@@ -1,8 +1,4 @@
-using System.Collections.ObjectModel;
 using AdminToys;
-using LabApi.Events;
-using LabApi.Events.Handlers;
-using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
 using ProjectMER.Events.Handlers;
@@ -13,10 +9,9 @@ using Utf8Json;
 using Logger = LabApi.Features.Console.Logger;
 using Object = UnityEngine.Object;
 
-
 namespace ProjectMER.Features.Objects;
 
-public class SchematicObject : MapEditorObject
+public class SchematicObject : MonoBehaviour
 {
 	public SchematicObjectDataList SchematicData { get; private set; }
 
@@ -68,15 +63,11 @@ public class SchematicObject : MapEditorObject
 
 	public AnimationController AnimationController => AnimationController.Get(this);
 
-	public SchematicObject Init(SerializableSchematic serializableSchematic, SchematicObjectDataList data, string mapName, string id, Room room)
+	public SchematicObject Init(SchematicObjectDataList data)
 	{
-		Base = serializableSchematic;
 		SchematicData = data;
 		Name = Path.GetFileNameWithoutExtension(data.Path);
 		DirectoryPath = data.Path;
-		MapName = mapName;
-		Id = id;
-		Room = room;
 
 		ObjectFromId = new Dictionary<int, Transform>(SchematicData.Blocks.Count + 1)
 		{

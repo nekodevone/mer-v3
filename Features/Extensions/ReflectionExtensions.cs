@@ -22,7 +22,7 @@ public static class ReflectionExtensions
 
 			if (property.Name == "Position" || property.Name == "Rotation" || property.Name == "Scale")
 				continue;
-			
+
 			yield return property;
 		}
 	}
@@ -31,6 +31,9 @@ public static class ReflectionExtensions
 	{
 		foreach (PropertyInfo property in properties)
 		{
+			if (!property.CanWrite)
+				continue;
+
 			if (property.PropertyType == typeof(bool))
 			{
 				yield return $"{property.Name}: {((bool)property.GetValue(instance) ? "<color=green><b>TRUE</b></color>" : "<color=red><b>FALSE</b></color>")}";

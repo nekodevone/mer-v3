@@ -6,7 +6,7 @@ namespace ProjectMER.Features.Extensions;
 
 public static class ToolGunExtensions
 {
-    public static bool IsToolGun(this Item item, out ToolGunItem toolGun)
+    public static bool IsToolGun(this Item? item, out ToolGunItem toolGun)
     {
 		if (item == null)
 		{
@@ -17,7 +17,7 @@ public static class ToolGunExtensions
         return IsToolGun(item.Base, out toolGun);
     }
 
-    public static bool IsToolGun(this ItemBase itemBase, out ToolGunItem toolGun)
+    public static bool IsToolGun(this ItemBase? itemBase, out ToolGunItem toolGun)
     {
 		if (itemBase == null)
 		{

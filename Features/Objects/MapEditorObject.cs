@@ -1,7 +1,7 @@
+using AdminToys;
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
-using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Serializable;
 using UnityEngine;
 
@@ -9,7 +9,6 @@ namespace ProjectMER.Features.Objects;
 
 public class MapEditorObject : MonoBehaviour
 {
-	private int _prevIndex;
 	public SerializableObject Base;
 
 	public string MapName { get; protected set; }
@@ -21,30 +20,19 @@ public class MapEditorObject : MonoBehaviour
 	public MapEditorObject Init(SerializableObject serializableObject, string mapName, string id, Room room)
 	{
 		Base = serializableObject;
-		_prevIndex = Base.Index;
 		MapName = mapName;
 		Id = id;
 		Room = room;
 
-		NetworkServer.Spawn(gameObject);
 		return this;
 	}
 
 	public virtual void UpdateObjectAndCopies()
 	{
-		if (Base is SerializableDoor serializableDoor && serializableDoor._prevType != serializableDoor.Type)
+		if (Base.RequiresReloading)
 		{
-			if (MapUtils.LoadedMaps.TryGetValue(MapName, out MapSchematic map))
-			{
-				map.DestroyObject(Id);
-			}
-
-			Timing.CallDelayed(0.1f, () => map.SpawnObject(Id, Base));
-			return;
-		}
-
-		if (_prevIndex != Base.Index)
-		{
+			Base._prevIndex = Base.Index;
+			
 			if (MapUtils.LoadedMaps.TryGetValue(MapName, out MapSchematic map))
 			{
 				map.DestroyObject(Id);
@@ -61,8 +49,6 @@ public class MapEditorObject : MonoBehaviour
 
 			copy.UpdateCopy();
 		}
-
-		_prevIndex = Base.Index;
 	}
 
 	private void UpdateCopy()

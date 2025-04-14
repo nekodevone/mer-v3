@@ -74,6 +74,20 @@ public static class MapUtils
 		return map;
 	}
 
+	public static bool TryGetSchematicDataByName(string schematicName, out SchematicObjectDataList data)
+	{
+		try
+		{
+			data = GetSchematicDataByName(schematicName);
+			return true;
+		}
+		catch (Exception)
+		{
+			data = null!;
+			return false;
+		}
+	}
+
 	public static SchematicObjectDataList GetSchematicDataByName(string schematicName)
 	{
 		SchematicObjectDataList data;

@@ -1,6 +1,6 @@
-
 using LabApi.Features.Wrappers;
 using UnityEngine;
+using YamlDotNet.Serialization;
 
 namespace ProjectMER.Features.Serializable;
 
@@ -25,5 +25,10 @@ public abstract class SerializableObject
 
 	public virtual int Index { get; set; } = -1;
 
-	public virtual GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null) => throw new NotSupportedException();
+	public virtual GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null) => throw new NotSupportedException();
+
+	[YamlIgnore]
+	public virtual bool RequiresReloading => Index != _prevIndex;
+
+	public int _prevIndex;
 }

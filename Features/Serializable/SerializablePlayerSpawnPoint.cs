@@ -16,21 +16,14 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 	[YamlIgnore]
 	public override Vector3 Scale { get; set; }
 
-	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
+	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		GameObject spawnpoint;
+		GameObject spawnpoint = instance ?? new GameObject("PlayerSpawnPoint");
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		_prevIndex = Index;
 
-		if (instance == null)
-			spawnpoint = new GameObject("PlayerSpawnPoint");
-		else
-		{
-			spawnpoint = instance;
-		}
-
-		spawnpoint.transform.position = position;
-		spawnpoint.transform.rotation = rotation;
+		spawnpoint.transform.SetPositionAndRotation(position, rotation);
 
 		return spawnpoint.gameObject;
 	}

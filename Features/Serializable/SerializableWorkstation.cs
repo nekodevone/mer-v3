@@ -1,5 +1,7 @@
 using InventorySystem.Items.Firearms.Attachments;
 using LabApi.Features.Wrappers;
+using MapGeneration.Distributors;
+using Mirror;
 using ProjectMER.Features.Extensions;
 using UnityEngine;
 
@@ -12,23 +14,26 @@ public class SerializableWorkstation : SerializableObject
 	/// </summary>
 	public bool IsInteractable { get; set; } = true;
 
-	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
+	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		WorkstationController workstation;
+		WorkstationController workstation = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.WorkstationPrefab) : instance.GetComponent<WorkstationController>();
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
-
-		if (instance == null)
-			workstation = UnityEngine.Object.Instantiate(PrefabManager.WorkstationPrefab);
-		else
-		{
-			workstation = instance.GetComponent<WorkstationController>();
-		}
+		_prevIndex = Index;
 
 		workstation.transform.SetPositionAndRotation(position, rotation);
 		workstation.transform.localScale = Scale;
 
 		workstation.NetworkStatus = (byte)(IsInteractable ? 0 : 4);
+
+		if (workstation.TryGetComponent(out StructurePositionSync structurePositionSync))
+		{
+			structurePositionSync.Network_position = workstation.transform.position;
+			structurePositionSync.Network_rotationY = (sbyte)Mathf.RoundToInt(workstation.transform.rotation.eulerAngles.y / 5.625f);
+		}
+
+		if (instance == null)
+			NetworkServer.Spawn(workstation.gameObject);
 
 		return workstation.gameObject;
 	}

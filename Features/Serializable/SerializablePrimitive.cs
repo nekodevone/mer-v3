@@ -1,6 +1,7 @@
 
 using AdminToys;
 using LabApi.Features.Wrappers;
+using Mirror;
 using ProjectMER.Features.Extensions;
 using UnityEngine;
 
@@ -9,9 +10,9 @@ namespace ProjectMER.Features.Serializable;
 public class SerializablePrimitive : SerializableObject
 {
 	/// <summary>
-	/// Gets or sets the <see cref="PrimitiveType"/>.
+	/// Gets or sets the <see cref="UnityEngine.PrimitiveType"/>.
 	/// </summary>
-	public PrimitiveType Type { get; set; } = PrimitiveType.Cube;
+	public PrimitiveType PrimitiveType { get; set; } = PrimitiveType.Cube;
 
 	/// <summary>
 	/// Gets or sets the <see cref="SerializablePrimitive"/>'s color.
@@ -21,29 +22,24 @@ public class SerializablePrimitive : SerializableObject
 	/// <summary>
 	/// Gets or sets the <see cref="SerializablePrimitive"/>'s flags.
 	/// </summary>
-	public PrimitiveFlags Flags { get; set; } = (PrimitiveFlags)3;
+	public PrimitiveFlags PrimitiveFlags { get; set; } = (PrimitiveFlags)3;
 
-	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
+	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		PrimitiveObjectToy primitive;
+		PrimitiveObjectToy primitive = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		_prevIndex = Index;
 
-		if (instance == null)
-			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
-		else
-		{
-			primitive = instance.GetComponent<PrimitiveObjectToy>();
-		}
-
-		primitive.transform.position = position;
-		primitive.transform.rotation = rotation;
+		primitive.transform.SetPositionAndRotation(position, rotation);
 		primitive.transform.localScale = Scale;
 
 		primitive.NetworkMaterialColor = Color.GetColorFromString();
+		primitive.NetworkPrimitiveType = PrimitiveType;
+		primitive.NetworkPrimitiveFlags = PrimitiveFlags;
 
-		primitive.NetworkPrimitiveType = Type;
-		primitive.NetworkPrimitiveFlags = Flags;
+		if (instance == null)
+			NetworkServer.Spawn(primitive.gameObject);
 
 		return primitive.gameObject;
 	}

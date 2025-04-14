@@ -1,4 +1,3 @@
-using System;
 using Serialization;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;

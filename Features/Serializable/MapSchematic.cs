@@ -1,4 +1,5 @@
 using LabApi.Features.Wrappers;
+using Mirror;
 using MonoMod.Utils;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
@@ -67,40 +68,15 @@ public class MapSchematic
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
 	{
-		List<Room> rooms;
-		if (serializableObject is SerializableSchematic serializableSchematic)
-		{
-			SchematicObjectDataList data;
-			try
-			{
-				data = MapUtils.GetSchematicDataByName(serializableSchematic.SchematicName);
-			}
-			catch (Exception)
-			{
-				return;
-			}
-
-			rooms = serializableObject.GetRooms();
-			foreach (Room room in rooms)
-			{
-				if (serializableObject.Index < 0 || serializableObject.Index == room.GetRoomIndex())
-				{
-					GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
-					SchematicObject schematicObject = gameObject.AddComponent<SchematicObject>().Init(serializableSchematic, data, Name, id, room);
-					SpawnedObjects.Add(schematicObject);
-				}
-			}
-
-			ListPool<Room>.Shared.Return(rooms);
-			return;
-		}
-
-		rooms = serializableObject.GetRooms();
+		List<Room> rooms = serializableObject.GetRooms();
 		foreach (Room room in rooms)
 		{
 			if (serializableObject.Index < 0 || serializableObject.Index == room.GetRoomIndex())
 			{
-				GameObject gameObject = serializableObject.SpawnOrUpdateObject(room);
+				GameObject? gameObject = serializableObject.SpawnOrUpdateObject(room);
+				if (gameObject == null)
+					continue;
+
 				MapEditorObject mapEditorObject = gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room);
 				SpawnedObjects.Add(mapEditorObject);
 			}

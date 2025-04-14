@@ -31,17 +31,17 @@ public static class RoomExtensions
 		return index;
 	}
 
-	public static Vector3 GetRelativePosition(this Room room, Vector3 position)
+	public static Vector3 GetRelativePosition(this Room? room, Vector3 position)
 	{
-		if (room.Name == RoomName.Outside)
+		if (room is null || room.Name == RoomName.Outside)
 			return position;
 
 		return room.Transform.TransformPoint(position);
 	}
 
-	public static Quaternion GetRelativeRotation(this Room room, Vector3 rotation)
+	public static Quaternion GetRelativeRotation(this Room? room, Vector3 rotation)
 	{
-		if (room.Name == RoomName.Outside)
+		if (room is null || room.Name == RoomName.Outside)
 			return Quaternion.Euler(rotation);
 
 		return room.Transform.rotation * Quaternion.Euler(rotation);

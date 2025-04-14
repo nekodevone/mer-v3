@@ -1,5 +1,6 @@
 using AdminToys;
 using LabApi.Features.Wrappers;
+using Mirror;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Interfaces;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 
 	public float Strength { get; set; } = 0f;
 
-	public LightType Type { get; set; } = LightType.Point;
+	public LightType LightType { get; set; } = LightType.Point;
 
 	public LightShape Shape { get; set; } = LightShape.Cone;
 
@@ -30,59 +31,44 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 	[YamlIgnore]
 	public override Vector3 Scale { get; set; }
 
-	public override GameObject SpawnOrUpdateObject(Room room, GameObject? instance = null)
+	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		LightSourceToy light;
+		LightSourceToy light = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.LightSourcePrefab) : instance.GetComponent<LightSourceToy>();
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		_prevIndex = Index;
 
-		if (instance == null)
-			light = UnityEngine.Object.Instantiate(PrefabManager.LightSourcePrefab);
-		else
-		{
-			light = instance.GetComponent<LightSourceToy>();
-		}
+		light.transform.SetPositionAndRotation(position, rotation);
 
-		light.transform.position = position;
-		light.transform.rotation = rotation;
-
-		if (ColorUtility.TryParseHtmlString(Color, out Color color))
-			light.NetworkLightColor = color;
-
+		light.NetworkLightColor = ColorUtility.TryParseHtmlString(Color, out Color color) ? color : UnityEngine.Color.magenta;
 		light.NetworkLightIntensity = Intensity;
 		light.NetworkLightRange = Range;
 		light.NetworkShadowType = Shadows;
 		light.NetworkShadowStrength = Strength;
-		light.NetworkLightType = Type;
+		light.NetworkLightType = LightType;
 		light.NetworkLightShape = Shape;
 		light.NetworkSpotAngle = SpotAngle;
 		light.NetworkInnerSpotAngle = InnerSpotAngle;
+
+		if (instance == null)
+			NetworkServer.Spawn(light.gameObject);
 
 		return light.gameObject;
 	}
 
 	public GameObject SpawnOrUpdateIndicator(Room room, GameObject? instance = null)
 	{
-		PrimitiveObjectToy primitive;
+		PrimitiveObjectToy primitive = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
 		Vector3 position = room.GetRelativePosition(Position);
-
-		if (instance == null)
-			primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
-		else
-		{
-			primitive = instance.GetComponent<PrimitiveObjectToy>();
-		}
 
 		primitive.transform.position = position;
 		primitive.NetworkPrimitiveType = PrimitiveType.Sphere;
 		primitive.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
 		primitive.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
 
-		if (ColorUtility.TryParseHtmlString(Color, out Color color))
-		{
-			Color transparentColor = new Color(color.r, color.g, color.b, 0.9f);
-			primitive.NetworkMaterialColor = transparentColor;
-		}
+		_ = ColorUtility.TryParseHtmlString(Color, out Color color) ? color : UnityEngine.Color.magenta;
+		Color transparentColor = new Color(color.r, color.g, color.b, 0.9f);
+		primitive.NetworkMaterialColor = transparentColor;
 
 		return primitive.gameObject;
 	}

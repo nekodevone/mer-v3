@@ -99,9 +99,9 @@ public static class ToolGunUI
 				if (mapEditorObject is IndicatorObject indicatorObject)
 					mapEditorObject = IndicatorObject.Dictionary[indicatorObject];
 
-				if (mapEditorObject is SchematicObject schematicObject)
+				if (mapEditorObject.gameObject.TryGetComponent(out SchematicObject schematicObject))
 				{
-					name = schematicObject.name.Split('-').Last().ToUpper();
+					name = schematicObject.Name.ToUpper();
 				}
 				else
 				{
