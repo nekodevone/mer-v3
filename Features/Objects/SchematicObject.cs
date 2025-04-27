@@ -105,20 +105,18 @@ public class SchematicObject : MonoBehaviour
 			return null;
 
 		GameObject gameObject = block.Create(this, parentTransform);
-		if (block.BlockType != BlockType.Empty)
+		NetworkServer.Spawn(gameObject);
+		
+		if (gameObject.TryGetComponent(out AdminToyBase adminToyBase))
 		{
-			NetworkServer.Spawn(gameObject);
-			if (gameObject.TryGetComponent(out AdminToyBase adminToyBase))
+			bool isStatic = block.Properties != null && block.Properties.TryGetValue("Static", out object value) && Convert.ToBoolean(value);
+			if (isStatic)
 			{
-				bool isStatic = block.Properties.TryGetValue("Static", out object value) && Convert.ToBoolean(value);
-				if (isStatic)
-				{
-					Timing.CallDelayed(0.1f, () => adminToyBase.NetworkIsStatic = true);
-				}
-				else
-				{
-					Timing.CallDelayed(0.1f, () => adminToyBase.NetworkMovementSmoothing = 60);
-				}
+				Timing.CallDelayed(0.1f, () => adminToyBase.NetworkIsStatic = true);
+			}
+			else
+			{
+				Timing.CallDelayed(0.1f, () => adminToyBase.NetworkMovementSmoothing = 60);
 			}
 		}
 

@@ -6,6 +6,8 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using UnityEngine;
+using LightSourceToy = AdminToys.LightSourceToy;
+using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable.Schematics;
 
@@ -33,7 +35,7 @@ public class SchematicBlockData
 	{
 		GameObject gameObject = BlockType switch
 		{
-			BlockType.Empty => new GameObject(),
+			BlockType.Empty => CreateEmpty(),
 			BlockType.Primitive => CreatePrimitive(),
 			BlockType.Light => CreateLight(),
 			BlockType.Pickup => CreatePickup(schematicObject),
@@ -49,6 +51,14 @@ public class SchematicBlockData
 		transform.localScale = BlockType == BlockType.Empty ? Vector3.one : Scale;
 
 		return gameObject;
+	}
+
+	private GameObject CreateEmpty()
+	{
+		PrimitiveObjectToy primitive = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+		primitive.NetworkPrimitiveFlags = PrimitiveFlags.None;
+
+		return primitive.gameObject;
 	}
 
 	private GameObject CreatePrimitive()

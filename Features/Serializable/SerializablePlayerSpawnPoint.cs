@@ -6,6 +6,7 @@ using ProjectMER.Features.Interfaces;
 using Respawning.Objectives;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable;
 

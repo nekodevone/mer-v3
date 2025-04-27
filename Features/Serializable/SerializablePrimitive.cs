@@ -4,6 +4,7 @@ using LabApi.Features.Wrappers;
 using Mirror;
 using ProjectMER.Features.Extensions;
 using UnityEngine;
+using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable;
 

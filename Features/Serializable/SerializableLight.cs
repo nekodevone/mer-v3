@@ -5,6 +5,8 @@ using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Interfaces;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using LightSourceToy = AdminToys.LightSourceToy;
+using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable;
 

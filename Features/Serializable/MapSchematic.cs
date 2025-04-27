@@ -1,5 +1,4 @@
 using LabApi.Features.Wrappers;
-using Mirror;
 using MonoMod.Utils;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
