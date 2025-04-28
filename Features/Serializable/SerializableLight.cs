@@ -41,6 +41,7 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 		_prevIndex = Index;
 
 		light.transform.SetPositionAndRotation(position, rotation);
+		light.NetworkMovementSmoothing = 60;
 
 		light.NetworkLightColor = ColorUtility.TryParseHtmlString(Color, out Color color) ? color : UnityEngine.Color.magenta;
 		light.NetworkLightIntensity = Intensity;

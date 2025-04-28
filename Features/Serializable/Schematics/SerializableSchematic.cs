@@ -14,30 +14,30 @@ public class SerializableSchematic : SerializableObject
 
 	public override GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		PrimitiveObjectToy primitive = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
-		primitive.NetworkPrimitiveFlags = PrimitiveFlags.None;
+		if (Data == null)
+			return null;
+
+		PrimitiveObjectToy schematic = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
+		schematic.NetworkPrimitiveFlags = PrimitiveFlags.None;
+		schematic.NetworkMovementSmoothing = 60;
 
 		Vector3 position = room.GetRelativePosition(Position);
 		Quaternion rotation = room.GetRelativeRotation(Rotation);
 		_prevIndex = Index;
 
+		schematic.name = $"CustomSchematic-{SchematicName}";
+		schematic.transform.SetPositionAndRotation(position, rotation);
+		schematic.transform.localScale = Scale;
+
 		if (instance == null)
 		{
-			if (!MapUtils.TryGetSchematicDataByName(SchematicName, out SchematicObjectDataList? data))
-				return null;
-
-			primitive.name = $"CustomSchematic-{SchematicName}";
-			primitive.transform.SetPositionAndRotation(position, rotation);
-			NetworkServer.Spawn(primitive.gameObject);
-
-			primitive.gameObject.AddComponent<SchematicObject>().Init(data);
-		}
-		else
-		{
-			primitive = instance.GetComponent<PrimitiveObjectToy>();
-			primitive.transform.SetPositionAndRotation(position, rotation);
+			NetworkServer.Spawn(schematic.gameObject);
+			schematic.gameObject.AddComponent<SchematicObject>().Init(Data);
 		}
 
-		return primitive.gameObject;
+		return schematic.gameObject;
 	}
+
+	private SchematicObjectDataList? Data => _data ??= MapUtils.TryGetSchematicDataByName(SchematicName, out SchematicObjectDataList data) ? data : null;
+	private SchematicObjectDataList? _data;
 }
