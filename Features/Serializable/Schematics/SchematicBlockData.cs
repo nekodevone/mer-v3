@@ -57,6 +57,7 @@ public class SchematicBlockData
 	{
 		PrimitiveObjectToy primitive = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab);
 		primitive.NetworkPrimitiveFlags = PrimitiveFlags.None;
+		primitive.NetworkMovementSmoothing = 60;
 
 		return primitive.gameObject;
 	}
@@ -64,6 +65,7 @@ public class SchematicBlockData
 	private GameObject CreatePrimitive()
 	{
 		PrimitiveObjectToy primitive = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+		primitive.NetworkMovementSmoothing = 60;
 
 		primitive.NetworkPrimitiveType = (PrimitiveType)Convert.ToInt32(Properties["PrimitiveType"]);
 		primitive.NetworkMaterialColor = Properties["Color"].ToString().GetColorFromString();
@@ -89,6 +91,7 @@ public class SchematicBlockData
 	private GameObject CreateLight()
 	{
 		LightSourceToy light = GameObject.Instantiate(PrefabManager.LightSourcePrefab);
+		light.NetworkMovementSmoothing = 60;
 
 		light.NetworkLightType = Properties.TryGetValue("LightType", out object lightType) ? (LightType)Convert.ToInt32(lightType) : LightType.Point;
 		light.NetworkLightColor = Properties["Color"].ToString().GetColorFromString();
