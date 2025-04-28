@@ -31,10 +31,10 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 
 	public GameObject SpawnOrUpdateIndicator(Room room, GameObject? instance = null)
 	{
-		Transform root;
+		PrimitiveObjectToy root;
 		PrimitiveObjectToy cylinder;
-		Transform arrowY;
-		Transform arrowX;
+		PrimitiveObjectToy arrowY;
+		PrimitiveObjectToy arrowX;
 		PrimitiveObjectToy arrow;
 
 		Vector3 position = room.GetRelativePosition(Position);
@@ -42,8 +42,10 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 
 		if (instance == null)
 		{
-			root = new GameObject("Indicator").transform;
-			root.position = position;
+			root = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+			root.NetworkPrimitiveFlags = PrimitiveFlags.None;
+			root.name = "Indicator";
+			root.transform.position = position;
 
 			cylinder = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab, root.transform);
 			cylinder.transform.localPosition = Vector3.zero;
@@ -51,36 +53,35 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 			cylinder.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
 			cylinder.transform.localScale = new Vector3(1f, 0.001f, 1f);
 
-			arrowY = new GameObject("Arrow Y Axis").transform;
-			arrowY.parent = root.transform;
-			// arrowY.transform.localPosition = Vector3.up;
+			arrowY = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+			arrowY.NetworkPrimitiveFlags = PrimitiveFlags.None;
+			arrowY.name = "Arrow Y Axis";
+			arrowY.transform.parent = root.transform;
 
-			arrowX = new GameObject("Arrow X Axis").transform;
-			arrowX.parent = arrowY.transform;
-			// arrowX.transform.localPosition = Vector3.zero;
+			arrowX = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+			arrowX.NetworkPrimitiveFlags = PrimitiveFlags.None;
+			arrowX.name = "Arrow X Axis";
+			arrowX.transform.parent = arrowY.transform;
 
 			arrow = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab, arrowX.transform);
-			arrow.transform.localPosition = root.forward;
+			arrow.transform.localPosition = root.transform.forward;
 			arrow.NetworkPrimitiveType = PrimitiveType.Cube;
 			arrow.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
 			arrow.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
 		}
-		// primitive = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab, position, rotation);
 		else
 		{
-			root = instance.transform;
+			root = instance.GetComponent<PrimitiveObjectToy>();
 			
-			arrowY = root.Find("Arrow Y Axis");
-			arrowX = arrowY.Find("Arrow X Axis");
-
-			// root.transform.rotation = rotation;
+			arrowY = root.transform.Find("Arrow Y Axis").GetComponent<PrimitiveObjectToy>();
+			arrowX = arrowY.transform.Find("Arrow X Axis").GetComponent<PrimitiveObjectToy>();
 		}
 
-		root.position = position;
-		arrowY.localPosition = Vector3.up * 1.6f;
-		arrowY.localEulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
-		arrowX.localPosition = Vector3.zero;
-		arrowX.localEulerAngles = new Vector3(-rotation.eulerAngles.x, 0f, 0f);
+		root.transform.position = position;
+		arrowY.transform.localPosition = Vector3.up * 1.6f;
+		arrowY.transform.localEulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
+		arrowX.transform.localPosition = Vector3.zero;
+		arrowX.transform.localEulerAngles = new Vector3(-rotation.eulerAngles.x, 0f, 0f);
 
 		foreach (PrimitiveObjectToy primitive in root.GetComponentsInChildren<PrimitiveObjectToy>())
 		{
