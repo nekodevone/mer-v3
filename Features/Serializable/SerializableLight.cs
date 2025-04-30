@@ -36,8 +36,8 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		LightSourceToy light = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.LightSourcePrefab) : instance.GetComponent<LightSourceToy>();
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
 
 		light.transform.SetPositionAndRotation(position, rotation);
@@ -62,7 +62,7 @@ public class SerializableLight : SerializableObject, IIndicatorDefinition
 	public GameObject SpawnOrUpdateIndicator(Room room, GameObject? instance = null)
 	{
 		PrimitiveObjectToy primitive = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
-		Vector3 position = room.GetRelativePosition(Position);
+		Vector3 position = room.GetAbsolutePosition(Position);
 
 		primitive.transform.position = position;
 		primitive.NetworkPrimitiveType = PrimitiveType.Sphere;

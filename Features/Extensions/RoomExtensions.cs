@@ -31,7 +31,7 @@ public static class RoomExtensions
 		return index;
 	}
 
-	public static Vector3 GetRelativePosition(this Room? room, Vector3 position)
+	public static Vector3 GetAbsolutePosition(this Room? room, Vector3 position)
 	{
 		if (room is null || room.Name == RoomName.Outside)
 			return position;
@@ -39,11 +39,11 @@ public static class RoomExtensions
 		return room.Transform.TransformPoint(position);
 	}
 
-	public static Quaternion GetRelativeRotation(this Room? room, Vector3 rotation)
+	public static Quaternion GetAbsoluteRotation(this Room? room, Vector3 eulerAngles)
 	{
 		if (room is null || room.Name == RoomName.Outside)
-			return Quaternion.Euler(rotation);
+			return Quaternion.Euler(eulerAngles);
 
-		return room.Transform.rotation * Quaternion.Euler(rotation);
+		return room.Transform.rotation * Quaternion.Euler(eulerAngles);
 	}
 }

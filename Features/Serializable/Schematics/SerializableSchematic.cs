@@ -21,8 +21,8 @@ public class SerializableSchematic : SerializableObject
 		schematic.NetworkPrimitiveFlags = PrimitiveFlags.None;
 		schematic.NetworkMovementSmoothing = 60;
 
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
 
 		schematic.name = $"CustomSchematic-{SchematicName}";

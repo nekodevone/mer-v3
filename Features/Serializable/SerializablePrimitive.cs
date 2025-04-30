@@ -28,8 +28,8 @@ public class SerializablePrimitive : SerializableObject
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		PrimitiveObjectToy primitive = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab) : instance.GetComponent<PrimitiveObjectToy>();
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
 
 		primitive.transform.SetPositionAndRotation(position, rotation);

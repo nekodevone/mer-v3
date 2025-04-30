@@ -16,8 +16,8 @@ public class SerializableDoor : SerializableObject
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		DoorVariant doorVariant;
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
 
 		if (instance == null)

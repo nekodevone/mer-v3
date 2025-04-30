@@ -20,8 +20,8 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		GameObject spawnpoint = instance ?? new GameObject("PlayerSpawnPoint");
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
 
 		spawnpoint.transform.SetPositionAndRotation(position, rotation);
@@ -37,8 +37,8 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 		PrimitiveObjectToy arrowX;
 		PrimitiveObjectToy arrow;
 
-		Vector3 position = room.GetRelativePosition(Position);
-		Quaternion rotation = room.GetRelativeRotation(Rotation);
+		Vector3 position = room.GetAbsolutePosition(Position);
+		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 
 		if (instance == null)
 		{
