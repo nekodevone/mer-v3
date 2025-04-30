@@ -183,9 +183,13 @@ public class SchematicObject : MonoBehaviour
 		return hasRigidbodies;
 	}
 
+
+	public void Destroy() => Destroy(gameObject);
+
 	private void OnDestroy()
 	{
 		AnimationController.Dictionary.Remove(this);
+		NetworkServer.Destroy(gameObject);
 		Schematic.OnSchematicDestroyed(new(this, Name));
 	}
 
