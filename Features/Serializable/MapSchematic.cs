@@ -58,7 +58,17 @@ public class MapSchematic
 
 		Primitives.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Lights.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
-		Doors.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Doors.ForEach(kVP =>
+		{
+			Door? vanillaDoor = Door.Get(kVP.Key);
+			if (vanillaDoor != null)
+			{
+				kVP.Value.SetupDoor(vanillaDoor.Base);
+				return;
+			}
+
+			SpawnObject(kVP.Key, kVP.Value);
+		});
 		Workstations.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Capybaras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));

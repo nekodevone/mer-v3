@@ -12,6 +12,8 @@ public class SerializableDoor : SerializableObject
 	public DoorType DoorType { get; set; } = DoorType.Lcz;
 	public bool IsOpen { get; set; } = false;
 	public bool IsLocked { get; set; } = false;
+	public DoorPermissionFlags RequiredPermissions { get; set; } = DoorPermissionFlags.None;
+	public bool RequireAll { get; set; } = true;
 
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
@@ -35,13 +37,19 @@ public class SerializableDoor : SerializableObject
 		doorVariant.transform.localScale = Scale;
 
 		_prevType = DoorType;
-		doorVariant.NetworkTargetState = IsOpen;
-		doorVariant.ServerChangeLock(DoorLockReason.SpecialDoorFeature, IsLocked);
+		SetupDoor(doorVariant);
 
 		NetworkServer.UnSpawn(doorVariant.gameObject);
 		NetworkServer.Spawn(doorVariant.gameObject);
 
 		return doorVariant.gameObject;
+	}
+
+	public void SetupDoor(DoorVariant doorVariant)
+	{
+		doorVariant.NetworkTargetState = IsOpen;
+		doorVariant.ServerChangeLock(DoorLockReason.SpecialDoorFeature, IsLocked);
+		doorVariant.RequiredPermissions = new DoorPermissionsPolicy(RequiredPermissions, RequireAll);
 	}
 
 	private DoorVariant DoorPrefab
