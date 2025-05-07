@@ -130,7 +130,27 @@ public class Modify : ICommand
 			}
 			catch (Exception)
 			{
-				response = $"\"{arguments.At(1)}\" is not a valid argument! The value should be a {foundProperty.PropertyType} type.";
+				StringBuilder sb = StringBuilderPool.Shared.Rent();
+				if (arguments.Count > 1)
+				{
+					sb.Append($"\"{arguments.At(1)}\" is not a valid argument!");
+				}
+
+				if (foundProperty.PropertyType.IsEnum)
+				{
+					sb.AppendLine();
+					sb.Append($"{foundProperty.PropertyType.ToString().Split('.').Last()} values (use either text name or number, sum numbers for multiple flags)");
+					sb.AppendLine();
+					foreach (object value in Enum.GetValues(foundProperty.PropertyType))
+					{
+						sb.Append($"- {value} = {Enum.Format(foundProperty.PropertyType, value, "d")}");
+						sb.AppendLine();
+					}
+
+					sb.Remove(sb.Length - 1, 1);
+				}
+
+				response = StringBuilderPool.Shared.ToStringReturn(sb);
 				return false;
 			}
 		}
