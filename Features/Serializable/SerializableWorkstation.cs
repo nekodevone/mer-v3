@@ -32,8 +32,8 @@ public class SerializableWorkstation : SerializableObject
 			structurePositionSync.Network_rotationY = (sbyte)Mathf.RoundToInt(workstation.transform.rotation.eulerAngles.y / 5.625f);
 		}
 
-		if (instance == null)
-			NetworkServer.Spawn(workstation.gameObject);
+		NetworkServer.UnSpawn(workstation.gameObject);
+		NetworkServer.Spawn(workstation.gameObject);
 
 		return workstation.gameObject;
 	}
