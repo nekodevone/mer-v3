@@ -5,7 +5,6 @@ using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
-using Logger = LabApi.Features.Console.Logger;
 
 namespace ProjectMER.Events.Handlers.Internal;
 

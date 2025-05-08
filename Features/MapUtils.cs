@@ -3,7 +3,6 @@ using ProjectMER.Features.Serializable;
 using ProjectMER.Features.Serializable.Schematics;
 using Utf8Json;
 using YamlDotNet.Core;
-using Logger = LabApi.Features.Console.Logger;
 
 namespace ProjectMER.Features;
 
