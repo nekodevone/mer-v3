@@ -24,6 +24,51 @@ public class SchematicObject : MonoBehaviour
 	/// Gets a schematic directory path.
 	/// </summary>
 	public string DirectoryPath { get; private set; }
+	
+	/// <summary>
+	/// Gets or sets the global position of the object.
+	/// </summary>
+	public Vector3 Position
+	{
+		get => transform.position;
+		set
+		{
+			transform.position = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the global rotation of the object.
+	/// </summary>
+	public Quaternion Rotation
+	{
+		get => transform.rotation;
+		set
+		{
+			transform.rotation = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the global euler angles of the object.
+	/// </summary>
+	public Vector3 EulerAngles
+	{
+		get => Rotation.eulerAngles;
+		set => Rotation = Quaternion.Euler(value);
+	}
+
+	/// <summary>
+	/// Gets or sets the scale of the object.
+	/// </summary>
+	public Vector3 Scale
+	{
+		get => transform.localScale;
+		set
+		{
+			transform.localScale = value;
+		}
+	}
 
 	public IReadOnlyList<GameObject> AttachedBlocks => _attachedBlocks;
 
