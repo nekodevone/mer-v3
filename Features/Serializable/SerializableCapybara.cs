@@ -1,9 +1,8 @@
-using System;
-using AdminToys;
 using LabApi.Features.Wrappers;
 using Mirror;
 using ProjectMER.Features.Extensions;
 using UnityEngine;
+using CapybaraToy = AdminToys.CapybaraToy;
 
 namespace ProjectMER.Features.Serializable;
 
