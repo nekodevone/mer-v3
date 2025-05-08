@@ -48,7 +48,7 @@ public class SchematicBlockData
 		Transform transform = gameObject.transform;
 		transform.SetParent(parentTransform);
 		transform.SetLocalPositionAndRotation(Position, Quaternion.Euler(Rotation));
-		transform.localScale = BlockType == BlockType.Empty ? Vector3.one : Scale;
+		transform.localScale = Scale;
 
 		return gameObject;
 	}
