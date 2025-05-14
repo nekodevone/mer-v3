@@ -25,7 +25,7 @@ public class ToolGunItem
 		{ ToolGunObjectType.PlayerSpawnpoint, typeof(SerializablePlayerSpawnpoint) },
 		{ ToolGunObjectType.Capybara, typeof(SerializableCapybara) },
 		{ ToolGunObjectType.Schematic, typeof(SerializableSchematic) },
-		{ ToolGunObjectType.Camera, typeof(SerializableCamera) },
+		{ ToolGunObjectType.Camera, typeof(SerializableScp079Camera) },
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
 	};
 

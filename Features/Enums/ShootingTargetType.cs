@@ -2,7 +2,7 @@
 
 public enum TargetType
 {
-    TargetSport = 0,
-    TargetDBoy = 1,
-    TargetBinary = 2
+    Sport = 0,
+    ClassD = 1,
+    Binary = 2
 }

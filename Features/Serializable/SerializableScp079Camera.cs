@@ -8,9 +8,9 @@ using CameraType = ProjectMER.Features.Enums.CameraType;
 
 namespace ProjectMER.Features.Serializable;
 
-public class SerializableCamera : SerializableObject
+public class SerializableScp079Camera : SerializableObject
 {
-	public CameraType CameraType { get; set; } = CameraType.LczCamera;
+	public CameraType CameraType { get; set; } = CameraType.Lcz;
 	public string Label { get; set; } = "CustomCamera";
 
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
@@ -53,11 +53,11 @@ public class SerializableCamera : SerializableObject
 		{
 			Scp079CameraToy prefab = CameraType switch
 			{
-				CameraType.LczCamera => PrefabManager.LczCameraToy,
-				CameraType.HczCamera => PrefabManager.HczCameraToy,
-				CameraType.EzCamera => PrefabManager.EzCameraToy,
-				CameraType.EzArmCamera => PrefabManager.EzArmCameraToy,
-				CameraType.SzCamera => PrefabManager.SzCameraToy,
+				CameraType.Lcz => PrefabManager.LczCameraToy,
+				CameraType.Hcz => PrefabManager.HczCameraToy,
+				CameraType.Ez => PrefabManager.EzCameraToy,
+				CameraType.EzArm => PrefabManager.EzArmCameraToy,
+				CameraType.Sz => PrefabManager.SzCameraToy,
 				_ => throw new InvalidOperationException(),
 			};
 

@@ -9,7 +9,8 @@ namespace ProjectMER.Features.Serializable;
 
 public class SerializableShootingTarget : SerializableObject
 {
-	public TargetType TargetType { get; set; } = TargetType.TargetDBoy;
+	public TargetType TargetType { get; set; } = TargetType.ClassD;
+	
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
 		ShootingTarget shootingTarget = instance == null ? UnityEngine.Object.Instantiate(TargetPrefab) : instance.GetComponent<ShootingTarget>();
@@ -33,9 +34,9 @@ public class SerializableShootingTarget : SerializableObject
 		{
 			ShootingTarget prefab = TargetType switch
 			{
-				TargetType.TargetBinary => PrefabManager.ShootingTargetBinary,
-				TargetType.TargetDBoy => PrefabManager.ShootingTargetDBoy,
-				TargetType.TargetSport => PrefabManager.ShootingTargetSport,
+				TargetType.Binary => PrefabManager.ShootingTargetBinary,
+				TargetType.ClassD => PrefabManager.ShootingTargetDBoy,
+				TargetType.Sport => PrefabManager.ShootingTargetSport,
 				_ => throw new InvalidOperationException(),
 			};
 
