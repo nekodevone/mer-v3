@@ -32,20 +32,20 @@ public class SerializableScp079Camera : SerializableObject
 		cameraVariant.transform.SetPositionAndRotation(position, rotation);
 		cameraVariant.transform.localScale = Scale;
 		cameraVariant.NetworkScale = cameraVariant.transform.localScale;
-		
+
 		_prevIndex = Index;
 		_prevType = CameraType;
-		
+
 		cameraVariant.NetworkMovementSmoothing = 60;
 		cameraVariant.NetworkLabel = Label;
 		cameraVariant.NetworkRoom = room == null ? LabApi.Features.Wrappers.Room.Get(RoomName.Outside).First().Base : room.Base;
 
-		NetworkServer.UnSpawn(cameraVariant.gameObject);
-		NetworkServer.Spawn(cameraVariant.gameObject);
+		if (instance == null)
+			NetworkServer.Spawn(cameraVariant.gameObject);
 
 		return cameraVariant.gameObject;
 	}
-	
+
 
 	private Scp079CameraToy CameraPrefab
 	{
