@@ -2,13 +2,13 @@ namespace ProjectMER.Features.Enums;
 
 public enum ToolGunObjectType
 {
-	Primitive = 0,
-	Light = 1,
-	Door = 2,
-	Workstation = 3,
-	PlayerSpawnpoint = 4,
-	Capybara = 5,
-	Schematic = 6,
+	Schematic = 0,
+	Primitive = 1,
+	Light = 2,
+	Door = 3,
+	Workstation = 4,
+	PlayerSpawnpoint = 5,
+	Capybara = 6,
 	Scp079Camera = 7,
 	ShootingTarget = 8
 }

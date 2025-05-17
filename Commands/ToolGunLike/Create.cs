@@ -26,7 +26,6 @@ public class Create : ICommand
 	{
 		Player player = Player.Get(sender)!;
 
-		int i = 0;
 		if (arguments.Count == 0)
 		{
 			StringBuilder sb = StringBuilderPool.Shared.Rent();
@@ -39,9 +38,8 @@ public class Create : ICommand
 				if (objectType == ToolGunObjectType.Schematic)
 					continue;
 
-				sb.Append($"- {objectType} ({i})");
+				sb.Append($"- {objectType} ({(int)objectType})");
 				sb.AppendLine();
-				i++;
 			}
 
 			sb.AppendLine();
