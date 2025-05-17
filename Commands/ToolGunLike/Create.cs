@@ -2,6 +2,7 @@ using System.Text;
 using CommandSystem;
 using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
+using ProjectMER.Configs;
 using ProjectMER.Features;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.ToolGun;
@@ -77,6 +78,9 @@ public class Create : ICommand
 		if (Enum.TryParse(objectName, true, out ToolGunObjectType parsedEnum) && Enum.IsDefined(typeof(ToolGunObjectType), parsedEnum))
 		{
 			ToolGunHandler.CreateObject(position, parsedEnum);
+			if (Config.AutoSelect)
+				ToolGunHandler.SelectObject(player, MapUtils.UntitledMap.SpawnedObjects.Last());
+
 			response = $"{objectName} has been successfully spawned!";
 			return true;
 		}
@@ -92,7 +96,12 @@ public class Create : ICommand
 		}
 
 		ToolGunHandler.CreateObject(position, ToolGunObjectType.Schematic, objectName);
+		if (Config.AutoSelect)
+			ToolGunHandler.SelectObject(player, MapUtils.UntitledMap.SpawnedObjects.Last());
+
 		response = $"{objectName} has been successfully spawned!";
 		return true;
 	}
+
+	private static Config Config => ProjectMER.Singleton.Config!;
 }
