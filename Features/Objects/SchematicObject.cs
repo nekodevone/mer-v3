@@ -5,6 +5,7 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Utf8Json;
+using Utils.NonAllocLINQ;
 using Object = UnityEngine.Object;
 
 namespace ProjectMER.Features.Objects;
@@ -22,7 +23,7 @@ public class SchematicObject : MonoBehaviour
 	/// Gets a schematic directory path.
 	/// </summary>
 	public string DirectoryPath { get; private set; }
-	
+
 	/// <summary>
 	/// Gets or sets the global position of the object.
 	/// </summary>
@@ -68,15 +69,29 @@ public class SchematicObject : MonoBehaviour
 		}
 	}
 
-	public IReadOnlyList<GameObject> AttachedBlocks => _attachedBlocks;
+	public IReadOnlyList<GameObject> AttachedBlocks
+	{
+		get
+		{
+			if (_attachedBlocks.Count == 0 || _attachedBlocks.Any(x => x == null))
+			{
+				GetComponentsInChildren(_attachedBlocks);
+				_networkIdentities.Clear();
+				_adminToyBases.Clear();
+			}
+
+			return _attachedBlocks;
+		}
+	}
 
 	public IReadOnlyList<NetworkIdentity> NetworkIdentities
 	{
 		get
 		{
-			if (_networkIdentities.Count > 0)
+			if (_networkIdentities.Count > 0 && _networkIdentities.All(x => x != null))
 				return _networkIdentities;
 
+			_networkIdentities.Clear();
 			foreach (GameObject block in AttachedBlocks)
 			{
 				if (block.TryGetComponent(out NetworkIdentity networkIdentity))
@@ -91,9 +106,10 @@ public class SchematicObject : MonoBehaviour
 	{
 		get
 		{
-			if (_adminToyBases.Count > 0)
+			if (_adminToyBases.Count > 0 && _adminToyBases.All(x => x != null))
 				return _adminToyBases;
 
+			_adminToyBases.Clear();
 			foreach (NetworkIdentity netId in NetworkIdentities)
 			{
 				if (netId.TryGetComponent(out AdminToyBase adminToyBase))
@@ -150,7 +166,7 @@ public class SchematicObject : MonoBehaviour
 		GameObject gameObject = block.Create(this, parentTransform);
 		NetworkServer.Spawn(gameObject);
 
-		_attachedBlocks.Add(gameObject);
+		// _attachedBlocks.Add(gameObject);
 		ObjectFromId.Add(block.ObjectId, gameObject.transform);
 
 		if (block.BlockType != BlockType.Light && TryGetAnimatorController(block.AnimatorName, out RuntimeAnimatorController animatorController))
@@ -238,8 +254,8 @@ public class SchematicObject : MonoBehaviour
 
 	internal Dictionary<int, Transform> ObjectFromId = new();
 
-	private List<GameObject> _attachedBlocks = new();
-	private List<NetworkIdentity> _networkIdentities = new();
-	private List<AdminToyBase> _adminToyBases = new();
+	private List<GameObject> _attachedBlocks = [];
+	private readonly List<NetworkIdentity> _networkIdentities = [];
+	private readonly List<AdminToyBase> _adminToyBases = [];
 	private Dictionary<GameObject, RuntimeAnimatorController> _animators = new();
 }
