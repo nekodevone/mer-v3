@@ -1,6 +1,5 @@
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
-using LabApi.Features.Console;
 using MEC;
 using ProjectMER.Configs;
 using ProjectMER.Features;
@@ -27,7 +26,7 @@ public class MapOnEventHandlers : CustomEventsHandler
 			string action = split[0];
 			string argument = split[1];
 
-			switch (action)
+			switch (action.ToLowerInvariant())
 			{
 				case "load":
 				{
