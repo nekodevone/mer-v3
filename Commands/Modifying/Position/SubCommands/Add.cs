@@ -1,6 +1,6 @@
 ﻿using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
@@ -17,7 +17,7 @@ public class Add : ICommand
 	public string Command => "add";
 
 	/// <inheritdoc/>
-	public string[] Aliases { get; } = Array.Empty<string>();
+	public string[] Aliases { get; } = [];
 
 	/// <inheritdoc/>
 	public string Description => string.Empty;
@@ -25,6 +25,12 @@ public class Add : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.position"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.position";
+			return false;
+		}
+
 		Player? player = Player.Get(sender);
 		if (player is null)
 		{

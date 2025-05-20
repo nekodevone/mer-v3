@@ -1,4 +1,5 @@
 using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
@@ -11,13 +12,19 @@ public class Delete : ICommand
 	public string Command => "delete";
 
 	/// <inheritdoc/>
-	public string[] Aliases { get; } = { "del", "remove", "rm" };
+	public string[] Aliases { get; } = ["del", "remove", "rm"];
 
 	/// <inheritdoc/>
 	public string Description => "Deletes the object which you are looking at.";
 
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.{Command}"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
+			return false;
+		}
+
 		Player? player = Player.Get(sender);
 		if (player is null)
 		{

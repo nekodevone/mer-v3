@@ -1,4 +1,5 @@
 ﻿using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
@@ -16,7 +17,7 @@ public class Set : ICommand
 	public string Command => "set";
 
 	/// <inheritdoc/>
-	public string[] Aliases { get; } = Array.Empty<string>();
+	public string[] Aliases { get; } = [];
 
 	/// <inheritdoc/>
 	public string Description => string.Empty;
@@ -24,6 +25,12 @@ public class Set : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.rotation"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.rotation";
+			return false;
+		}
+
 		Player? player = Player.Get(sender);
 		if (player is null)
 		{

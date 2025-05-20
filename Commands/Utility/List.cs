@@ -1,5 +1,6 @@
 using System.Text;
 using CommandSystem;
+using LabApi.Features.Permissions;
 using NorthwoodLib.Pools;
 using ProjectMER.Features;
 
@@ -25,6 +26,12 @@ public class List : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.{Command}"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
+			return false;
+		}
+
 		StringBuilder builder = StringBuilderPool.Shared.Rent();
 
 		builder.AppendLine();
@@ -46,17 +53,6 @@ public class List : ICommand
 			builder.AppendLine();
 			builder.Append($"- <color=yellow>{schematicName}</color>");
 		}
-		/*
-		foreach (string directoryPath in Directory.GetDirectories(ProjectMER.SchematicsDir))
-		{
-			string jsonFilePath = Directory.GetFiles(directoryPath).FirstOrDefault(x => x.EndsWith(".json") && !x.Contains('-'));
-			if (jsonFilePath is null)
-				continue;
-
-			builder.AppendLine();
-			builder.Append($"- <color=yellow>{Path.GetFileNameWithoutExtension(jsonFilePath)}</color>");
-		}
-		*/
 
 		response = StringBuilderPool.Shared.ToStringReturn(builder);
 		return true;

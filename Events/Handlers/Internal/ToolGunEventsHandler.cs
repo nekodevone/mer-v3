@@ -1,6 +1,5 @@
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.CustomHandlers;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using MEC;
 using ProjectMER.Features.Extensions;

@@ -1,5 +1,6 @@
 using System.Text;
 using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using ProjectMER.Configs;
@@ -17,7 +18,7 @@ public class Create : ICommand
 	public string Command => "create";
 
 	/// <inheritdoc/>
-	public string[] Aliases { get; } = { "cr", "spawn" };
+	public string[] Aliases { get; } = ["cr", "spawn"];
 
 	/// <inheritdoc/>
 	public string Description => "Creates a selected object at the point you are looking at.";
@@ -25,7 +26,13 @@ public class Create : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
-		Player player = Player.Get(sender)!;
+		if (!sender.HasAnyPermission($"mpr.{Command}"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
+			return false;
+		}
+
+		Player? player = Player.Get(sender)!;
 
 		if (arguments.Count == 0)
 		{
@@ -78,7 +85,7 @@ public class Create : ICommand
 		if (Enum.TryParse(objectName, true, out ToolGunObjectType parsedEnum) && Enum.IsDefined(typeof(ToolGunObjectType), parsedEnum))
 		{
 			ToolGunHandler.CreateObject(position, parsedEnum);
-			if (Config.AutoSelect)
+			if (Config.AutoSelect && player is not null)
 				ToolGunHandler.SelectObject(player, MapUtils.UntitledMap.SpawnedObjects.Last());
 
 			response = $"{objectName} has been successfully spawned!";
@@ -96,7 +103,7 @@ public class Create : ICommand
 		}
 
 		ToolGunHandler.CreateObject(position, ToolGunObjectType.Schematic, objectName);
-		if (Config.AutoSelect)
+		if (Config.AutoSelect && player is not null)
 			ToolGunHandler.SelectObject(player, MapUtils.UntitledMap.SpawnedObjects.Last());
 
 		response = $"{objectName} has been successfully spawned!";

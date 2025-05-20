@@ -1,4 +1,5 @@
 using CommandSystem;
+using LabApi.Features.Permissions;
 using ProjectMER.Features;
 
 namespace ProjectMER.Commands.Map;
@@ -13,6 +14,12 @@ public class Unload : ICommand
 
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.{Command}"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
+			return false;
+		}
+
 		if (arguments.Count == 0)
 		{
 			foreach (string mapName in MapUtils.LoadedMaps.Keys.ToList())

@@ -1,4 +1,5 @@
 ﻿using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
@@ -22,6 +23,12 @@ public class Bring : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.position"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.position";
+			return false;
+		}
+
 		Player? player = Player.Get(sender);
 		if (player is null)
 		{

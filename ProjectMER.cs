@@ -1,7 +1,6 @@
 global using Logger = LabApi.Features.Console.Logger;
 
 using LabApi.Events.CustomHandlers;
-using LabApi.Loader;
 using LabApi.Loader.Features.Paths;
 using LabApi.Loader.Features.Plugins;
 using ProjectMER.Configs;

@@ -1,6 +1,6 @@
 ﻿using CommandSystem;
+using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
-using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
@@ -22,6 +22,12 @@ public class Add : ICommand
 	/// <inheritdoc/>
 	public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
+		if (!sender.HasAnyPermission($"mpr.scale"))
+		{
+			response = $"You don't have permission to execute this command. Required permission: mpr.scale";
+			return false;
+		}
+
 		Player? player = Player.Get(sender);
 		if (player is null)
 		{
