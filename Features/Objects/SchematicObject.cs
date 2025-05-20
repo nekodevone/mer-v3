@@ -73,11 +73,16 @@ public class SchematicObject : MonoBehaviour
 	{
 		get
 		{
-			if (_attachedBlocks.Count == 0 || _attachedBlocks.Any(x => x == null))
+			if (_attachedBlocks.Count != 0 && _attachedBlocks.All(x => x != null))
+				return _attachedBlocks;
+
+			_attachedBlocks.Clear();
+			foreach (Transform transform in GetComponentsInChildren<Transform>())
 			{
-				GetComponentsInChildren(_attachedBlocks);
-				_networkIdentities.Clear();
-				_adminToyBases.Clear();
+				if (transform == this.transform)
+					continue;
+
+				_attachedBlocks.Add(transform.gameObject);
 			}
 
 			return _attachedBlocks;
@@ -252,10 +257,10 @@ public class SchematicObject : MonoBehaviour
 		Schematic.OnSchematicDestroyed(new(this, Name));
 	}
 
-	internal Dictionary<int, Transform> ObjectFromId = new();
+	internal Dictionary<int, Transform> ObjectFromId = [];
 
-	private List<GameObject> _attachedBlocks = [];
+	private readonly List<GameObject> _attachedBlocks = [];
 	private readonly List<NetworkIdentity> _networkIdentities = [];
 	private readonly List<AdminToyBase> _adminToyBases = [];
-	private Dictionary<GameObject, RuntimeAnimatorController> _animators = new();
+	private readonly Dictionary<GameObject, RuntimeAnimatorController> _animators = [];
 }
