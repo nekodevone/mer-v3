@@ -26,7 +26,7 @@ public static class ToolGunUI
 		{
 			instance = mapEditorObject.GetType().GetField("Base").GetValue(mapEditorObject);
 			properties = instance.GetType().GetProperties().ToList();
-			offset = properties.Count - properties.Count(x => Attribute.IsDefined(x, typeof(YamlIgnoreAttribute))) + 2;
+			offset = properties.Count - properties.Count(x => Attribute.IsDefined(x, typeof(YamlIgnoreAttribute))) + 2 + 2;
 		}
 
 		for (int i = 0; i < 36 - offset; i++)
@@ -35,13 +35,21 @@ public static class ToolGunUI
 			sb.AppendLine();
 		}
 
-		foreach (string property in properties.GetColoredProperties(instance))
+		if (mapEditorObject != null)
 		{
-			sb.Append($"<size=50%>");
-			sb.Append(property);
-			sb.Append("</size>");
+			sb.Append($"<size=50%>MapName: <color=yellow><b>{mapEditorObject.MapName}</b></color></size>");
+			sb.AppendLine();
+			sb.Append($"<size=50%>ID: <color=yellow><b>{mapEditorObject.Id}</b></color></size>");
 			sb.AppendLine();
 		}
+
+		foreach (string property in properties.GetColoredProperties(instance))
+			{
+				sb.Append($"<size=50%>");
+				sb.Append(property);
+				sb.Append("</size>");
+				sb.AppendLine();
+			}
 
 		if (offset > 0)
 			sb.AppendLine();
