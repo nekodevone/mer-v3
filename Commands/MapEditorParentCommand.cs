@@ -31,6 +31,7 @@ public class MapEditorParentCommand : ParentCommand
         RegisterCommand(new ToggleToolGun());
         RegisterCommand(new List());
         RegisterCommand(new Indicators());
+        RegisterCommand(new Merge());
 
         RegisterCommand(new Position());
         RegisterCommand(new Rotation());

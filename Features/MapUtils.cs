@@ -46,6 +46,20 @@ public static class MapUtils
 		return true;
 	}
 
+	public static bool TryGetMapData(string mapName, out MapSchematic mapSchematic)
+	{
+		try
+		{
+			mapSchematic = GetMapData(mapName);
+			return true;
+		}
+		catch (Exception)
+		{
+			mapSchematic = null!;
+			return false;
+		}
+	}
+
 	public static MapSchematic GetMapData(string mapName)
 	{
 		MapSchematic map;
