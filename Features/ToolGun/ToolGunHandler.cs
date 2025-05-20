@@ -33,7 +33,7 @@ public static class ToolGunHandler
 		string roomId = room.GetRoomStringId();
 
 		MapSchematic map = MapUtils.UntitledMap;
-		string id = Guid.NewGuid().ToString();
+		string id = Guid.NewGuid().ToString("N").Substring(0, 8);
 
 		SerializableObject serializableObject = (SerializableObject)Activator.CreateInstance(ToolGunItem.TypesDictionary[objectType]);
 		serializableObject.Room = roomId;
