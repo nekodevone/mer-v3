@@ -47,6 +47,12 @@ public static class ToolGunHandler
 					break;
 				}
 
+			case SerializableTeleport _:
+				{
+					serializableObject.Position = position + Vector3.up;
+					break;
+				}
+
 			case SerializableSchematic serializableSchematic:
 				{
 					serializableObject.Position = position;

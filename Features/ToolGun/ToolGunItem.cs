@@ -27,6 +27,7 @@ public class ToolGunItem
 		{ ToolGunObjectType.Schematic, typeof(SerializableSchematic) },
 		{ ToolGunObjectType.Scp079Camera, typeof(SerializableScp079Camera) },
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
+		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
 	};
 
 	private ToolGunObjectType _selectedObjectToSpawn;
