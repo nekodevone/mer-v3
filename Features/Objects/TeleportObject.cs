@@ -33,7 +33,7 @@ public class TeleportObject : MonoBehaviour
 		return null;
 	}
 
-	public void OnTriggerStay(Collider other)
+	public void OnTriggerEnter(Collider other)
 	{
 		Player? player = Player.Get(other.gameObject);
 		if (player is null)
