@@ -1,4 +1,5 @@
 using AdminToys;
+using GameCore;
 using InventorySystem.Items.Firearms.Attachments;
 using LabApi.Features.Wrappers;
 using ProjectMER.Events.Handlers.Internal;
@@ -40,7 +41,7 @@ public class SchematicBlockData
 			BlockType.Light => CreateLight(),
 			BlockType.Pickup => CreatePickup(schematicObject),
 			BlockType.Workstation => CreateWorkstation(),
-			_ => throw new NotImplementedException(),
+			_ => CreateEmpty(true)
 		};
 
 		gameObject.name = Name;
@@ -53,8 +54,11 @@ public class SchematicBlockData
 		return gameObject;
 	}
 
-	private GameObject CreateEmpty()
+	private GameObject CreateEmpty(bool fallback = false)
 	{
+		if (fallback)
+			Logger.Warn($"{BlockType} is not yet implemented. Object will be an empty GameObject instead.");
+
 		PrimitiveObjectToy primitive = GameObject.Instantiate(PrefabManager.PrimitiveObjectPrefab);
 		primitive.NetworkPrimitiveFlags = PrimitiveFlags.None;
 		primitive.NetworkMovementSmoothing = 60;
