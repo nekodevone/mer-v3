@@ -14,18 +14,18 @@ public static class RoomExtensions
 	{
 		string[] split = serializableObject.Room.Split('_');
 		if (split.Length != 3)
-			return ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Name == RoomName.Outside));
+			return ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Base != null && x.Name == RoomName.Outside));
 
 		FacilityZone facilityZone = (FacilityZone)Enum.Parse(typeof(FacilityZone), split[0], true);
 		RoomShape roomShape = (RoomShape)Enum.Parse(typeof(RoomShape), split[1], true);
 		RoomName roomName = (RoomName)Enum.Parse(typeof(RoomName), split[2], true);
 
-		return ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == facilityZone && x.Shape == roomShape && x.Name == roomName));
+		return ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Base != null && x.Zone == facilityZone && x.Shape == roomShape && x.Name == roomName));
 	}
 
 	public static int GetRoomIndex(this Room room)
 	{
-		List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
+		List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Base != null && x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
 		int index = list.IndexOf(room);
 		ListPool<Room>.Shared.Return(list);
 		return index;

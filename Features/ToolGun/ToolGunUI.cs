@@ -131,7 +131,7 @@ public static class ToolGunUI
 		if (!Room.TryGetRoomAtPosition(player.Camera.transform.position, out Room? room))
 			return "Unknown";
 
-		List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
+		List<Room> list = ListPool<Room>.Shared.Rent(Room.List.Where(x => x.Base != null && x.Zone == room.Zone && x.Shape == room.Shape && x.Name == room.Name));
 
 		string roomString;
 		if (list.Count == 1)
