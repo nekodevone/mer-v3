@@ -20,6 +20,8 @@ public class MapSchematic
 
 	public string Name;
 
+	public bool IsDirty;
+
 	public Dictionary<string, SerializablePrimitive> Primitives { get; set; } = [];
 
 	public Dictionary<string, SerializableLight> Lights { get; set; } = [];
@@ -120,6 +122,9 @@ public class MapSchematic
 
 	public bool TryAddElement<T>(string id, T serializableObject) where T : SerializableObject
 	{
+		bool dirtyPrevValue = IsDirty;
+		IsDirty = true;
+		
 		if (Primitives.TryAdd(id, serializableObject))
 			return true;
 
@@ -150,11 +155,15 @@ public class MapSchematic
 		if (Teleports.TryAdd(id, serializableObject))
 			return true;
 
+		IsDirty = dirtyPrevValue;
 		return false;
 	}
 
 	public bool TryRemoveElement(string id)
 	{
+		bool dirtyPrevValue = IsDirty;
+		IsDirty = true;
+		
 		if (Primitives.Remove(id))
 			return true;
 
@@ -185,6 +194,7 @@ public class MapSchematic
 		if (Teleports.Remove(id))
 			return true;
 		
+		IsDirty = dirtyPrevValue;
 		return false;
 	}
 }

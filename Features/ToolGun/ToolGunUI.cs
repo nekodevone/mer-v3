@@ -37,9 +37,9 @@ public static class ToolGunUI
 
 		if (mapEditorObject != null)
 		{
-			sb.Append($"<size=50%>MapName: <color=yellow><b>{mapEditorObject.MapName}</b></color></size>");
+			sb.Append($"<size=50%>MapName: {MapUtils.GetColoredMapName(mapEditorObject.MapName)}</size>");
 			sb.AppendLine();
-			sb.Append($"<size=50%>ID: <color=yellow><b>{mapEditorObject.Id}</b></color></size>");
+			sb.Append($"<size=50%>ID: {MapUtils.GetColoredString(mapEditorObject.Id)}</size>");
 			sb.AppendLine();
 		}
 

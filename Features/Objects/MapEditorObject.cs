@@ -16,6 +16,8 @@ public class MapEditorObject : MonoBehaviour
 
 	public Room Room { get; protected set; }
 
+	public MapSchematic Map => MapUtils.LoadedMaps[MapName];
+
 	public MapEditorObject Init(SerializableObject serializableObject, string mapName, string id, Room room)
 	{
 		Base = serializableObject;
@@ -28,6 +30,8 @@ public class MapEditorObject : MonoBehaviour
 
 	public virtual void UpdateObjectAndCopies()
 	{
+		Map.IsDirty = true;
+
 		if (Base.RequiresReloading)
 		{
 			Base._prevIndex = Base.Index;
@@ -43,12 +47,13 @@ public class MapEditorObject : MonoBehaviour
 				map.SpawnObject(Id, Base);
 
 				if (player is not null)
-					ToolGunHandler.SelectObject(player, MapUtils.LoadedMaps[MapName].SpawnedObjects.Find(x => x.Id == Id));
+					ToolGunHandler.SelectObject(player, Map.SpawnedObjects.Find(x => x.Id == Id));
 			});
+
 			return;
 		}
 
-		foreach (MapEditorObject copy in MapUtils.LoadedMaps[MapName].SpawnedObjects.ToList())
+		foreach (MapEditorObject copy in Map.SpawnedObjects.ToList())
 		{
 			if (copy.Id != Id)
 				continue;

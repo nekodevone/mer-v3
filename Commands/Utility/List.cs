@@ -3,6 +3,8 @@ using CommandSystem;
 using LabApi.Features.Permissions;
 using NorthwoodLib.Pools;
 using ProjectMER.Features;
+using ProjectMER.Features.Serializable;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Commands.Utility;
 
@@ -38,11 +40,20 @@ public class List : ICommand
 		builder.AppendLine();
 		builder.Append("<color=green><b>List of maps:</b></color>");
 
+		List<MapStatus> mapStatuses = ListPool<MapStatus>.Shared.Rent();
+
 		foreach (string filePath in Directory.GetFiles(ProjectMER.MapsDir))
+			mapStatuses.AddIfNotContains(new MapStatus(Path.GetFileNameWithoutExtension(filePath)));
+		foreach (string loaderMapName in MapUtils.LoadedMaps.Keys)
+			mapStatuses.AddIfNotContains(new MapStatus(loaderMapName));
+
+		foreach (MapStatus mapStatus in mapStatuses.OrderByDescending(x => x.IsLoaded).ThenByDescending(x => x.IsDirty))
 		{
 			builder.AppendLine();
-			builder.Append($"- <color=yellow>{Path.GetFileNameWithoutExtension(filePath)}</color>");
+			builder.Append($"- {mapStatus}");
 		}
+
+		ListPool<MapStatus>.Shared.Return(mapStatuses);
 
 		builder.AppendLine();
 		builder.AppendLine();
@@ -56,5 +67,34 @@ public class List : ICommand
 
 		response = StringBuilderPool.Shared.ToStringReturn(builder);
 		return true;
+	}
+
+	private readonly struct MapStatus
+	{
+		public MapStatus(string mapName)
+		{
+			MapName = mapName;
+			IsLoaded = MapUtils.LoadedMaps.TryGetValue(MapName, out MapSchematic map);
+			IsDirty = map != null && map.IsDirty;
+		}
+
+		public readonly string MapName;
+		public readonly bool IsLoaded;
+		public readonly bool IsDirty;
+
+		public override readonly string ToString()
+		{
+			StringBuilder sb = StringBuilderPool.Shared.Rent(MapUtils.GetColoredMapName(MapName));
+			sb.Append(" ");
+
+			if (IsLoaded && !IsDirty)
+				sb.Append("<color=green>(loaded, saved)</color>");
+			else if (IsLoaded && IsDirty)
+				sb.Append("<color=red>(loaded, not saved)</color>");
+			else
+				sb.Append("<color=grey>(unloaded)</color>");
+
+			return StringBuilderPool.Shared.ToStringReturn(sb);
+		}
 	}
 }

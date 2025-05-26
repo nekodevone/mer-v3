@@ -49,13 +49,28 @@ public static class ReflectionExtensions
 			else if (typeof(ICollection).IsAssignableFrom(property.PropertyType))
 			{
 				StringBuilder sb = StringBuilderPool.Shared.Rent();
-				foreach (object? item in (ICollection)property.GetValue(instance))
-					sb.Append($"{item}, ");
+				ICollection collection = (ICollection)property.GetValue(instance);
+				if (collection.GetType().GetGenericArguments()[0].IsEnum)
+				{
+					foreach (object? item in collection)
+						sb.Append($"{item} ");
 
-				if (sb.Length > 0)
-					sb.Remove(sb.Length - 2, 2);
+					if (sb.Length > 0)
+						sb.Remove(sb.Length - 1, 1);
 
-				yield return $"{property.Name}: <color=yellow><b>{StringBuilderPool.Shared.ToStringReturn(sb)}</b></color>";
+					sb.Insert(0, "<color=yellow><b>");
+					sb.Append("</b></color>");
+				}
+				else
+				{
+					foreach (object? item in collection)
+						sb.Append($"{MapUtils.GetColoredString(item.ToString())} ");
+
+					if (sb.Length > 0)
+						sb.Remove(sb.Length - 1, 1);
+				}
+
+				yield return $"{property.Name}: {StringBuilderPool.Shared.ToStringReturn(sb)}";
 			}
 			else
 			{

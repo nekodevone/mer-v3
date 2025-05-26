@@ -16,13 +16,28 @@ public static class MapUtils
 
 	public static void SaveMap(string mapName)
 	{
-		if (LoadedMaps.TryGetValue(mapName, out MapSchematic map))
+		if (mapName == UntitledMapName)
+			throw new InvalidOperationException("This map name is reserved for internal use!");
+
+		if (LoadedMaps.TryGetValue(mapName, out MapSchematic map)) // Map is already loaded
+		{
 			map.Merge(UntitledMap);
-		else
-			map = UntitledMap;
+		}
+		else if (TryGetMapData(mapName, out map)) // Map isn't loaded but map file exists
+		{
+			map.Merge(UntitledMap);
+		}
+		else // Map isn't loaded and map file doesn't exist
+		{
+			map = new MapSchematic(mapName).Merge(UntitledMap);
+		}
 
 		string path = Path.Combine(ProjectMER.MapsDir, $"{mapName}.yml");
 		File.WriteAllText(path, YamlParser.Serializer.Serialize(map));
+		map.IsDirty = false;
+
+		UnloadMap(UntitledMapName);
+		LoadMap(mapName);
 	}
 
 	public static void LoadMap(string mapName)
@@ -68,7 +83,6 @@ public static class MapUtils
 		if (!File.Exists(path))
 		{
 			string error = $"Failed to load map data: File {mapName}.yml does not exist!";
-			Logger.Error(error);
 			throw new FileNotFoundException(error);
 		}
 
@@ -80,7 +94,6 @@ public static class MapUtils
 		catch (YamlException e)
 		{
 			string error = $"Failed to load map data: File {mapName}.yml has YAML errors!\n{e.ToString().Split('\n')[0]}";
-			Logger.Error(error);
 			throw new YamlException(error);
 		}
 
@@ -153,4 +166,23 @@ public static class MapUtils
 	}
 
 	public static string[] GetAvailableSchematicNames() => Directory.GetFiles(ProjectMER.SchematicsDir, "*.json", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension).Where(x => !x.Contains('-')).ToArray();
+
+	public static string GetColoredMapName(string mapName)
+	{
+		if (mapName == UntitledMapName)
+			return $"<color=grey><b><i>{UntitledMapName}</i></b></color>";
+
+		bool isDirty = false;
+		if (LoadedMaps.TryGetValue(mapName, out MapSchematic mapSchematic))
+			isDirty = mapSchematic.IsDirty;
+
+		return isDirty ? $"<i>{GetColoredString(mapName)}</i>" : GetColoredString(mapName);
+	}
+
+	public static string GetColoredString(string s)
+	{
+		uint value = Math.Min(((uint)s.GetHashCode()) / 255, 16777215);
+		string colorHex = value.ToString("X6");
+		return $"<color=#{colorHex}><b>{s}</b></color>";
+	}
 }

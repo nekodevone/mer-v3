@@ -6,9 +6,12 @@ using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
+using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Commands.Modifying;
 
@@ -58,6 +61,10 @@ public class Modify : ICommand
 			sb.Append("Object properties:");
 			sb.AppendLine();
 			sb.AppendLine();
+			sb.Append($"MapName: {MapUtils.GetColoredMapName(mapEditorObject.MapName)}");
+			sb.AppendLine();
+			sb.Append($"ID: {MapUtils.GetColoredString(mapEditorObject.Id)}");
+			sb.AppendLine();
 			foreach (string property in properties.GetColoredProperties(instance))
 			{
 				sb.Append(property);
@@ -68,22 +75,88 @@ public class Modify : ICommand
 			return true;
 		}
 
-		PropertyInfo foundProperty = properties.FirstOrDefault(x => x.Name.ToLower().Contains(arguments.At(0).ToLower()));
+		if (arguments.Count < 2)
+		{
+			response = "Not enough arguments!";
+			return false;
+		}
 
+		string propertyName = arguments.At(0).ToUpperInvariant();
+		if (propertyName.Contains("MAP"))
+		{
+			string newMapName = arguments.At(1);
+			if (mapEditorObject.MapName == newMapName)
+			{
+				response = $"This object is already a part of this map!";
+				return false;
+			}
+
+			if (newMapName == MapUtils.UntitledMapName)
+			{
+				response = $"This map name is reserved for internal use!";
+				return false;
+			}
+
+			MapSchematic oldMap = mapEditorObject.Map;
+			if (!MapUtils.LoadedMaps.TryGetValue(newMapName, out MapSchematic newMap)) // Map is already loaded
+				if (!MapUtils.TryGetMapData(newMapName, out newMap)) // Map isn't loaded but map file exists
+				{ // Map isn't loaded and map file doesn't exist
+
+					newMap = new MapSchematic(newMapName);
+					MapUtils.LoadedMaps.Add(newMapName, newMap);
+				}
+
+
+			oldMap.TryRemoveElement(mapEditorObject.Id);
+			newMap.TryAddElement(mapEditorObject.Id, mapEditorObject.Base);
+
+			oldMap.Reload();
+			newMap.Reload();
+			response = "You've successfully modified the object's map!";
+			return true;
+		}
+		else if (propertyName == "ID")
+		{
+			string newId = arguments.At(1);
+
+			if (mapEditorObject.Map.SpawnedObjects.Any(x => x.Id == newId))
+			{
+				response = $"This ID is already used by an other object!";
+				return false;
+			}
+
+			mapEditorObject.Map.TryAddElement(newId, mapEditorObject.Base);
+			mapEditorObject.Map.TryRemoveElement(mapEditorObject.Id);
+			mapEditorObject.Map.Reload();
+			response = "You've successfully modified the object's ID!";
+			return true;
+		}
+
+		PropertyInfo? foundProperty = properties.FirstOrDefault(x => x.Name.ToUpperInvariant().Contains(propertyName));
 		if (foundProperty == null)
 		{
 			response = $"There isn't any object property that contains \"{arguments.At(0)}\" in it's name!";
 			return false;
 		}
 
+		bool result;
 		if (typeof(ICollection).IsAssignableFrom(foundProperty.PropertyType))
-		{
-			if (arguments.Count < 2)
-			{
-				response = "Not enough arguments!";
-				return false;
-			}
+			result = HandleCollection(out response);
+		else if (foundProperty.PropertyType != typeof(string))
+			result = HandleNonString(out response);
+		else result = HandleString(out response);
 
+		if (!result)
+			return false;
+
+		mapEditorObject.UpdateObjectAndCopies();
+		response = "You've successfully modified the object!";
+		return true;
+
+
+
+		bool HandleCollection(out string response)
+		{
 			object listInstance = foundProperty.GetValue(instance);
 			Type listType = foundProperty.PropertyType.GetInterfaces().First(x => x.IsGenericType).GetGenericArguments()[0];
 
@@ -126,9 +199,17 @@ public class Modify : ICommand
 						}
 						break;
 					}
+
+				default:
+					response = "Invalid arguments! Use add/remove.";
+					return false;
 			}
+
+			response = string.Empty;
+			return true;
 		}
-		else if (foundProperty.PropertyType != typeof(string))
+
+		bool HandleNonString(out string response)
 		{
 			try
 			{
@@ -160,29 +241,37 @@ public class Modify : ICommand
 				response = StringBuilderPool.Shared.ToStringReturn(sb);
 				return false;
 			}
+
+			response = string.Empty;
+			return true;
 		}
-		else // Property is a string
+
+		bool HandleString(out string response)
 		{
-			string spacedString = arguments.At(1);
+			if (arguments.Count < 2)
+			{
+				response = "You need to provide a string value!";
+				return false;
+			}
+
+			StringBuilder spacedStringBuilder = StringBuilderPool.Shared.Rent(arguments.At(1));
 			for (int i = 1; i < arguments.Count - 1; i++)
 			{
-				spacedString += $" {arguments.At(1 + i)}";
+				spacedStringBuilder.Append($" {arguments.At(1 + i)}");
 			}
 
 			try
 			{
-				foundProperty.SetValue(instance, TypeDescriptor.GetConverter(foundProperty.PropertyType).ConvertFromInvariantString(spacedString));
+				foundProperty.SetValue(instance, TypeDescriptor.GetConverter(foundProperty.PropertyType).ConvertFromInvariantString(StringBuilderPool.Shared.ToStringReturn(spacedStringBuilder)));
 			}
 			catch (Exception)
 			{
 				response = $"\"{arguments.At(1)}\" is not a valid argument! The value should be a {foundProperty.PropertyType} type.";
 				return false;
 			}
+
+			response = string.Empty;
+			return true;
 		}
-
-		mapEditorObject.UpdateObjectAndCopies();
-
-		response = "You've successfully modified the object!";
-		return true;
 	}
 }
