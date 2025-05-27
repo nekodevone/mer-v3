@@ -17,6 +17,8 @@ public class GenericEventsHandler : CustomEventsHandler
 		MapUtils.LoadedMaps.Clear();
 		ToolGunItem.ItemDictionary.Clear();
 		ToolGunHandler.PlayerSelectedObjectDict.Clear();
+		PickupEventsHandler.ButtonPickups.Clear();
+		PickupEventsHandler.PickupUsesLeft.Clear();
 	}
 
 	public override void OnPlayerSpawning(PlayerSpawningEventArgs ev)

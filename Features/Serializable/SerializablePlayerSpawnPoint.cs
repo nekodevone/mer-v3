@@ -19,7 +19,7 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		GameObject spawnpoint = instance ?? new GameObject("PlayerSpawnPoint");
+		GameObject spawnpoint = instance ?? new GameObject("PlayerSpawnpoint");
 		Vector3 position = room.GetAbsolutePosition(Position);
 		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;

@@ -30,12 +30,14 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableWorkstation> Workstations { get; set; } = [];
 
+	public Dictionary<string, SerializableItemSpawnpoint> ItemSpawnpoints { get; set; } = [];
+
 	public Dictionary<string, SerializablePlayerSpawnpoint> PlayerSpawnpoints { get; set; } = [];
 
 	public Dictionary<string, SerializableCapybara> Capybaras { get; set; } = [];
 
 	public Dictionary<string, SerializableScp079Camera> Scp079Cameras { get; set; } = [];
-	
+
 	public Dictionary<string, SerializableShootingTarget> ShootingTargets { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
@@ -50,6 +52,7 @@ public class MapSchematic
 		Lights.AddRange(other.Lights);
 		Doors.AddRange(other.Doors);
 		Workstations.AddRange(other.Workstations);
+		ItemSpawnpoints.AddRange(other.ItemSpawnpoints);
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Capybaras.AddRange(other.Capybaras);
 		Schematics.AddRange(other.Schematics);
@@ -81,6 +84,7 @@ public class MapSchematic
 			SpawnObject(kVP.Key, kVP.Value);
 		});
 		Workstations.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		ItemSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Capybaras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Schematics.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
@@ -137,6 +141,9 @@ public class MapSchematic
 		if (Workstations.TryAdd(id, serializableObject))
 			return true;
 
+		if (ItemSpawnpoints.TryAdd(id, serializableObject))
+			return true;
+
 		if (PlayerSpawnpoints.TryAdd(id, serializableObject))
 			return true;
 
@@ -145,10 +152,10 @@ public class MapSchematic
 
 		if (Schematics.TryAdd(id, serializableObject))
 			return true;
-		
+
 		if (Scp079Cameras.TryAdd(id, serializableObject))
 			return true;
-		
+
 		if (ShootingTargets.TryAdd(id, serializableObject))
 			return true;
 
@@ -176,18 +183,21 @@ public class MapSchematic
 		if (Workstations.Remove(id))
 			return true;
 
+		if (ItemSpawnpoints.Remove(id))
+			return true;
+
 		if (PlayerSpawnpoints.Remove(id))
 			return true;
 
 		if (Capybaras.Remove(id))
 			return true;
-		
+
 		if (Schematics.Remove(id))
 			return true;
 
 		if (Scp079Cameras.Remove(id))
-			return true;		
-		
+			return true;
+
 		if (ShootingTargets.Remove(id))
 			return true;
 
