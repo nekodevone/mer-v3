@@ -31,7 +31,7 @@ public class ProjectMER : Plugin<Config>
 
 	public ToolGunEventsHandler ToolGunEventsHandler { get; } = new();
 
-	public MapOnEventHandlers MapOnEventHandlers { get; } = new();
+	public ActionOnEventHandlers AcionOnEventHandlers { get; } = new();
 
 	public PickupEventsHandler PickupEventsHandler { get; } = new();
 
@@ -63,7 +63,7 @@ public class ProjectMER : Plugin<Config>
 
 		CustomHandlersManager.RegisterEventsHandler(GenericEventsHandler);
 		CustomHandlersManager.RegisterEventsHandler(ToolGunEventsHandler);
-		CustomHandlersManager.RegisterEventsHandler(MapOnEventHandlers);
+		CustomHandlersManager.RegisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.RegisterEventsHandler(PickupEventsHandler);
 	}
 
@@ -73,7 +73,7 @@ public class ProjectMER : Plugin<Config>
 
 		CustomHandlersManager.UnregisterEventsHandler(GenericEventsHandler);
 		CustomHandlersManager.UnregisterEventsHandler(ToolGunEventsHandler);
-		CustomHandlersManager.UnregisterEventsHandler(MapOnEventHandlers);
+		CustomHandlersManager.UnregisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.UnregisterEventsHandler(PickupEventsHandler);
 	}
 
