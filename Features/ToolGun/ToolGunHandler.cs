@@ -26,8 +26,7 @@ public static class ToolGunHandler
 
 	public static void CreateObject(Vector3 position, ToolGunObjectType objectType, string schematicName = "")
 	{
-		if (!Room.TryGetRoomAtPosition(position, out Room? room))
-			room = Room.List.First(x => x.Name == RoomName.Outside);
+		Room room = RoomExtensions.GetRoomAtPosition(position);
 
 		position = room.Name == RoomName.Outside ? position : room.Transform.InverseTransformPoint(position);
 		string roomId = room.GetRoomStringId();

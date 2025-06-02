@@ -24,4 +24,8 @@
     <Reference Include="LabApi" HintPath="$(SL_REFERENCES)\LabApi.dll" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.6" />
+  </ItemGroup>
+
 </Project>
