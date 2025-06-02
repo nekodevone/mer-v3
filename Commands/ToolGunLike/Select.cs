@@ -40,17 +40,11 @@ public class Select : ICommand
 		if (arguments.Count > 0)
 		{
 			string id = arguments.At(0);
-			foreach (MapSchematic map in MapUtils.LoadedMaps.Values)
+			if (ToolGunHandler.TryGetObjectById(id, out MapEditorObject idObject))
 			{
-				foreach (MapEditorObject meo in map.SpawnedObjects)
-				{
-					if (meo.Id == id)
-					{
-						ToolGunHandler.SelectObject(player, meo);
-						response = "You've successfully selected the object!";
-						return true;
-					}
-				}
+				ToolGunHandler.SelectObject(player, idObject);
+				response = "You've successfully selected the object!";
+				return true;
 			}
 
 			response = $"Unable to find object with ID of {id}!";
