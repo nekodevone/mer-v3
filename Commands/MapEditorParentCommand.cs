@@ -46,7 +46,7 @@ public class MapEditorParentCommand : ParentCommand
 		RegisterCommand(new Select());
 	}
 
-	protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+	public override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
 		StringBuilder sb = StringBuilderPool.Shared.Rent();
 		sb.AppendLine();

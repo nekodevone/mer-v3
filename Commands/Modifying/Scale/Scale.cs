@@ -29,7 +29,7 @@ public class Scale : ParentCommand
 	}
 
 	/// <inheritdoc/>
-	protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+	public override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
 		if (!sender.HasAnyPermission($"mpr.{Command}"))
 		{
