@@ -11,6 +11,8 @@ namespace ProjectMER.Features.Serializable.Schematics;
 public class SerializableSchematic : SerializableObject
 {
 	public string SchematicName { get; set; } = "None";
+	
+	public SchematicObject SchematicObject { get; set; }
 
 	public override GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
@@ -35,6 +37,7 @@ public class SerializableSchematic : SerializableObject
 			schematic.gameObject.AddComponent<SchematicObject>().Init(Data);
 		}
 
+		SchematicObject = schematic.gameObject.GetComponent<SchematicObject>();
 		return schematic.gameObject;
 	}
 

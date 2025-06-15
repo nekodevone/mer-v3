@@ -1,4 +1,5 @@
 using AdminToys;
+using LabApi.Features.Wrappers;
 using Mirror;
 using ProjectMER.Events.Handlers;
 using ProjectMER.Features.Enums;
@@ -56,6 +57,11 @@ public class SchematicObject : MonoBehaviour
 		get => Rotation.eulerAngles;
 		set => Rotation = Quaternion.Euler(value);
 	}
+
+	/// <summary>
+	/// Привязанный к игроку схемат
+	/// </summary>
+	public Player AttachedPlayer { get; set; }
 
 	/// <summary>
 	/// Gets or sets the scale of the object.

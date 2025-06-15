@@ -5,6 +5,7 @@ using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
+using ProjectMER.Commands.Utility;
 
 namespace ProjectMER.Events.Handlers.Internal;
 
@@ -53,6 +54,16 @@ public class GenericEventsHandler : CustomEventsHandler
 				Logger.Error(e);
 			}
 		});
+	}
+
+	public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev)
+	{
+		if (!Attach.AttachedSchematic.ContainsKey(ev.Player))
+		{
+			return;
+		}
+
+		Attach.AttachedSchematic[ev.Player].Destroy();
 	}
 
 	public override void OnPlayerInteractingShootingTarget(PlayerInteractingShootingTargetEventArgs ev)

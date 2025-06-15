@@ -1,6 +1,7 @@
 using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
+using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 
@@ -30,6 +31,49 @@ public class Delete : ICommand
 		{
 			response = "This command can't be run from the server console.";
 			return false;
+		}
+
+		if (arguments.Count > 1)
+		{
+			var slug = arguments.At(1);
+			switch (arguments.At(0))
+			{
+				case "map":
+					var map = MapUtils.LoadedMaps[slug];
+
+					if (map is not null)
+					{
+						MapUtils.UnloadMap(slug);
+						response = "Вы успешно удалили объект!";
+						return true;
+					}
+
+					response = "Подобного объекта не существует!";
+					return false;
+				case "schematic":
+					var schematmap  = MapUtils.LoadedMaps.Values.FirstOrDefault(map => map.Schematics.Values.FirstOrDefault(schem => schem.SchematicName == slug) != null);
+
+					if (schematmap != null)
+					{
+						var mapeditorobject = schematmap.SpawnedObjects.FirstOrDefault(schem => schem.name == slug);
+
+						if (mapeditorobject is null)
+						{
+							response = "Подобного объекта не существует!";
+							return false;
+						}
+
+						ToolGunHandler.DeleteObject(mapeditorobject);
+						response = "Вы успешно удалили объект!";
+						return true;
+					}
+
+					response = "Объекта не существует!";
+					return false;
+				default:
+					response = "Введены неправильные аргументы!";
+					return false;
+			}
 		}
 
 		if (ToolGunHandler.TryGetMapObject(player, out MapEditorObject mapEditorObject))
