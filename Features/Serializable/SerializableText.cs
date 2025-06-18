@@ -15,7 +15,7 @@ public class SerializableText : SerializableObject, IIndicatorDefinition
 
 	public override GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
-		TextToy text = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.TextPrefab) : instance.GetComponent<TextToy>();
+		TextToy text = instance == null ? UnityEngine.Object.Instantiate(PrefabManager.Text) : instance.GetComponent<TextToy>();
 		Vector3 position = room.GetAbsolutePosition(Position);
 		Quaternion rotation = room.GetAbsoluteRotation(Rotation);
 		_prevIndex = Index;
@@ -40,7 +40,7 @@ public class SerializableText : SerializableObject, IIndicatorDefinition
 
 		if (instance == null)
 		{
-			cube = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObjectPrefab);
+			cube = UnityEngine.Object.Instantiate(PrefabManager.PrimitiveObject);
 			cube.NetworkPrimitiveType = PrimitiveType.Cube;
 			cube.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
 			cube.NetworkMaterialColor = new Color(1f, 1f, 1f, 0.9f);

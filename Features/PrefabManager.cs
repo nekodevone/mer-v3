@@ -11,47 +11,47 @@ namespace ProjectMER.Features;
 
 public static class PrefabManager
 {
-	public static PrimitiveObjectToy PrimitiveObjectPrefab { get; private set; }
+	public static PrimitiveObjectToy PrimitiveObject { get; private set; }
 
-	public static LightSourceToy LightSourcePrefab { get; private set; }
+	public static LightSourceToy LightSource { get; private set; }
 
-	public static DoorVariant LczDoorPrefab { get; private set; }
-	public static DoorVariant HczDoorPrefab { get; private set; }
-	public static DoorVariant EzDoorPrefab { get; private set; }
-	public static DoorVariant BulkDoorPrefab { get; private set; }
+	public static DoorVariant DoorLcz { get; private set; }
+	public static DoorVariant DoorHcz { get; private set; }
+	public static DoorVariant DoorEz { get; private set; }
+	public static DoorVariant DoorHeavyBulk { get; private set; }
 
-	public static WorkstationController WorkstationPrefab { get; private set; }
+	public static WorkstationController Workstation { get; private set; }
 
-	public static CapybaraToy CapybaraPrefab { get; private set; }
+	public static CapybaraToy Capybara { get; private set; }
 
-	public static TextToy TextPrefab { get; private set; }
+	public static TextToy Text { get; private set; }
 
-	public static Scp079CameraToy LczCameraToy { get; private set; }
-	public static Scp079CameraToy HczCameraToy { get; private set; }
-	public static Scp079CameraToy SzCameraToy { get; private set; }
-	public static Scp079CameraToy EzArmCameraToy { get; private set; }
-	public static Scp079CameraToy EzCameraToy { get; private set; }
+	public static Scp079CameraToy CameraLcz { get; private set; }
+	public static Scp079CameraToy CameraHcz { get; private set; }
+	public static Scp079CameraToy CameraSz { get; private set; }
+	public static Scp079CameraToy CameraEzArm { get; private set; }
+	public static Scp079CameraToy CameraEz { get; private set; }
 
 	public static ShootingTarget ShootingTargetSport { get; private set; }
 	public static ShootingTarget ShootingTargetDBoy { get; private set; }
 	public static ShootingTarget ShootingTargetBinary { get; private set; }
 
-	public static Locker Scp018PedestalPrefab { get; private set; }
-	public static Locker Scp207PedstalPrefab { get; private set; }
-	public static Locker Scp244PedestalPrefab { get; private set; }
-	public static Locker Scp268PedestalPrefab { get; private set; }
-	public static Locker LargeGunLockerPrefab { get; private set; }
-	public static Locker RifleRackLockerPrefab { get; private set; }
-	public static Locker MiscLockerPrefab { get; private set; }
-	public static Locker RegularMedkitLockerPrefab { get; private set; }
-	public static Locker AdrenalineMedkitLockerPrefab { get; private set; }
-	public static Locker Scp500PedestalPrefab { get; private set; }
-	public static Locker Scp1853PedstalPrefab { get; private set; }
-	public static Locker Scp2176PedestalPrefab { get; private set; }
-	public static Locker Scp1576PedestalPrefab { get; private set; }
-	public static Locker AntiScp207PedestalPrefab { get; private set; }
-	public static Locker Scp1344PedestalPrefab { get; private set; }
-	public static Locker ExperimentalWeaponLockerPrefab { get; private set; }
+	public static Locker PedestalScp018 { get; private set; }
+	public static Locker PedstalScp207 { get; private set; }
+	public static Locker PedestalScp244 { get; private set; }
+	public static Locker PedestalScp268 { get; private set; }
+	public static Locker LockerLargeGun { get; private set; }
+	public static Locker LockerRifleRack { get; private set; }
+	public static Locker LockerMisc { get; private set; }
+	public static Locker LockerRegularMedkit { get; private set; }
+	public static Locker LockerAdrenalineMedkit { get; private set; }
+	public static Locker PedestalScp500 { get; private set; }
+	public static Locker PedstalScp1853 { get; private set; }
+	public static Locker PedestalScp2176 { get; private set; }
+	public static Locker PedestalScp1576 { get; private set; }
+	public static Locker PedestalAntiScp207 { get; private set; }
+	public static Locker PedestalScp1344 { get; private set; }
+	public static Locker LockerExperimentalWeapon { get; private set; }
 
 	public static void RegisterPrefabs()
 	{
@@ -59,13 +59,13 @@ public static class PrefabManager
 		{
 			if (gameObject.TryGetComponent(out PrimitiveObjectToy primitiveObjectToy))
 			{
-				PrimitiveObjectPrefab = primitiveObjectToy;
+				PrimitiveObject = primitiveObjectToy;
 				continue;
 			}
 
 			if (gameObject.TryGetComponent(out LightSourceToy lightSourceToy))
 			{
-				LightSourcePrefab = lightSourceToy;
+				LightSource = lightSourceToy;
 				continue;
 			}
 
@@ -74,16 +74,16 @@ public static class PrefabManager
 				switch (gameObject.name)
 				{
 					case "LCZ BreakableDoor":
-						LczDoorPrefab = doorVariant;
+						DoorLcz = doorVariant;
 						continue;
 					case "HCZ BreakableDoor":
-						HczDoorPrefab = doorVariant;
+						DoorHcz = doorVariant;
 						continue;
 					case "EZ BreakableDoor":
-						EzDoorPrefab = doorVariant;
+						DoorEz = doorVariant;
 						continue;
 					case "HCZ BulkDoor":
-						BulkDoorPrefab = doorVariant;
+						DoorHeavyBulk = doorVariant;
 						continue;
 				}
 			}
@@ -106,13 +106,13 @@ public static class PrefabManager
 
 			if (gameObject.TryGetComponent(out WorkstationController workstationController))
 			{
-				WorkstationPrefab = workstationController;
+				Workstation = workstationController;
 				continue;
 			}
 
 			if (gameObject.TryGetComponent(out CapybaraToy capybaraToy))
 			{
-				CapybaraPrefab = capybaraToy;
+				Capybara = capybaraToy;
 				continue;
 			}
 
@@ -121,26 +121,26 @@ public static class PrefabManager
 				switch (gameObject.name)
 				{
 					case "LczCameraToy":
-						LczCameraToy = cameraToy;
+						CameraLcz = cameraToy;
 						continue;
 					case "HczCameraToy":
-						HczCameraToy = cameraToy;
+						CameraHcz = cameraToy;
 						continue;
 					case "SzCameraToy":
-						SzCameraToy = cameraToy;
+						CameraSz = cameraToy;
 						continue;
 					case "EzArmCameraToy":
-						EzArmCameraToy = cameraToy;
+						CameraEzArm = cameraToy;
 						continue;
 					case "EzCameraToy":
-						EzCameraToy = cameraToy;
+						CameraEz = cameraToy;
 						continue;
 				}
 			}
 
 			if (gameObject.TryGetComponent(out TextToy textToy))
 			{
-				TextPrefab = textToy;
+				Text = textToy;
 				continue;
 			}
 
@@ -149,52 +149,52 @@ public static class PrefabManager
 				switch (gameObject.name)
 				{
 					case "Scp018PedestalStructure Variant":
-						Scp018PedestalPrefab = locker;
+						PedestalScp018 = locker;
 						continue;
 					case "Scp207PedestalStructure Variant":
-						Scp207PedstalPrefab = locker;
+						PedstalScp207 = locker;
 						continue;
 					case "Scp244PedestalStructure Variant":
-						Scp244PedestalPrefab = locker;
+						PedestalScp244 = locker;
 						continue;
 					case "Scp268PedestalStructure Variant":
-						Scp268PedestalPrefab = locker;
+						PedestalScp268 = locker;
 						continue;
 					case "LargeGunLockerStructure":
-						LargeGunLockerPrefab = locker;
+						LockerLargeGun = locker;
 						continue;
 					case "RifleRackStructure":
-						RifleRackLockerPrefab = locker;
+						LockerRifleRack = locker;
 						continue;
 					case "MiscLocker":
-						MiscLockerPrefab = locker;
+						LockerMisc = locker;
 						continue;
 					case "RegularMedkitStructure":
-						RegularMedkitLockerPrefab = locker;
+						LockerRegularMedkit = locker;
 						continue;
 					case "AdrenalineMedkitStructure":
-						AdrenalineMedkitLockerPrefab = locker;
+						LockerAdrenalineMedkit = locker;
 						continue;
 					case "Scp500PedestalStructure Variant":
-						Scp500PedestalPrefab = locker;
+						PedestalScp500 = locker;
 						continue;
 					case "Scp1853PedestalStructure Variant":
-						Scp1853PedstalPrefab = locker;
+						PedstalScp1853 = locker;
 						continue;
 					case "Scp2176PedestalStructure Variant":
-						Scp2176PedestalPrefab = locker;
+						PedestalScp2176 = locker;
 						continue;
 					case "Scp1576PedestalStructure Variant":
-						Scp1576PedestalPrefab = locker;
+						PedestalScp1576 = locker;
 						continue;
 					case "AntiScp207PedestalStructure Variant":
-						AntiScp207PedestalPrefab = locker;
+						PedestalAntiScp207 = locker;
 						continue;
 					case "Scp1344PedestalStructure Variant":
-						Scp1344PedestalPrefab = locker;
+						PedestalScp1344 = locker;
 						continue;
 					case "Experimental Weapon Locker":
-						ExperimentalWeaponLockerPrefab = locker;
+						LockerExperimentalWeapon = locker;
 						continue;
 				}
 			}
