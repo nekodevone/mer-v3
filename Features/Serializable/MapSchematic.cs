@@ -2,6 +2,7 @@ using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Utils.NonAllocLINQ;
@@ -45,6 +46,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableTeleport> Teleports { get; set; } = [];
 
+	public Dictionary<string, SerializableLocker> Lockers { get; set; } = [];
+
 	public List<MapEditorObject> SpawnedObjects = [];
 
 	public MapSchematic Merge(MapSchematic other)
@@ -61,6 +64,7 @@ public class MapSchematic
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);
 		Teleports.AddRange(other.Teleports);
+		Lockers.AddRange(other.Lockers);
 
 		return this;
 	}
@@ -94,6 +98,11 @@ public class MapSchematic
 		Scp079Cameras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		ShootingTargets.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Teleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Lockers.ForEach(kVP =>
+		{
+			kVP.Value._prevType = kVP.Value.LockerType;
+			SpawnObject(kVP.Key, kVP.Value);
+		});
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -168,6 +177,9 @@ public class MapSchematic
 		if (Teleports.TryAdd(id, serializableObject))
 			return true;
 
+		if (Lockers.TryAdd(id, serializableObject))
+			return true;
+
 		IsDirty = dirtyPrevValue;
 		return false;
 	}
@@ -211,6 +223,9 @@ public class MapSchematic
 			return true;
 
 		if (Teleports.Remove(id))
+			return true;
+
+		if (Lockers.Remove(id))
 			return true;
 		
 		IsDirty = dirtyPrevValue;

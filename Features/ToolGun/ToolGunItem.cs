@@ -7,6 +7,7 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
+using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UserSettings.ServerSpecific;
 
@@ -30,6 +31,7 @@ public class ToolGunItem
 		{ ToolGunObjectType.Scp079Camera, typeof(SerializableScp079Camera) },
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
 		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
+		{ ToolGunObjectType.Locker, typeof(SerializableLocker) },
 	};
 
 	private ToolGunObjectType _selectedObjectToSpawn;

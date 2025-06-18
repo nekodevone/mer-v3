@@ -4,14 +4,17 @@ using HarmonyLib;
 using LabApi.Events.CustomHandlers;
 using LabApi.Loader.Features.Paths;
 using LabApi.Loader.Features.Plugins;
+using MEC;
 using ProjectMER.Configs;
 using ProjectMER.Events.Handlers.Internal;
+using ProjectMER.Features;
 
 namespace ProjectMER;
 
 public class ProjectMER : Plugin<Config>
 {
 	private Harmony _harmony;
+	private FileSystemWatcher _mapFileSystemWatcher;
 
 	public static ProjectMER Singleton { get; private set; }
 
@@ -70,6 +73,42 @@ public class ProjectMER : Plugin<Config>
 		CustomHandlersManager.RegisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.RegisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.RegisterEventsHandler(PickupEventsHandler);
+
+		_harmony = new Harmony($"michal78900.mapEditorReborn-{DateTime.Now.Ticks}");
+		_harmony.PatchAll();
+
+		if (Config!.EnableFileSystemWatcher)
+		{
+			_mapFileSystemWatcher = new FileSystemWatcher(MapsDir)
+			{
+				NotifyFilter = NotifyFilters.LastWrite,
+				Filter = "*.yml",
+				EnableRaisingEvents = true,
+			};
+
+			_mapFileSystemWatcher.Changed += OnMapFileChanged;
+
+			Logger.Debug("FileSystemWatcher enabled!");
+		}
+	}
+
+	private void OnMapFileChanged(object _, FileSystemEventArgs ev)
+	{
+		string mapName = ev.Name.Split('.')[0];
+		if (!MapUtils.LoadedMaps.ContainsKey(mapName))
+			return;
+
+		Timing.CallDelayed(0.01f, () =>
+		{
+			try
+			{
+				MapUtils.LoadMap(mapName);
+			}
+			catch (Exception e)
+			{
+				Logger.Error(e);
+			}
+		});
 	}
 
 	public override void Disable()
@@ -81,6 +120,9 @@ public class ProjectMER : Plugin<Config>
 		CustomHandlersManager.UnregisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.UnregisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.UnregisterEventsHandler(PickupEventsHandler);
+
+		_harmony.UnpatchAll();
+		_mapFileSystemWatcher?.Dispose();
 	}
 
 	public override string Name => "ProjectMER";

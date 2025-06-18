@@ -60,7 +60,8 @@ public static class ReflectionExtensions
 			{
 				StringBuilder sb = StringBuilderPool.Shared.Rent();
 				ICollection collection = (ICollection)property.GetValue(instance);
-				if (collection.GetType().GetGenericArguments()[0].IsEnum)
+				Type collectionType = collection.GetType().GetGenericArguments()[0];
+				if (collectionType.IsEnum)
 				{
 					foreach (object? item in collection)
 						sb.Append($"{item} ");
@@ -71,13 +72,17 @@ public static class ReflectionExtensions
 					sb.Insert(0, "<color=yellow><b>");
 					sb.Append("</b></color>");
 				}
-				else
+				else if (collectionType == typeof(string))
 				{
 					foreach (object? item in collection)
 						sb.Append($"{MapUtils.GetColoredString(item.ToString())} ");
 
 					if (sb.Length > 0)
 						sb.Remove(sb.Length - 1, 1);
+				}
+				else
+				{
+					sb.Append($"<color=yellow><b>{collection.Count}</b></color>");
 				}
 
 				yield return $"{property.Name}: {StringBuilderPool.Shared.ToStringReturn(sb)}";
