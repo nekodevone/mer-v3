@@ -13,6 +13,6 @@ public enum ToolGunObjectType
 	Text = 8,
 	Scp079Camera = 9,
 	ShootingTarget = 10,
-	Teleport = 11,
-	Locker = 12,
+	Locker = 11,
+	Teleport = 12,
 }
