@@ -56,14 +56,20 @@ public class GenericEventsHandler : CustomEventsHandler
 		});
 	}
 
-	public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev)
+	public override void OnPlayerDying(PlayerDyingEventArgs ev)
 	{
+		if (!ev.IsAllowed)
+		{
+			return;
+		}
+
 		if (!Attach.AttachedSchematic.ContainsKey(ev.Player))
 		{
 			return;
 		}
 
 		Attach.AttachedSchematic[ev.Player].Destroy();
+		Attach.AttachedSchematic.Remove(ev.Player);
 	}
 
 	public override void OnPlayerInteractingShootingTarget(PlayerInteractingShootingTargetEventArgs ev)

@@ -44,6 +44,9 @@ public class MapEditorParentCommand : ParentCommand
 		RegisterCommand(new Create());
 		RegisterCommand(new Delete());
 		RegisterCommand(new Select());
+
+		RegisterCommand(new Attach());
+		RegisterCommand(new SpawnedCount());
 	}
 
 	public override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)

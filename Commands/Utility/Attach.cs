@@ -52,24 +52,27 @@ public class Attach : ICommand
             response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
             return false;
         }
-        
-        Player? player = Player.Get(sender)!;
 
-        if (!TryGetTarget(arguments, sender, out var target))
+        Player target;
+
+        target = arguments.At(0) != null ? Player.Get(arguments.At(0))! : Player.Get(sender)!;
+
+        if (AttachedSchematic.ContainsKey(target))
         {
-            response = "Введены некорректные данные";
-            return false;
+            response = "На игроке уже весит схемат!";
+            return true;
         }
 
-        if (!ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject mapEditorObject))
+        if (!ToolGunHandler.TryGetSelectedMapObject(Player.Get(sender)!, out MapEditorObject mapEditorObject))
         {
             response = "You haven't selected any object!";
             return false;
         }
 
-        if (AttachedSchematic.ContainsKey(player))
+        if (AttachedSchematic.ContainsKey(target))
         {
-            response = "На игроке уже весит схемат!";
+            SchematicUnfollow(AttachedSchematic[target]);
+            response = "Схемат снят с игрока!";
             return true;
         }
 
@@ -81,94 +84,26 @@ public class Attach : ICommand
             return false;
         }
 
-        AttachSchematic(target, schematic.SchematicObject, arguments.At(1));
+        AttachSchematic(target, schematic.SchematicObject);
         response = "Схемат был привязан к игроку!!";
         return true;
     }
 
-    private static void AttachSchematic(Player player, SchematicObject schematicObject, string slug)
+    private static void AttachSchematic(Player player, SchematicObject schematicObject)
     {
-        if (AttachedSchematic.ContainsKey(player))
-        {
-            return;
-        }
-
-        if (!slug.IsEmpty())
-        {
-            schematicObject.gameObject.transform.parent = player.GameObject.transform;
-            AttachedSchematic[player] = schematicObject;
-            return;
-        }
-
-        if (!player.IsSCP)
-        {
-            var hitboxIdentity = player.ReferenceHub.GetModel().Hitboxes.FirstOrDefault(hb => hb.name == slug);
-
-            if (hitboxIdentity is null)
-            {
-                return;
-            }
-
-            schematicObject.gameObject.transform.parent = hitboxIdentity.transform;
-            AttachedSchematic[player] = schematicObject;
-            return;
-        }
-
-        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-        switch (player.Role)
-        {
-            case RoleTypeId.Scp3114:
-            {
-                var newSlug = Scp3114HitboxesSlug[slug];
-
-                var hitboxIdentity = player.ReferenceHub.GetModel().Hitboxes.FirstOrDefault(hb => hb.name == newSlug);
-
-                if (hitboxIdentity is null)
-                {
-                    return;
-                }
-
-                schematicObject.gameObject.transform.parent = hitboxIdentity.transform;
-                break;
-            }
-            case RoleTypeId.Scp0492:
-            {
-                var newSlug = Scp0492HitboxesSlug[slug];
-
-                var hitboxIdentity = player.ReferenceHub.GetModel().Hitboxes.FirstOrDefault(hb => hb.name == newSlug);
-
-                if (hitboxIdentity is null)
-                {
-                    return;
-                }
-
-                schematicObject.gameObject.transform.parent = hitboxIdentity.transform;
-                break;
-            }
-            default:
-                schematicObject.gameObject.transform.parent = player.GameObject.transform;
-                break;
-        }
-
+        schematicObject.gameObject.transform.position = player.Position;
+        schematicObject.gameObject.transform.parent = player.GameObject.transform;
         AttachedSchematic[player] = schematicObject;
     }
 
     /// <summary>
-    /// Получаем игрока
+    /// Отвязывает схемат от игрок
     /// </summary>
-    private bool TryGetTarget(ArraySegment<string> arguments, ICommandSender sender, out Player? player)
+    /// <param name="schem">Схемат.</param>
+    private static void SchematicUnfollow(SchematicObject schem)
     {
-        if (!arguments.Any() && Player.TryGet(sender, out player))
-        {
-            return true;
-        }
-
-        if (int.TryParse(arguments.At(0), out var id) && Player.TryGet(id, out player))
-        {
-            return true;
-        }
-
-        player = null;
-        return false;
+        schem.transform.parent = schem.OriginTransform;
+        AttachedSchematic.Remove(schem.AttachedPlayer!);
+        schem.AttachedPlayer = null;
     }
 }
