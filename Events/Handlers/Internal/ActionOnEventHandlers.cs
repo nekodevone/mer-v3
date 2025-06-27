@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Wrappers;
@@ -80,8 +81,8 @@ public class ActionOnEventHandlers : CustomEventsHandler
 
 		foreach (string mapName in allMaps)
 		{
-			// if (FileSystemName.MatchesSimpleExpression(argument, mapName))
-			MapUtils.LoadMap(mapName);
+			if (Regex.IsMatch(mapName, WildCardToRegular(argument)))
+				MapUtils.LoadMap(mapName);
 		}
 	}
 
@@ -102,8 +103,10 @@ public class ActionOnEventHandlers : CustomEventsHandler
 
 		foreach (string mapName in allMaps)
 		{
-			// if (FileSystemName.MatchesSimpleExpression(argument, mapName))
-			MapUtils.UnloadMap(mapName);
+			if (Regex.IsMatch(mapName, WildCardToRegular(argument)))
+				MapUtils.UnloadMap(mapName);
 		}
 	}
+
+	private static string WildCardToRegular(string value) => "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
 }
