@@ -1,4 +1,3 @@
-using System.IO.Enumeration;
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Wrappers;
@@ -66,7 +65,7 @@ public class ActionOnEventHandlers : CustomEventsHandler
 
 	private void HandleMapLoading(string argument, List<string> allMaps)
 	{
-		string[] orSplit = argument.Split("||");
+		string[] orSplit = argument.Split('|', '|');
 		string[] andSplit = argument.Split(',');
 
 		if (orSplit.Length > 1 || andSplit.Length > 1)
@@ -81,14 +80,14 @@ public class ActionOnEventHandlers : CustomEventsHandler
 
 		foreach (string mapName in allMaps)
 		{
-			if (FileSystemName.MatchesSimpleExpression(argument, mapName))
-				MapUtils.LoadMap(mapName);
+			// if (FileSystemName.MatchesSimpleExpression(argument, mapName))
+			MapUtils.LoadMap(mapName);
 		}
 	}
 
 	private void HandleMapUnloading(string argument, List<string> allMaps)
 	{
-		string[] orSplit = argument.Split("||");
+		string[] orSplit = argument.Split('|', '|');
 		string[] andSplit = argument.Split(',');
 
 		if (orSplit.Length > 1 || andSplit.Length > 1)
@@ -103,8 +102,8 @@ public class ActionOnEventHandlers : CustomEventsHandler
 
 		foreach (string mapName in allMaps)
 		{
-			if (FileSystemName.MatchesSimpleExpression(argument, mapName))
-				MapUtils.UnloadMap(mapName);
+			// if (FileSystemName.MatchesSimpleExpression(argument, mapName))
+			MapUtils.UnloadMap(mapName);
 		}
 	}
 }
