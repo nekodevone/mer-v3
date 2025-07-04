@@ -101,7 +101,7 @@ public class SerializableLocker : SerializableObject
 	{
 		get
 		{
-			Locker prefab = LockerType switch
+			var prefab = LockerType switch
 			{
 				LockerType.PedestalScp500 => PrefabManager.PedestalScp500,
 				LockerType.LargeGun => PrefabManager.LockerLargeGun,

@@ -39,14 +39,20 @@ public class MapSchematic
 	public Dictionary<string, SerializableText> Texts { get; set; } = [];
 
 	public Dictionary<string, SerializableScp079Camera> Scp079Cameras { get; set; } = [];
-
+	
 	public Dictionary<string, SerializableShootingTarget> ShootingTargets { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
 
+	public Dictionary<string, SerializableClutter> Clutters { get; set; } = [];
+	
+	public Dictionary<string, SerializableInteractableTeleport> InvisibleTeleports { get; set; } = [];
+
 	public Dictionary<string, SerializableTeleport> Teleports { get; set; } = [];
 
 	public Dictionary<string, SerializableLocker> Lockers { get; set; } = [];
+
+	public Dictionary<string, SerializableGenerator> Generators { get; set; } = [];
 
 	public List<MapEditorObject> SpawnedObjects = [];
 
@@ -64,7 +70,10 @@ public class MapSchematic
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);
 		Teleports.AddRange(other.Teleports);
+		Clutters.AddRange(other.Clutters);
+		InvisibleTeleports.AddRange(other.InvisibleTeleports);
 		Lockers.AddRange(other.Lockers);
+		Generators.AddRange(other.Generators);
 
 		return this;
 	}
@@ -103,6 +112,9 @@ public class MapSchematic
 			kVP.Value._prevType = kVP.Value.LockerType;
 			SpawnObject(kVP.Key, kVP.Value);
 		});
+		InvisibleTeleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Clutters.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Generators.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -176,8 +188,17 @@ public class MapSchematic
 
 		if (Teleports.TryAdd(id, serializableObject))
 			return true;
+		
+		if (InvisibleTeleports.TryAdd(id, serializableObject))
+			return true;
+        
+		if (Clutters.TryAdd(id, serializableObject))
+			return true;
 
 		if (Lockers.TryAdd(id, serializableObject))
+			return true;
+		
+		if (Generators.TryAdd(id, serializableObject))
 			return true;
 
 		IsDirty = dirtyPrevValue;
@@ -225,9 +246,18 @@ public class MapSchematic
 		if (Teleports.Remove(id))
 			return true;
 
+		if (InvisibleTeleports.Remove(id))
+			return true;
+	            
+		if (Clutters.Remove(id))
+			return true;
+
 		if (Lockers.Remove(id))
 			return true;
 		
+		if (Generators.Remove(id))
+			return true;
+
 		IsDirty = dirtyPrevValue;
 		return false;
 	}

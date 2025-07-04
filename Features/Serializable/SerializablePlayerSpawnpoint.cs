@@ -47,7 +47,8 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 			root.name = "Indicator";
 			root.transform.position = position;
 
-			cylinder = GameObject.Instantiate(PrefabManager.PrimitiveObject, root.transform);
+			cylinder = GameObject.Instantiate(PrefabManager.PrimitiveObject);
+			cylinder.transform.parent = root.transform;
 			cylinder.transform.localPosition = Vector3.zero;
 			cylinder.NetworkPrimitiveType = PrimitiveType.Cylinder;
 			cylinder.NetworkPrimitiveFlags = PrimitiveFlags.Visible;
@@ -63,7 +64,8 @@ public class SerializablePlayerSpawnpoint : SerializableObject, IIndicatorDefini
 			arrowX.name = "Arrow X Axis";
 			arrowX.transform.parent = arrowY.transform;
 
-			arrow = GameObject.Instantiate(PrefabManager.PrimitiveObject, arrowX.transform);
+			arrow = GameObject.Instantiate(PrefabManager.PrimitiveObject);
+			arrow.transform.parent = arrowX.transform;
 			arrow.transform.localPosition = root.transform.forward;
 			arrow.NetworkPrimitiveType = PrimitiveType.Cube;
 			arrow.NetworkPrimitiveFlags = PrimitiveFlags.Visible;

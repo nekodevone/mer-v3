@@ -15,4 +15,7 @@ public enum ToolGunObjectType
 	ShootingTarget = 10,
 	Locker = 11,
 	Teleport = 12,
+	Clutter = 13,
+	InvisibleTeleport = 14,
+	Generator = 15
 }

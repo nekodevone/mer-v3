@@ -4,8 +4,11 @@ using InventorySystem.Items.Firearms.Attachments;
 using MapGeneration.Distributors;
 using Mirror;
 using UnityEngine;
+using CapybaraToy = AdminToys.CapybaraToy;
 using LightSourceToy = AdminToys.LightSourceToy;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
+using Locker = MapGeneration.Distributors.Locker;
+using TextToy = AdminToys.TextToy;
 
 namespace ProjectMER.Features;
 
@@ -36,6 +39,21 @@ public static class PrefabManager
 	public static ShootingTarget ShootingTargetDBoy { get; private set; }
 	public static ShootingTarget ShootingTargetBinary { get; private set; }
 
+	public static GameObject HczOneSidedPrefab { get; private set; }
+	public static GameObject HczTwoSidedPrefab { get; private set; }
+	public static GameObject HczOpenHallwayPrefab { get; private set; }
+	public static GameObject HczOpenHallwayConstructAPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterAPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterBPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterCPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterDPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterEPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterFPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterGPrefab { get; private set; }
+
+	
+	public static InvisibleInteractableToy InteractableToyPrefab { get; private set; }
+
 	public static Locker PedestalScp018 { get; private set; }
 	public static Locker PedstalScp207 { get; private set; }
 	public static Locker PedestalScp244 { get; private set; }
@@ -53,15 +71,70 @@ public static class PrefabManager
 	public static Locker PedestalScp1344 { get; private set; }
 	public static Locker LockerExperimentalWeapon { get; private set; }
 
+	public static Scp079Generator Scp079Generator { get; private set; }
+
 	public static void RegisterPrefabs()
 	{
-		foreach (GameObject gameObject in NetworkClient.prefabs.Values)
+		foreach (var pair in NetworkClient.prefabs)
 		{
+			var gameObject = pair.Value;
+
 			if (gameObject.TryGetComponent(out PrimitiveObjectToy primitiveObjectToy))
 			{
 				PrimitiveObject = primitiveObjectToy;
 				continue;
 			}
+
+			if (gameObject.TryGetComponent(out InvisibleInteractableToy interactableToy))
+			{
+				InteractableToyPrefab = interactableToy;
+				continue;
+			}
+
+			if (gameObject.TryGetComponent(out Scp079Generator scp079Generator))
+			{
+				Scp079Generator = scp079Generator;
+				continue;
+			}
+
+			switch (pair.Key)
+			{
+				/*
+				case 400539138:
+					HczOneSidedPrefab = gameObject;
+					continue;
+				case 2060920286:
+					HczTwoSidedPrefab = gameObject;
+					continue;
+				case 3343949480:
+					HczOpenHallwayPrefab = gameObject;
+					continue; */
+				case 3999209566:
+					HczOpenHallwayConstructAPrefab = gameObject;
+					continue;
+				case 38976586:
+					HczOpenHallwayClutterAPrefab = gameObject;
+					continue;
+				case 1687661105:
+					HczOpenHallwayClutterBPrefab = gameObject;
+					continue;
+				case 147203050:
+					HczOpenHallwayClutterCPrefab = gameObject;
+					continue;
+				case 1102032353:
+					HczOpenHallwayClutterDPrefab = gameObject;
+					continue;
+				case 2490430134:
+					HczOpenHallwayClutterEPrefab = gameObject;
+					continue;
+				case 2673083832:
+					HczOpenHallwayClutterFPrefab = gameObject;
+					continue;
+				case 2536312960:
+					HczOpenHallwayClutterGPrefab = gameObject;
+					continue;
+			}
+
 
 			if (gameObject.TryGetComponent(out LightSourceToy lightSourceToy))
 			{

@@ -32,6 +32,9 @@ public class ToolGunItem
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
 		{ ToolGunObjectType.Locker, typeof(SerializableLocker) },
 		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
+		{ ToolGunObjectType.Clutter, typeof(SerializableClutter) },
+		{ ToolGunObjectType.InvisibleTeleport, typeof(SerializableInteractableTeleport) },
+		{ ToolGunObjectType.Generator, typeof(SerializableGenerator) }
 	};
 
 	private ToolGunObjectType _selectedObjectToSpawn;
@@ -47,11 +50,12 @@ public class ToolGunItem
 				return;
 			}
 
-			if (_selectedObjectToSpawn < 0)
+			if (_selectedObjectToSpawn >= 0)
 			{
-				_selectedObjectToSpawn = (ToolGunObjectType)(TypesDictionary.Count - 1);
 				return;
 			}
+
+			_selectedObjectToSpawn = (ToolGunObjectType)(TypesDictionary.Count - 1);
 		}
 	}
 
