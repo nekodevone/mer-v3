@@ -3,7 +3,9 @@ using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using PlayerRoles;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.Structs;
 using ProjectMER.Features.ToolGun;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Commands.Utility;
 
@@ -15,35 +17,7 @@ public class Attach : ICommand
 
     public string Description => "Привязывает к игроку схемат";
 
-    public static Dictionary<Player, SchematicObject> AttachedSchematic = new();
-
-    private static Dictionary<string, string> Scp3114HitboxesSlug { get; } = new()
-    {
-        { "Thigh.L", "mixamorig:LeftUpLeg" },
-        { "leg.L", "mixamorig:LeftLeg" },
-        { "Thigh.R", "mixamorig:RightUpLeg" },
-        { "leg.R", "mixamorig:RightLeg" },
-        { "SpineMiddle", "mixamorig:Spine" },
-        { "Arm.L", "mixamorig:LeftArm" },
-        { "Forearm.L", "mixamorig:LeftForeArm" },
-        { "Head", "mixamorig:Head" },
-        { "Arm.R", "mixamorig:RightArm" },
-        { "Forearm.R", "mixamorig:RightForeArm" },
-    };
-
-    private static Dictionary<string, string> Scp0492HitboxesSlug { get; } = new()
-    {
-        { "Thigh.L", "mixamorig:LeftUpLeg" },
-        { "leg.L", "mixamorig:LeftLeg" },
-        { "Thigh.R", "mixamorig:RightUpLeg" },
-        { "leg.R", "mixamorig:RightLeg" },
-        { "SpineMiddle", "mixamorig:Spine2" },
-        { "Arm.L", "mixamorig:LeftArm" },
-        { "Forearm.L", "mixamorig:LeftForeArm" },
-        { "Head", "mixamorig:HeadTop_End" },
-        { "Arm.R", "mixamorig:RightArm" },
-        { "Forearm.R", "mixamorig:RightForeArm" },
-    };
+    public static List<AttachedSchematic> AttachedSchematic = new ();
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
@@ -53,13 +27,16 @@ public class Attach : ICommand
             return false;
         }
 
-        Player target;
-
-        target = arguments.At(0) != null ? Player.Get(arguments.At(0))! : Player.Get(sender)!;
-
-        if (AttachedSchematic.ContainsKey(target))
+        if (!TryGetTarget(arguments, sender, out var target) || target == null)
         {
-            response = "На игроке уже весит схемат!";
+            response = "Введены некорректные данные";
+            return false;
+        }
+
+        if (AttachedSchematic.TryGetFirst(schem => schem.Player == target, out var schematicTarget))
+        {
+            SchematicUnfollow(schematicTarget);
+            response = "Схемат снят с игрока!";
             return true;
         }
 
@@ -67,13 +44,6 @@ public class Attach : ICommand
         {
             response = "You haven't selected any object!";
             return false;
-        }
-
-        if (AttachedSchematic.ContainsKey(target))
-        {
-            SchematicUnfollow(AttachedSchematic[target]);
-            response = "Схемат снят с игрока!";
-            return true;
         }
 
         var schematic = mapEditorObject.Map.Schematics[mapEditorObject.Id];
@@ -91,19 +61,45 @@ public class Attach : ICommand
 
     private static void AttachSchematic(Player player, SchematicObject schematicObject)
     {
+        var attachedSchematic = new AttachedSchematic()
+        {
+            Player = player,
+            Schematic = schematicObject,
+            OriginalTransform = schematicObject.transform
+        };
+
         schematicObject.gameObject.transform.position = player.Position;
         schematicObject.gameObject.transform.parent = player.GameObject.transform;
-        AttachedSchematic[player] = schematicObject;
+        AttachedSchematic.Add(attachedSchematic);
     }
 
     /// <summary>
     /// Отвязывает схемат от игрок
     /// </summary>
     /// <param name="schem">Схемат.</param>
-    private static void SchematicUnfollow(SchematicObject schem)
+    private static void SchematicUnfollow(AttachedSchematic attachedSchematic)
     {
-        schem.transform.parent = schem.OriginTransform;
-        AttachedSchematic.Remove(schem.AttachedPlayer!);
-        schem.AttachedPlayer = null;
+        attachedSchematic.Schematic.AttachedPlayer = null;
+        attachedSchematic.Schematic.transform.parent = null;
+        AttachedSchematic.Remove(attachedSchematic);
+    }
+
+    /// <summary>
+    /// Получаем игрока
+    /// </summary>
+    private static bool TryGetTarget(ArraySegment<string> arguments, ICommandSender sender, out Player? player)
+    {
+        if (!arguments.Any() && Player.TryGet(sender, out player))
+        {
+            return true;
+        }
+
+        if (int.TryParse(arguments.At(0), out var id) && Player.TryGet(id, out player))
+        {
+            return true;
+        }
+
+        player = null;
+        return false;
     }
 }

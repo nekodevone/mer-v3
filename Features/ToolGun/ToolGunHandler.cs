@@ -85,11 +85,12 @@ public static class ToolGunHandler
 		if (map.TryRemoveElement(mapEditorObject.Id))
 			map.DestroyObject(mapEditorObject.Id);
 
-		var schematic = Attach.AttachedSchematic.Values.FirstOrDefault(o =>
-			o == mapEditorObject.gameObject.GetComponent<SchematicObject>());
+		var schematic = Attach.AttachedSchematic.FirstOrDefault(attch =>
+			attch.Schematic == mapEditorObject.gameObject.GetComponent<SchematicObject>());
+
 		if (schematic != null)
 		{
-			Attach.AttachedSchematic.Remove(schematic.AttachedPlayer);
+			Attach.AttachedSchematic.Remove(schematic);
 		}
 	}
 

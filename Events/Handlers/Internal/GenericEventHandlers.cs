@@ -6,6 +6,7 @@ using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
 using ProjectMER.Commands.Utility;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Events.Handlers.Internal;
 
@@ -65,13 +66,13 @@ public class GenericEventsHandler : CustomEventsHandler
 			return;
 		}
 
-		if (!Attach.AttachedSchematic.ContainsKey(ev.Player))
+		if (!Attach.AttachedSchematic.TryGetFirst(attach => attach.Player == ev.Player, out var schematic))
 		{
 			return;
 		}
 
-		Attach.AttachedSchematic[ev.Player].Destroy();
-		Attach.AttachedSchematic.Remove(ev.Player);
+		schematic.Schematic.Destroy();
+		Attach.AttachedSchematic.Remove(schematic);
 	}
 
 	public override void OnPlayerInteractingShootingTarget(PlayerInteractingShootingTargetEventArgs ev)

@@ -26,11 +26,6 @@ public class SchematicObject : MonoBehaviour
 	public string DirectoryPath { get; private set; }
 
 	/// <summary>
-	/// Gets or sets the global rotation of the object.
-	/// </summary>
-	public Transform OriginTransform { get; private set; }
-
-	/// <summary>
 	/// Gets or sets the global position of the object.
 	/// </summary>
 	public Vector3 Position
@@ -153,7 +148,6 @@ public class SchematicObject : MonoBehaviour
 
 		AddRigidbodies();
 		AddAnimators();
-		OriginTransform = transform;
 
 		Schematic.OnSchematicSpawned(new(this, Name));
 
