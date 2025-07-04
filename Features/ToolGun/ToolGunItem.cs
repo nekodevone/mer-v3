@@ -7,6 +7,7 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
+using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UserSettings.ServerSpecific;
 
@@ -22,11 +23,14 @@ public class ToolGunItem
 		{ ToolGunObjectType.Light, typeof(SerializableLight) },
 		{ ToolGunObjectType.Door, typeof(SerializableDoor) },
 		{ ToolGunObjectType.Workstation, typeof(SerializableWorkstation) },
+		{ ToolGunObjectType.ItemSpawnpoint, typeof(SerializableItemSpawnpoint)},
 		{ ToolGunObjectType.PlayerSpawnpoint, typeof(SerializablePlayerSpawnpoint) },
 		{ ToolGunObjectType.Capybara, typeof(SerializableCapybara) },
+		{ ToolGunObjectType.Text, typeof(SerializableText)},
 		{ ToolGunObjectType.Schematic, typeof(SerializableSchematic) },
 		{ ToolGunObjectType.Scp079Camera, typeof(SerializableScp079Camera) },
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
+		{ ToolGunObjectType.Locker, typeof(SerializableLocker) },
 		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
 	};
 
