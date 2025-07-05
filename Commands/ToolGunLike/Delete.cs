@@ -33,6 +33,14 @@ public class Delete : ICommand
 			return false;
 		}
 
+		if (ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject selectedmapEditorObject))
+		{
+			ToolGunHandler.DeleteObject(selectedmapEditorObject);
+			response = "You've successfully deleted the object!";
+
+			return true;
+		}
+
 		if (arguments.Count > 1)
 		{
 			var slug = arguments.At(1);
