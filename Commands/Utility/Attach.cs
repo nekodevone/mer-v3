@@ -40,7 +40,7 @@ public class Attach : ICommand
             return true;
         }
 
-        if (!ToolGunHandler.TryGetSelectedMapObject(Player.Get(sender)!, out MapEditorObject mapEditorObject))
+        if (!ToolGunHandler.TryGetSelectedMapObject(Player.Get(sender)!, out var mapEditorObject))
         {
             response = "You haven't selected any object!";
             return false;
@@ -69,6 +69,7 @@ public class Attach : ICommand
         };
 
         schematicObject.gameObject.transform.position = player.Position;
+        schematicObject.gameObject.transform.rotation = player.Rotation;
         schematicObject.gameObject.transform.parent = player.GameObject.transform;
         AttachedSchematic.Add(attachedSchematic);
     }
@@ -90,11 +91,6 @@ public class Attach : ICommand
     private static bool TryGetTarget(ArraySegment<string> arguments, ICommandSender sender, out Player? player)
     {
         if (!arguments.Any() && Player.TryGet(sender, out player))
-        {
-            return true;
-        }
-
-        if (int.TryParse(arguments.At(0), out var id) && Player.TryGet(id, out player))
         {
             return true;
         }
