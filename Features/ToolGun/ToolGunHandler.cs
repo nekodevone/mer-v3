@@ -94,6 +94,11 @@ public static class ToolGunHandler
 		}
 	}
 
+	public static void DeleteSchematicObject(MapSchematic mapEditorObject)
+	{
+		mapEditorObject.SpawnedObjects.Clear();
+	}
+
 	public static bool TryGetMapObject(Player player, out MapEditorObject mapEditorObject)
 	{
 		mapEditorObject = null!;

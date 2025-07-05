@@ -51,24 +51,28 @@ public class Delete : ICommand
 					response = "Подобного объекта не существует!";
 					return false;
 				case "schematic":
-					var schematmap  = MapUtils.LoadedMaps.Values.FirstOrDefault(map => map.Schematics.Values.FirstOrDefault(schem => schem.SchematicName == slug) != null);
 
-					if (schematmap != null)
+					foreach (var obj in MapUtils.LoadedMaps.Where
+						         (obj => obj.Value.Schematics.Any
+							         (schematics =>
+								         schematics.Value.SchematicName == slug)))
 					{
-						var mapeditorobject = schematmap.SpawnedObjects.FirstOrDefault(schem => schem.name == slug);
-
-						if (mapeditorobject is null)
-						{
-							response = "Подобного объекта не существует!";
-							return false;
-						}
-
-						ToolGunHandler.DeleteObject(mapeditorobject);
+						ToolGunHandler.DeleteSchematicObject(obj.Value);
 						response = "Вы успешно удалили объект!";
 						return true;
 					}
 
 					response = "Объекта не существует!";
+					return false;
+				case "id":
+					if (ToolGunHandler.TryGetObjectById(slug, out MapEditorObject idObject))
+					{
+						ToolGunHandler.DeleteObject(idObject);
+						response = "You've successfully deleted the object!";
+						return true;
+					}
+
+					response = $"Unable to find object with ID of {slug}!";
 					return false;
 				default:
 					response = "Введены неправильные аргументы!";
