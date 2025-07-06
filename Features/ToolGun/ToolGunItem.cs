@@ -33,7 +33,7 @@ public class ToolGunItem
 		{ ToolGunObjectType.Locker, typeof(SerializableLocker) },
 		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
 		{ ToolGunObjectType.Clutter, typeof(SerializableClutter) },
-		{ ToolGunObjectType.InvisibleTeleport, typeof(SerializableInteractableTeleport) },
+		{ ToolGunObjectType.InteractableTeleport, typeof(SerializableInteractableTeleport) },
 		{ ToolGunObjectType.Generator, typeof(SerializableGenerator) }
 	};
 

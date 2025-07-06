@@ -16,6 +16,6 @@ public enum ToolGunObjectType
 	Locker = 11,
 	Teleport = 12,
 	Clutter = 13,
-	InvisibleTeleport = 14,
+	InteractableTeleport = 14,
 	Generator = 15
 }

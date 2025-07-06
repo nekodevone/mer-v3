@@ -59,8 +59,6 @@ namespace ProjectMER.Features.Serializable
             cube.transform.localScale = Scale;
             cube.NetworkScale = Scale;
 
-            
-
             return cube.gameObject;
         }
         private InvisibleInteractableToy TargetPrefab => PrefabManager.InteractableToyPrefab;
