@@ -68,7 +68,7 @@ public class Attach : ICommand
             OriginalTransform = schematicObject.transform
         };
 
-        schematicObject.gameObject.transform.position = player.Position;
+        schematicObject.gameObject.transform.position = player.Position / 2;
         schematicObject.gameObject.transform.rotation = player.Rotation;
         schematicObject.gameObject.transform.parent = player.GameObject.transform;
         AttachedSchematic.Add(attachedSchematic);

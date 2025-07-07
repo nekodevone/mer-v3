@@ -21,7 +21,7 @@ public class SpawnedCount : ICommand
         foreach (var mapEditorObject in MapUtils.LoadedMaps.Values.SelectMany(mapEditorObjects => mapEditorObjects.Schematics.Values))
         {
             sB.AppendLine(
-                $"{mapEditorObject.SchematicObject.name} - Количество примитивов: {mapEditorObject.SchematicObject.AttachedBlocks.Count}");
+                $"{mapEditorObject.SchematicObject.Name} - Количество примитивов: {mapEditorObject.SchematicObject.AttachedBlocks.Count}");
             countBlock += mapEditorObject.SchematicObject.AttachedBlocks.Count;
         }
 
