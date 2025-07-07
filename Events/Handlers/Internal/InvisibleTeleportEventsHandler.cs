@@ -1,6 +1,7 @@
 ﻿using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Wrappers;
+using MapGeneration;
 using ProjectMER.Features;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
@@ -33,16 +34,17 @@ namespace ProjectMER.Events.Handlers.Internal
 
             if (targetTeleport is not null)
             {
-                ev.Player.Position = Room.List.FirstOrDefault
-                    (x => x.Name.ToString() == targetTeleport.Room && RoomExtensions.GetRoomIndex(x) == targetTeleport.Index).GetAbsolutePosition(targetTeleport.Position);
+                ev.Player.Position = targetTeleport.RoomToy.GetAbsolutePosition(targetTeleport.Position);
             }
             else
             {
-                ev.Player.SendConsoleMessage($@"
-( FATAL ERROR )
-{DateTime.Now.ToString()} - {ev.Player.Nickname}
-Teleport ({teleport.ThisTeleportID}) doesn`t found teleporter ({teleport.ToTeleportID})
-Обратитесь в Discord в баги!", "red");
+                ev.Player.SendConsoleMessage($"""
+
+                                              ( FATAL ERROR )
+                                              {DateTime.Now.ToString()} - {ev.Player.Nickname}
+                                              Teleport ({teleport.ThisTeleportID}) doesn`t found teleporter ({teleport.ToTeleportID})
+                                              Обратитесь в Discord в баги!
+                                              """, "red");
             }
         } 
     }

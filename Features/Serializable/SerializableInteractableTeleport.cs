@@ -1,5 +1,6 @@
 ﻿using AdminToys;
 using LabApi.Features.Wrappers;
+using MapGeneration;
 using Mirror;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Interfaces;
@@ -13,6 +14,8 @@ namespace ProjectMER.Features.Serializable
         public string ToTeleportID { get; set; } = "PutID";
         public string ThisTeleportID { get; set; } = "PutID";
         public float InteractionDuration { get; set; } = 1;
+
+        public Room RoomToy { get; set; }
         public bool IsLocked { get; set; } = false;
         public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
         {
@@ -30,6 +33,17 @@ namespace ProjectMER.Features.Serializable
             interactabletoy.NetworkScale = Scale;
             interactabletoy.NetworkPosition = interactabletoy.transform.position;
             interactabletoy.NetworkRotation = interactabletoy.transform.rotation;
+            if (room is not null)
+            {
+                RoomToy = room;
+            }
+            else
+            {
+                if (interactabletoy.gameObject.transform.position.TryGetRoom(out var roomToy))
+                {
+                    RoomToy = LabApi.Features.Wrappers.Room.Get(roomToy);
+                }
+            }
 
             if (instance == null)
                 NetworkServer.Spawn(interactabletoy.gameObject);
