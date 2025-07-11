@@ -1,10 +1,10 @@
 ﻿using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
-using PlayerRoles;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Structs;
 using ProjectMER.Features.ToolGun;
+using UnityEngine;
 using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Commands.Utility;
@@ -68,8 +68,10 @@ public class Attach : ICommand
             OriginalTransform = schematicObject.transform
         };
 
-        schematicObject.gameObject.transform.position = player.Position / 2;
-        schematicObject.gameObject.transform.rotation = player.Rotation;
+        var camera = player.Camera;
+        schematicObject.transform.SetLocalPositionAndRotation(
+            new Vector3(0, camera.localPosition.y - player.GameObject.transform.localScale.y, 0) + camera.localPosition,
+            new Quaternion(0f, camera.localRotation.y, 0f, camera.localRotation.w));
         schematicObject.gameObject.transform.parent = player.GameObject.transform;
         AttachedSchematic.Add(attachedSchematic);
     }
@@ -91,6 +93,11 @@ public class Attach : ICommand
     private static bool TryGetTarget(ArraySegment<string> arguments, ICommandSender sender, out Player? player)
     {
         if (!arguments.Any() && Player.TryGet(sender, out player))
+        {
+            return true;
+        }
+
+        if (int.TryParse(arguments.At(0), out var id) && Player.TryGet(id, out player))
         {
             return true;
         }
