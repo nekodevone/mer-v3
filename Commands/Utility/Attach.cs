@@ -82,7 +82,6 @@ public class Attach : ICommand
     /// <param name="schem">Схемат.</param>
     private static void SchematicUnfollow(AttachedSchematic attachedSchematic)
     {
-        attachedSchematic.Schematic.AttachedPlayer = null;
         attachedSchematic.Schematic.transform.parent = null;
         AttachedSchematic.Remove(attachedSchematic);
     }

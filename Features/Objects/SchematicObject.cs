@@ -59,11 +59,6 @@ public class SchematicObject : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Привязанный к игроку схемат
-	/// </summary>
-	public Player? AttachedPlayer { get; set; }
-
-	/// <summary>
 	/// Gets or sets the scale of the object.
 	/// </summary>
 	public Vector3 Scale
