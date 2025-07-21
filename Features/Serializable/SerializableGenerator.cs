@@ -14,6 +14,7 @@ namespace ProjectMER.Features.Serializable
     public class SerializableGenerator : SerializableObject, IIndicatorDefinition
     {
         public DoorPermissionFlags KeycardPermissions { get; set; }
+        [IgnoreToolgunGUI]
         [YamlIgnore]
         public StructurePositionSync StructurePositionSync { get; set; }
 

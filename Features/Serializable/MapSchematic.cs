@@ -2,7 +2,6 @@ using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
-using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Utils.NonAllocLINQ;
@@ -54,6 +53,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableGenerator> Generators { get; set; } = [];
 
+	public Dictionary<string, SerializablePedestalScp> Pedestals  { get; set; } = [];
+
 	public List<MapEditorObject> SpawnedObjects = [];
 
 	public MapSchematic Merge(MapSchematic other)
@@ -74,6 +75,7 @@ public class MapSchematic
 		InvisibleTeleports.AddRange(other.InvisibleTeleports);
 		Lockers.AddRange(other.Lockers);
 		Generators.AddRange(other.Generators);
+		Pedestals.AddRange(other.Pedestals);
 
 		return this;
 	}
@@ -107,14 +109,11 @@ public class MapSchematic
 		Scp079Cameras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		ShootingTargets.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Teleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
-		Lockers.ForEach(kVP =>
-		{
-			kVP.Value._prevType = kVP.Value.LockerType;
-			SpawnObject(kVP.Key, kVP.Value);
-		});
+		Lockers.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		InvisibleTeleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Clutters.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Generators.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Pedestals.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -200,6 +199,9 @@ public class MapSchematic
 		
 		if (Generators.TryAdd(id, serializableObject))
 			return true;
+		
+		if (Pedestals.TryAdd(id, serializableObject))
+			return true;
 
 		IsDirty = dirtyPrevValue;
 		return false;
@@ -256,6 +258,9 @@ public class MapSchematic
 			return true;
 		
 		if (Generators.Remove(id))
+			return true;
+
+		if (Pedestals.Remove(id))
 			return true;
 
 		IsDirty = dirtyPrevValue;
