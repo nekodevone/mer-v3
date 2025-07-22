@@ -4,6 +4,7 @@ using Mirror;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using UnityEngine;
+using YamlDotNet.Serialization;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable.Schematics;
@@ -12,6 +13,7 @@ public class SerializableSchematic : SerializableObject
 {
 	public string SchematicName { get; set; } = "None";
 	
+	[YamlIgnore]
 	public SchematicObject SchematicObject { get; set; }
 
 	public override GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
