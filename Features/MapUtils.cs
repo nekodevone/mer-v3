@@ -14,6 +14,8 @@ public static class MapUtils
 
 	public static Dictionary<string, MapSchematic> LoadedMaps { get; private set; } = [];
 
+	public static HashSet<MapEditorObject> LockedObjects { get; set; }
+
 	public static void SaveMap(string mapName)
 	{
 		if (mapName == UntitledMapName)

@@ -35,6 +35,12 @@ public class Delete : ICommand
 
 		if (ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject selectedmapEditorObject))
 		{
+			if (MapUtils.LockedObjects.Contains(selectedmapEditorObject))
+			{
+				response = "This object is locked.";
+				return false;
+			}
+
 			ToolGunHandler.DeleteObject(selectedmapEditorObject);
 			response = "You've successfully deleted the object!";
 
@@ -75,6 +81,12 @@ public class Delete : ICommand
 				case "id":
 					if (ToolGunHandler.TryGetObjectById(slug, out MapEditorObject idObject))
 					{
+						if (MapUtils.LockedObjects.Contains(idObject))
+						{
+							response = "This object is locked.";
+							return false;
+						}
+
 						ToolGunHandler.DeleteObject(idObject);
 						response = "You've successfully deleted the object!";
 						return true;
