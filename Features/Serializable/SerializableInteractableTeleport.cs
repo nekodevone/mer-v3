@@ -5,6 +5,7 @@ using Mirror;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Interfaces;
 using UnityEngine;
+using YamlDotNet.Serialization;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable
@@ -15,6 +16,7 @@ namespace ProjectMER.Features.Serializable
         public string ThisTeleportID { get; set; } = "PutID";
         public float InteractionDuration { get; set; } = 1;
 
+        [YamlIgnore]
         public Room RoomToy { get; set; }
         public bool IsLocked { get; set; } = false;
         public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
