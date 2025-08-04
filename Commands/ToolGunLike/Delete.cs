@@ -1,6 +1,7 @@
 using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
+using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 
@@ -32,18 +33,71 @@ public class Delete : ICommand
 			return false;
 		}
 
-		if (arguments.Count > 0)
+		if (ToolGunHandler.TryGetSelectedMapObject(player, out MapEditorObject selectedmapEditorObject))
 		{
-			string id = arguments.At(0);
-			if (ToolGunHandler.TryGetObjectById(id, out MapEditorObject idObject))
+			if (MapUtils.LockedObjects.Contains(selectedmapEditorObject))
 			{
-				ToolGunHandler.DeleteObject(idObject);
-				response = "You've successfully deleted the object!";
-				return true;
+				response = "This object is locked.";
+				return false;
 			}
 
-			response = $"Unable to find object with ID of {id}!";
-			return false;
+			ToolGunHandler.DeleteObject(selectedmapEditorObject);
+			response = "You've successfully deleted the object!";
+
+			return true;
+		}
+
+		if (arguments.Count > 1)
+		{
+			var slug = arguments.At(1);
+			switch (arguments.At(0))
+			{
+				case "map":
+					var map = MapUtils.LoadedMaps[slug];
+
+					if (map is not null)
+					{
+						MapUtils.UnloadMap(slug);
+						response = "Вы успешно удалили объект!";
+						return true;
+					}
+
+					response = "Подобного объекта не существует!";
+					return false;
+				case "schematic":
+
+					foreach (var obj in MapUtils.LoadedMaps.Where
+						         (obj => obj.Value.Schematics.Any
+							         (schematics =>
+								         schematics.Value.SchematicName == slug)))
+					{
+						ToolGunHandler.DeleteSchematicObject(obj.Value);
+						response = "Вы успешно удалили объект!";
+						return true;
+					}
+
+					response = "Объекта не существует!";
+					return false;
+				case "id":
+					if (ToolGunHandler.TryGetObjectById(slug, out MapEditorObject idObject))
+					{
+						if (MapUtils.LockedObjects.Contains(idObject))
+						{
+							response = "This object is locked.";
+							return false;
+						}
+
+						ToolGunHandler.DeleteObject(idObject);
+						response = "You've successfully deleted the object!";
+						return true;
+					}
+
+					response = $"Unable to find object with ID of {slug}!";
+					return false;
+				default:
+					response = "Введены неправильные аргументы!";
+					return false;
+			}
 		}
 
 		if (ToolGunHandler.TryGetMapObject(player, out MapEditorObject mapEditorObject))

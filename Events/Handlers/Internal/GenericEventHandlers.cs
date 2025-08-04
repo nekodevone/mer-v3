@@ -5,6 +5,8 @@ using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
+using ProjectMER.Commands.Utility;
+using Utils.NonAllocLINQ;
 
 namespace ProjectMER.Events.Handlers.Internal;
 
@@ -13,7 +15,7 @@ public class GenericEventsHandler : CustomEventsHandler
 	public override void OnServerWaitingForPlayers()
 	{
 		PrefabManager.RegisterPrefabs();
-
+		MapUtils.LockedObjects.Clear();
 		MapUtils.LoadedMaps.Clear();
 		ToolGunItem.ItemDictionary.Clear();
 		ToolGunHandler.PlayerSelectedObjectDict.Clear();
@@ -55,6 +57,22 @@ public class GenericEventsHandler : CustomEventsHandler
 				Logger.Error(e);
 			}
 		});
+	}
+
+	public override void OnPlayerDying(PlayerDyingEventArgs ev)
+	{
+		if (!ev.IsAllowed)
+		{
+			return;
+		}
+
+		if (!Attach.AttachedSchematic.TryGetFirst(attach => attach.Player == ev.Player, out var schematic))
+		{
+			return;
+		}
+
+		schematic.Schematic.Destroy();
+		Attach.AttachedSchematic.Remove(schematic);
 	}
 
 	public override void OnPlayerInteractingShootingTarget(PlayerInteractingShootingTargetEventArgs ev)

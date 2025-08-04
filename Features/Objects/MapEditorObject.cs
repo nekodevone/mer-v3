@@ -1,5 +1,6 @@
 using LabApi.Features.Wrappers;
 using MEC;
+using ProjectMER.Commands.Utility;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
@@ -74,6 +75,20 @@ public class MapEditorObject : MonoBehaviour
 	public void Destroy()
 	{
 		IndicatorObject.TryDestroyIndicator(this);
+
+		var schematic = gameObject;
 		Destroy(gameObject);
+
+		if (schematic.TryGetComponent<SchematicObject>(out var schematicObject))
+		{
+			return;
+		}
+
+		var attachedSchematic = Attach.AttachedSchematic.FirstOrDefault(schematic => schematic.Schematic == schematicObject);
+
+		if (attachedSchematic != null)
+		{
+			Attach.AttachedSchematic.Remove(attachedSchematic);
+		}
 	}
 }

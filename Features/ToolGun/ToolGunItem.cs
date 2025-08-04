@@ -7,7 +7,6 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
-using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UserSettings.ServerSpecific;
 
@@ -32,7 +31,10 @@ public class ToolGunItem
 		{ ToolGunObjectType.ShootingTarget, typeof(SerializableShootingTarget) },
 		{ ToolGunObjectType.Locker, typeof(SerializableLocker) },
 		{ ToolGunObjectType.Teleport, typeof(SerializableTeleport) },
-		{ ToolGunObjectType.Interactable, typeof(SerializableInteractable) },
+		{ ToolGunObjectType.Clutter, typeof(SerializableClutter) },
+		{ ToolGunObjectType.InteractableTeleport, typeof(SerializableInteractableTeleport) },
+		{ ToolGunObjectType.Generator, typeof(SerializableGenerator) },
+		{ ToolGunObjectType.Pedestal, typeof(SerializablePedestalScp) }
 	};
 
 	private ToolGunObjectType _selectedObjectToSpawn;
@@ -48,11 +50,12 @@ public class ToolGunItem
 				return;
 			}
 
-			if (_selectedObjectToSpawn < 0)
+			if (_selectedObjectToSpawn >= 0)
 			{
-				_selectedObjectToSpawn = (ToolGunObjectType)(TypesDictionary.Count - 1);
 				return;
 			}
+
+			_selectedObjectToSpawn = (ToolGunObjectType)(TypesDictionary.Count - 1);
 		}
 	}
 

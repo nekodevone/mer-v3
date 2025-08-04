@@ -4,8 +4,11 @@ using InventorySystem.Items.Firearms.Attachments;
 using MapGeneration.Distributors;
 using Mirror;
 using UnityEngine;
+using CapybaraToy = AdminToys.CapybaraToy;
 using LightSourceToy = AdminToys.LightSourceToy;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
+using Locker = MapGeneration.Distributors.Locker;
+using TextToy = AdminToys.TextToy;
 
 namespace ProjectMER.Features;
 
@@ -39,8 +42,23 @@ public static class PrefabManager
 	public static ShootingTarget ShootingTargetDBoy { get; private set; }
 	public static ShootingTarget ShootingTargetBinary { get; private set; }
 
+	public static GameObject HczOneSidedPrefab { get; private set; }
+	public static GameObject HczTwoSidedPrefab { get; private set; }
+	public static GameObject HczOpenHallwayPrefab { get; private set; }
+	public static GameObject HczOpenHallwayConstructAPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterAPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterBPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterCPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterDPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterEPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterFPrefab { get; private set; }
+	public static GameObject HczOpenHallwayClutterGPrefab { get; private set; }
+
+	
+	public static InvisibleInteractableToy InteractableToyPrefab { get; private set; }
+
 	public static Locker PedestalScp018 { get; private set; }
-	public static Locker PedstalScp207 { get; private set; }
+	public static Locker PedestalScp207 { get; private set; }
 	public static Locker PedestalScp244 { get; private set; }
 	public static Locker PedestalScp268 { get; private set; }
 	public static Locker LockerLargeGun { get; private set; }
@@ -49,9 +67,10 @@ public static class PrefabManager
 	public static Locker LockerRegularMedkit { get; private set; }
 	public static Locker LockerAdrenalineMedkit { get; private set; }
 	public static Locker PedestalScp500 { get; private set; }
-	public static Locker PedstalScp1853 { get; private set; }
+	public static Locker PedestalScp1853 { get; private set; }
 	public static Locker PedestalScp2176 { get; private set; }
 	public static Locker PedestalScp1576 { get; private set; }
+
 	public static Locker PedestalAntiScp207 { get; private set; }
 	public static Locker PedestalScp1344 { get; private set; }
 	public static Locker LockerExperimentalWeapon { get; private set; }
@@ -59,15 +78,70 @@ public static class PrefabManager
 	public static WaypointToy Waypoint { get; private set; }
 	public static SpawnableCullingParent CullingParent { get; private set; }
 
+	public static Scp079Generator Scp079Generator { get; private set; }
+
 	public static void RegisterPrefabs()
 	{
-		foreach (GameObject gameObject in NetworkClient.prefabs.Values)
+		foreach (var pair in NetworkClient.prefabs)
 		{
+			var gameObject = pair.Value;
+
 			if (gameObject.TryGetComponent(out PrimitiveObjectToy primitiveObjectToy))
 			{
 				PrimitiveObject = primitiveObjectToy;
 				continue;
 			}
+
+			if (gameObject.TryGetComponent(out InvisibleInteractableToy interactableToy))
+			{
+				InteractableToyPrefab = interactableToy;
+				continue;
+			}
+
+			if (gameObject.TryGetComponent(out Scp079Generator scp079Generator))
+			{
+				Scp079Generator = scp079Generator;
+				continue;
+			}
+
+			switch (pair.Key)
+			{
+				/*
+				case 400539138:
+					HczOneSidedPrefab = gameObject;
+					continue;
+				case 2060920286:
+					HczTwoSidedPrefab = gameObject;
+					continue;
+				case 3343949480:
+					HczOpenHallwayPrefab = gameObject;
+					continue; */
+				case 3999209566:
+					HczOpenHallwayConstructAPrefab = gameObject;
+					continue;
+				case 38976586:
+					HczOpenHallwayClutterAPrefab = gameObject;
+					continue;
+				case 1687661105:
+					HczOpenHallwayClutterBPrefab = gameObject;
+					continue;
+				case 147203050:
+					HczOpenHallwayClutterCPrefab = gameObject;
+					continue;
+				case 1102032353:
+					HczOpenHallwayClutterDPrefab = gameObject;
+					continue;
+				case 2490430134:
+					HczOpenHallwayClutterEPrefab = gameObject;
+					continue;
+				case 2673083832:
+					HczOpenHallwayClutterFPrefab = gameObject;
+					continue;
+				case 2536312960:
+					HczOpenHallwayClutterGPrefab = gameObject;
+					continue;
+			}
+
 
 			if (gameObject.TryGetComponent(out LightSourceToy lightSourceToy))
 			{
@@ -153,12 +227,6 @@ public static class PrefabManager
 				continue;
 			}
 
-			if (gameObject.TryGetComponent(out InvisibleInteractableToy interactableToy))
-			{
-				Interactable = interactableToy;
-				continue;
-			}
-
 			if (gameObject.TryGetComponent(out Locker locker))
 			{
 				switch (gameObject.name)
@@ -167,7 +235,7 @@ public static class PrefabManager
 						PedestalScp018 = locker;
 						continue;
 					case "Scp207PedestalStructure Variant":
-						PedstalScp207 = locker;
+						PedestalScp207 = locker;
 						continue;
 					case "Scp244PedestalStructure Variant":
 						PedestalScp244 = locker;
@@ -194,7 +262,7 @@ public static class PrefabManager
 						PedestalScp500 = locker;
 						continue;
 					case "Scp1853PedestalStructure Variant":
-						PedstalScp1853 = locker;
+						PedestalScp1853 = locker;
 						continue;
 					case "Scp2176PedestalStructure Variant":
 						PedestalScp2176 = locker;
@@ -219,13 +287,12 @@ public static class PrefabManager
 				Waypoint = waypointToy;
 				continue;
 			}
-			
+
 			if (gameObject.TryGetComponent(out SpawnableCullingParent spawnableCullingParent))
 			{
 				CullingParent = spawnableCullingParent;
 				continue;
 			}
-
 		}
 	}
 }

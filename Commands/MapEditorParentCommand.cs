@@ -44,9 +44,14 @@ public class MapEditorParentCommand : ParentCommand
 		RegisterCommand(new Create());
 		RegisterCommand(new Delete());
 		RegisterCommand(new Select());
+
+		RegisterCommand(new Attach());
+		RegisterCommand(new SpawnedCount());
+		RegisterCommand(new Find());
+		RegisterCommand(new Lock());
 	}
 
-	protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+	public override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
 	{
 		StringBuilder sb = StringBuilderPool.Shared.Rent();
 		sb.AppendLine();
@@ -56,7 +61,7 @@ public class MapEditorParentCommand : ParentCommand
 		{
 			if (sender.HasAnyPermission($"mpr.{command.Command}"))
 			{
-				sb.Append($"\n\n<color=yellow><b>- {command.Command} ({string.Join(", ", command.Aliases)})</b></color>\n<color=white>{command.Description}</color>");
+				sb.Append($"\n\n<color=yellow><b>- {command.Command} </b></color>\n<color=white>{command.Description}</color>");
 			}
 		}
 

@@ -40,6 +40,8 @@ public class ProjectMER : Plugin<Config>
 	public ActionOnEventHandlers AcionOnEventHandlers { get; } = new();
 
 	public PickupEventsHandler PickupEventsHandler { get; } = new();
+	
+	public InvisibleTeleportEventsHandler TeleportEventsHandler { get; } = new();
 
 	public override void Enable()
 	{
@@ -73,6 +75,7 @@ public class ProjectMER : Plugin<Config>
 		CustomHandlersManager.RegisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.RegisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.RegisterEventsHandler(PickupEventsHandler);
+		CustomHandlersManager.RegisterEventsHandler(TeleportEventsHandler);
 
 		_harmony = new Harmony($"michal78900.mapEditorReborn-{DateTime.Now.Ticks}");
 		_harmony.PatchAll();
@@ -109,6 +112,7 @@ public class ProjectMER : Plugin<Config>
 				Logger.Error(e);
 			}
 		});
+		CustomHandlersManager.RegisterEventsHandler(TeleportEventsHandler);
 	}
 
 	public override void Disable()
@@ -120,6 +124,7 @@ public class ProjectMER : Plugin<Config>
 		CustomHandlersManager.UnregisterEventsHandler(ToolGunEventsHandler);
 		CustomHandlersManager.UnregisterEventsHandler(AcionOnEventHandlers);
 		CustomHandlersManager.UnregisterEventsHandler(PickupEventsHandler);
+		CustomHandlersManager.UnregisterEventsHandler(TeleportEventsHandler);
 
 		_harmony.UnpatchAll();
 		_mapFileSystemWatcher?.Dispose();
@@ -133,5 +138,5 @@ public class ProjectMER : Plugin<Config>
 
 	public override Version Version => new Version(2025, 8, 4, 1);
 
-	public override Version RequiredApiVersion => new Version(1, 0, 0, 0);
+	public override Version RequiredApiVersion => new Version(4, 2, 0, 0);
 }

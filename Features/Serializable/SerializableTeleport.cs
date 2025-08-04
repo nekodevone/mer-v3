@@ -71,7 +71,8 @@ public class SerializableTeleport : SerializableObject, IIndicatorDefinition
 			arrowX.name = "Arrow X Axis";
 			arrowX.transform.parent = arrowY.transform;
 
-			arrow = GameObject.Instantiate(PrefabManager.PrimitiveObject, arrowX.transform);
+			arrow = GameObject.Instantiate(PrefabManager.PrimitiveObject);
+			arrow.transform.parent = arrowX.transform;
 			arrow.transform.localPosition = root.transform.forward;
 			arrow.NetworkPrimitiveType = PrimitiveType.Cube;
 			arrow.NetworkPrimitiveFlags = PrimitiveFlags.Visible;

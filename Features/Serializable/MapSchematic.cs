@@ -2,7 +2,6 @@ using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
-using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Utils.NonAllocLINQ;
@@ -38,17 +37,23 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableText> Texts { get; set; } = [];
 
-	public Dictionary<string, SerializableInteractable> Interactables { get; set; } = [];
-
 	public Dictionary<string, SerializableScp079Camera> Scp079Cameras { get; set; } = [];
-
+	
 	public Dictionary<string, SerializableShootingTarget> ShootingTargets { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
 
+	public Dictionary<string, SerializableClutter> Clutters { get; set; } = [];
+	
+	public Dictionary<string, SerializableInteractableTeleport> InvisibleTeleports { get; set; } = [];
+
 	public Dictionary<string, SerializableTeleport> Teleports { get; set; } = [];
 
 	public Dictionary<string, SerializableLocker> Lockers { get; set; } = [];
+
+	public Dictionary<string, SerializableGenerator> Generators { get; set; } = [];
+
+	public Dictionary<string, SerializablePedestalScp> Pedestals  { get; set; } = [];
 
 	public List<MapEditorObject> SpawnedObjects = [];
 
@@ -62,12 +67,16 @@ public class MapSchematic
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Capybaras.AddRange(other.Capybaras);
 		Texts.AddRange(other.Texts);
-		Interactables.AddRange(other.Interactables);
 		Schematics.AddRange(other.Schematics);
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);
 		Teleports.AddRange(other.Teleports);
+		Clutters.AddRange(other.Clutters);
+		InvisibleTeleports.AddRange(other.InvisibleTeleports);
 		Lockers.AddRange(other.Lockers);
+		Generators.AddRange(other.Generators);
+		Pedestals.AddRange(other.Pedestals);
+		Schematics.AddRange(other.Schematics);
 
 		return this;
 	}
@@ -97,16 +106,15 @@ public class MapSchematic
 		PlayerSpawnpoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Capybaras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Texts.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
-		Interactables.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Schematics.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Scp079Cameras.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		ShootingTargets.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Teleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
-		Lockers.ForEach(kVP =>
-		{
-			kVP.Value._prevType = kVP.Value.LockerType;
-			SpawnObject(kVP.Key, kVP.Value);
-		});
+		Lockers.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		InvisibleTeleports.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Clutters.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Generators.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Pedestals.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -169,9 +177,6 @@ public class MapSchematic
 		if (Texts.TryAdd(id, serializableObject))
 			return true;
 
-		if (Interactables.TryAdd(id, serializableObject))
-			return true;
-
 		if (Schematics.TryAdd(id, serializableObject))
 			return true;
 
@@ -183,8 +188,20 @@ public class MapSchematic
 
 		if (Teleports.TryAdd(id, serializableObject))
 			return true;
+		
+		if (InvisibleTeleports.TryAdd(id, serializableObject))
+			return true;
+        
+		if (Clutters.TryAdd(id, serializableObject))
+			return true;
 
 		if (Lockers.TryAdd(id, serializableObject))
+			return true;
+		
+		if (Generators.TryAdd(id, serializableObject))
+			return true;
+		
+		if (Pedestals.TryAdd(id, serializableObject))
 			return true;
 
 		IsDirty = dirtyPrevValue;
@@ -220,9 +237,6 @@ public class MapSchematic
 		if (Texts.Remove(id))
 			return true;
 
-		if (Interactables.Remove(id))
-			return true;
-
 		if (Schematics.Remove(id))
 			return true;
 
@@ -235,7 +249,19 @@ public class MapSchematic
 		if (Teleports.Remove(id))
 			return true;
 
+		if (InvisibleTeleports.Remove(id))
+			return true;
+	            
+		if (Clutters.Remove(id))
+			return true;
+
 		if (Lockers.Remove(id))
+			return true;
+		
+		if (Generators.Remove(id))
+			return true;
+
+		if (Pedestals.Remove(id))
 			return true;
 
 		IsDirty = dirtyPrevValue;

@@ -1,5 +1,6 @@
 using LabApi.Features.Wrappers;
 using MapGeneration;
+using ProjectMER.Commands.Utility;
 using ProjectMER.Configs;
 using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
@@ -78,11 +79,29 @@ public static class ToolGunHandler
 
 	public static void DeleteObject(MapEditorObject mapEditorObject)
 	{
+		if (MapUtils.LockedObjects.Contains(mapEditorObject))
+		{
+			return;
+		}
+
 		IndicatorObject.TryDestroyIndicator(mapEditorObject);
 
 		MapSchematic map = MapUtils.LoadedMaps[mapEditorObject.MapName];
 		if (map.TryRemoveElement(mapEditorObject.Id))
 			map.DestroyObject(mapEditorObject.Id);
+
+		var schematic = Attach.AttachedSchematic.FirstOrDefault(attch =>
+			attch.Schematic == mapEditorObject.gameObject.GetComponent<SchematicObject>());
+
+		if (schematic != null)
+		{
+			Attach.AttachedSchematic.Remove(schematic);
+		}
+	}
+
+	public static void DeleteSchematicObject(MapSchematic mapEditorObject)
+	{
+		mapEditorObject.SpawnedObjects.Clear();
 	}
 
 	public static bool TryGetMapObject(Player player, out MapEditorObject mapEditorObject)

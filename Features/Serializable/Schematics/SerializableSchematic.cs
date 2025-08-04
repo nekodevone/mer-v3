@@ -6,6 +6,7 @@ using ProjectMER.Events.Handlers;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using UnityEngine;
+using YamlDotNet.Serialization;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 
 namespace ProjectMER.Features.Serializable.Schematics;
@@ -13,6 +14,9 @@ namespace ProjectMER.Features.Serializable.Schematics;
 public class SerializableSchematic : SerializableObject
 {
 	public string SchematicName { get; set; } = "None";
+	
+	[YamlIgnore]
+	public SchematicObject SchematicObject { get; set; }
 
 	public override GameObject? SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
@@ -52,6 +56,7 @@ public class SerializableSchematic : SerializableObject
 			schematic.gameObject.AddComponent<SchematicObject>().Init(data);
 		}
 
+		SchematicObject = schematic.gameObject.GetComponent<SchematicObject>();
 		return schematic.gameObject;
 	}
 }

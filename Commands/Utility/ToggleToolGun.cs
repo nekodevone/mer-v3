@@ -3,7 +3,7 @@ using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.ToolGun;
 
-namespace ProjectMER.Commands;
+namespace ProjectMER.Commands.Utility;
 
 public class ToggleToolGun : ICommand
 {
