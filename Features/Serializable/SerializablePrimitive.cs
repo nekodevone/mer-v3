@@ -5,6 +5,7 @@ using Mirror;
 using ProjectMER.Features.Extensions;
 using UnityEngine;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
+using SpawnableCullingParent = LabApi.Features.Wrappers.SpawnableCullingParent;
 
 namespace ProjectMER.Features.Serializable;
 
@@ -39,6 +40,8 @@ public class SerializablePrimitive : SerializableObject
 		primitive.NetworkMaterialColor = Color.GetColorFromString();
 		primitive.NetworkPrimitiveType = PrimitiveType;
 		primitive.NetworkPrimitiveFlags = PrimitiveFlags;
+		var cullingParent = SpawnableCullingParent.Create(position, Scale);
+		primitive.transform.parent = cullingParent.Transform.parent;
 
 		if (instance == null)
 			NetworkServer.Spawn(primitive.gameObject);

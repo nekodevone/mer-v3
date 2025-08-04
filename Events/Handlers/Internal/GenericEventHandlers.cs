@@ -15,7 +15,7 @@ public class GenericEventsHandler : CustomEventsHandler
 	public override void OnServerWaitingForPlayers()
 	{
 		PrefabManager.RegisterPrefabs();
-		MapUtils.LockedObjects.Clear();
+		MapUtils.LockedObjects = [];
 		MapUtils.LoadedMaps.Clear();
 		ToolGunItem.ItemDictionary.Clear();
 		ToolGunHandler.PlayerSelectedObjectDict.Clear();
