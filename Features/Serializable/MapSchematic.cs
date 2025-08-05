@@ -37,8 +37,6 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableText> Texts { get; set; } = [];
 
-	public Dictionary<string, SerializableInteractable> Interactables { get; set; } = [];
-
 	public Dictionary<string, SerializableScp079Camera> Scp079Cameras { get; set; } = [];
 
 	public Dictionary<string, SerializableShootingTarget> ShootingTargets { get; set; } = [];
@@ -71,7 +69,6 @@ public class MapSchematic
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Capybaras.AddRange(other.Capybaras);
 		Texts.AddRange(other.Texts);
-		Interactables.AddRange(other.Interactables);
 		Schematics.AddRange(other.Schematics);
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);

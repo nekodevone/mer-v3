@@ -7,7 +7,6 @@ using ProjectMER.Features.Enums;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
-using ProjectMER.Features.Serializable.Lockers;
 using ProjectMER.Features.Serializable.Schematics;
 using UserSettings.ServerSpecific;
 
