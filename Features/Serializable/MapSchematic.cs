@@ -37,8 +37,10 @@ public class MapSchematic
 
 	public Dictionary<string, SerializableText> Texts { get; set; } = [];
 
+	public Dictionary<string, SerializableInteractable> Interactables { get; set; } = [];
+
 	public Dictionary<string, SerializableScp079Camera> Scp079Cameras { get; set; } = [];
-	
+
 	public Dictionary<string, SerializableShootingTarget> ShootingTargets { get; set; } = [];
 
 	public Dictionary<string, SerializableSchematic> Schematics { get; set; } = [];
@@ -55,6 +57,8 @@ public class MapSchematic
 
 	public Dictionary<string, SerializablePedestalScp> Pedestals  { get; set; } = [];
 
+	public Dictionary<string, SerializableWaypoint> Waypoints { get; set; } = [];
+
 	public List<MapEditorObject> SpawnedObjects = [];
 
 	public MapSchematic Merge(MapSchematic other)
@@ -67,6 +71,7 @@ public class MapSchematic
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Capybaras.AddRange(other.Capybaras);
 		Texts.AddRange(other.Texts);
+		Interactables.AddRange(other.Interactables);
 		Schematics.AddRange(other.Schematics);
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);
@@ -77,6 +82,7 @@ public class MapSchematic
 		Generators.AddRange(other.Generators);
 		Pedestals.AddRange(other.Pedestals);
 		Schematics.AddRange(other.Schematics);
+		Waypoints.AddRange(other.Waypoints);
 
 		return this;
 	}
@@ -115,6 +121,7 @@ public class MapSchematic
 		Clutters.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Generators.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Pedestals.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		Waypoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -204,6 +211,9 @@ public class MapSchematic
 		if (Pedestals.TryAdd(id, serializableObject))
 			return true;
 
+		if (Waypoints.TryAdd(id, serializableObject))
+			return true;
+
 		IsDirty = dirtyPrevValue;
 		return false;
 	}
@@ -262,6 +272,9 @@ public class MapSchematic
 			return true;
 
 		if (Pedestals.Remove(id))
+			return true;
+
+		if (Waypoints.Remove(id))
 			return true;
 
 		IsDirty = dirtyPrevValue;

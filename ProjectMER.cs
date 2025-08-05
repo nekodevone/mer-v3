@@ -136,7 +136,7 @@ public class ProjectMER : Plugin<Config>
 
 	public override string Author => "Michal78900";
 
-	public override Version Version => new Version(2025, 8, 4, 1);
+	public override Version Version => new Version(2025, 8, 4, 2);
 
 	public override Version RequiredApiVersion => new Version(4, 2, 0, 0);
 }
