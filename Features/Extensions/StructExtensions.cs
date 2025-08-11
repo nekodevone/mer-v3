@@ -70,4 +70,15 @@ public static class StructExtensions
 		vector = new Vector3(xValue, yValue, zValue);
 		return true;
 	}
+
+	public static bool TryGetQuaternion(string x, string y, string z, out Quaternion vector)
+	{
+		vector = Quaternion.identity;
+
+		if (!x.TryParseToFloat(out float xValue) || !y.TryParseToFloat(out float yValue) || !z.TryParseToFloat(out float zValue))
+			return false;
+
+		vector = new Quaternion(xValue, yValue, zValue, 1f);
+		return true;
+	}
 }

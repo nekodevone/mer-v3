@@ -79,11 +79,6 @@ public static class ToolGunHandler
 
 	public static void DeleteObject(MapEditorObject mapEditorObject)
 	{
-		if (MapUtils.LockedObjects.Contains(mapEditorObject))
-		{
-			return;
-		}
-
 		IndicatorObject.TryDestroyIndicator(mapEditorObject);
 
 		MapSchematic map = MapUtils.LoadedMaps[mapEditorObject.MapName];

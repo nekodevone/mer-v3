@@ -1,6 +1,7 @@
 ﻿using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
+using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 
@@ -44,6 +45,7 @@ public class Bring : ICommand
 
 		mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(player.Position);
 		mapEditorObject.UpdateObjectAndCopies();
+		MapUtils.SetOrUpdateObjectCollider(mapEditorObject.gameObject);
 
 		response = mapEditorObject.Base.Position.ToString("F3");
 		return true;

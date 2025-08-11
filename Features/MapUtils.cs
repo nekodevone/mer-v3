@@ -1,8 +1,12 @@
+using LabApi.Features.Wrappers;
+using Mirror;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.Serializable.Schematics;
+using UnityEngine;
 using Utf8Json;
 using YamlDotNet.Core;
+using Object = UnityEngine.Object;
 
 namespace ProjectMER.Features;
 
@@ -186,5 +190,25 @@ public static class MapUtils
 		uint value = Math.Min(((uint)s.GetHashCode()) / 255, 16777215);
 		string colorHex = value.ToString("X6");
 		return $"<color=#{colorHex}><b>{s}</b></color>";
+	}
+
+	public static void SetOrUpdateObjectCollider(GameObject gameObject)
+	{
+		var renderers = gameObject.GetComponentsInChildren<Renderer>();
+		var bounds = renderers[0].bounds;
+		for (var i = 1; i < renderers.Length; ++i)
+		{
+			bounds.Encapsulate(renderers[i].bounds);
+		}
+
+		var cullingParent = Object.Instantiate(PrefabManager.CullingParent);
+		cullingParent.NetworkBoundsPosition = bounds.center;
+		cullingParent.NetworkBoundsSize = bounds.size;
+		gameObject.isStatic = false;
+		cullingParent.DrawDebugBounds(
+			new Color(UnityEngine.Random.Range(0, 255), UnityEngine.Random.Range(0, 255), UnityEngine.Random.Range(0, 255)), 40f);
+		cullingParent.SetVisibility(true);
+		NetworkServer.Spawn(cullingParent.gameObject); 
+		gameObject.transform.SetParent(cullingParent.transform);
 	}
 }

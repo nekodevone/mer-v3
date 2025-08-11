@@ -3,6 +3,7 @@ using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
+using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
@@ -50,6 +51,7 @@ public class Grab : ICommand
 			Room room = mapEditorObject.Room;
 			mapEditorObject.Base.Position = room.Name == MapGeneration.RoomName.Outside ? mapEditorObject.transform.position : mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position);
 			mapEditorObject.UpdateObjectAndCopies();
+			MapUtils.SetOrUpdateObjectCollider(mapEditorObject.gameObject);
 
 			response = "Ungrabbed";
 			return true;
@@ -66,6 +68,7 @@ public class Grab : ICommand
 		Vector3 position = player.Camera.position;
 		float multiplier = Vector3.Distance(position, mapEditorObject.transform.position);
 		Vector3 prevPos = position + (player.Camera.forward * multiplier);
+		mapEditorObject.transform.parent = null;
 
 		while (true)
 		{
@@ -80,18 +83,19 @@ public class Grab : ICommand
 				continue;
 
 			prevPos = newPos;
-			mapEditorObject.transform.position = prevPos;
-			if (mapEditorObject.Base is SerializableDoor _)
+			if (mapEditorObject.Base is not SerializableDoor _)
 			{
-				NetworkServer.UnSpawn(mapEditorObject.gameObject);
-				NetworkServer.Spawn(mapEditorObject.gameObject);
+				continue;
 			}
+			NetworkServer.UnSpawn(mapEditorObject.gameObject);
+			NetworkServer.Spawn(mapEditorObject.gameObject);
 		}
 
 		GrabbingPlayers.Remove(player);
 		if (mapEditorObject != null)
 		{
-			mapEditorObject.Base.Position = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position);
+			var transformPoint = mapEditorObject.Room.Transform.InverseTransformPoint(mapEditorObject.transform.position);
+			mapEditorObject.Base.Position = transformPoint;
 			mapEditorObject.UpdateObjectAndCopies();
 		}
 	}

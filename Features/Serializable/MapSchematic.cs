@@ -1,15 +1,20 @@
 using LabApi.Features.Wrappers;
+using Mirror;
 using NorthwoodLib.Pools;
+using ProjectMER.Configs;
 using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable.Schematics;
 using UnityEngine;
 using Utils.NonAllocLINQ;
+using Object = UnityEngine.Object;
 
 namespace ProjectMER.Features.Serializable;
 
 public class MapSchematic
 {
+	private static Config Config => ProjectMER.Singleton.Config!;
+
 	public MapSchematic() { }
 
 	public MapSchematic(string mapName)
@@ -134,6 +139,11 @@ public class MapSchematic
 
 				MapEditorObject mapEditorObject = gameObject.AddComponent<MapEditorObject>().Init(serializableObject, Name, id, room);
 				SpawnedObjects.Add(mapEditorObject);
+
+				if (Config.OptimizingVariant)
+				{
+					MapUtils.SetOrUpdateObjectCollider(gameObject);
+				}
 			}
 		}
 
@@ -276,5 +286,29 @@ public class MapSchematic
 
 		IsDirty = dirtyPrevValue;
 		return false;
+	}
+
+	/// <summary>
+	/// Получить AABB область для схемата
+	/// </summary>
+	private static GameObject GetObjectCollider(GameObject gameObject)
+	{
+		var renderers = gameObject.GetComponentsInChildren<Renderer>();
+		var bounds = renderers[0].bounds;
+		for (var i = 1; i < renderers.Length; ++i)
+		{
+			bounds.Encapsulate(renderers[i].bounds);
+		}
+
+		var cullingParent = Object.Instantiate(PrefabManager.CullingParent);
+		cullingParent.NetworkBoundsPosition = bounds.center;
+		cullingParent.NetworkBoundsSize = bounds.size;
+		gameObject.isStatic = false;
+		cullingParent.DrawDebugBounds(
+			new Color(UnityEngine.Random.Range(0, 255), UnityEngine.Random.Range(0, 255), UnityEngine.Random.Range(0, 255)), 40f);
+		cullingParent.SetVisibility(true);
+		NetworkServer.Spawn(cullingParent.gameObject);
+		gameObject.transform.SetParent(cullingParent.transform);
+		return cullingParent.gameObject;
 	}
 }

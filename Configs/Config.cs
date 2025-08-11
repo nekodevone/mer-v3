@@ -52,4 +52,7 @@ public class Config
 	public List<string> OnWarheadStarted { get; set; } = [];
 	public List<string> OnWarheadStopped { get; set; } = [];
 	public List<string> OnWarheadDetonated { get; set; } = [];
+
+	[Description("Включать режим оптимизации или нет")]
+	public bool OptimizingVariant { get; set; } = false;
 }

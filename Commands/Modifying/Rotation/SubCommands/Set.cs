@@ -1,6 +1,7 @@
 ﻿using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
+using ProjectMER.Features;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.ToolGun;
 using UnityEngine;
@@ -48,6 +49,7 @@ public class Set : ICommand
 		{
 			mapEditorObject.Base.Rotation = newRotation;
 			mapEditorObject.UpdateObjectAndCopies();
+			MapUtils.SetOrUpdateObjectCollider(mapEditorObject.gameObject);
 
 			response = mapEditorObject.Base.Rotation.ToString("F3");
 			return true;
