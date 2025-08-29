@@ -74,7 +74,6 @@ public class MapSchematic
 		PlayerSpawnpoints.AddRange(other.PlayerSpawnpoints);
 		Capybaras.AddRange(other.Capybaras);
 		Texts.AddRange(other.Texts);
-		Schematics.AddRange(other.Schematics);
 		Scp079Cameras.AddRange(other.Scp079Cameras);
 		ShootingTargets.AddRange(other.ShootingTargets);
 		Teleports.AddRange(other.Teleports);

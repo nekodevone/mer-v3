@@ -82,18 +82,12 @@ public static class ToolGunUI
 	{
 		if (toolGun.CreateMode)
 		{
-			string output;
 			if (toolGun.SelectedObjectToSpawn == ToolGunObjectType.Schematic)
 			{
-				if (ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting) && dropdownSetting.TryGetSyncSelectionText(out string schematicName))
-					output = schematicName.ToUpper();
-				else
-					output = "Please select schematic in options";
+				toolGun.SelectedObjectToSpawn++;
 			}
-			else
-			{
-				output = toolGun.SelectedObjectToSpawn.ToString().ToUpper();
-			}
+
+			var output = toolGun.SelectedObjectToSpawn.ToString().ToUpper();
 
 			return $"<color=green>CREATE</color>\n<color=yellow>{output}</color>";
 		}

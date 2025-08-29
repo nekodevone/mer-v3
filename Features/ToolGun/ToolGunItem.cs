@@ -4,11 +4,9 @@ using InventorySystem.Items.Firearms.Attachments;
 using InventorySystem.Items.Firearms.Modules;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features.Enums;
-using ProjectMER.Features.Extensions;
 using ProjectMER.Features.Objects;
 using ProjectMER.Features.Serializable;
 using ProjectMER.Features.Serializable.Schematics;
-using UserSettings.ServerSpecific;
 
 namespace ProjectMER.Features.ToolGun;
 
@@ -83,16 +81,6 @@ public class ToolGunItem
 		player.AddAmmo(ItemType.Ammo9x19, 1);
 
 		ItemDictionary.Add(toolgun.ItemSerial, new ToolGunItem(toolgun));
-
-		ServerSpecificSettingsSync.SendOnJoinFilter = (_) => false; // Prevent all users from receiving the tools after joining the server.
-		ServerSpecificSettingsSync.DefinedSettings =
-		[
-			new SSGroupHeader("MapEditorReborn"),
-			new SSDropdownSetting(0, "Schematic Name", MapUtils.GetAvailableSchematicNames(), isServerOnly: true)
-		];
-
-		ServerSpecificSettingsSync.SendToPlayersConditionally(x => x.inventory.UserInventory.Items.Values.Any(x => x.IsToolGun(out ToolGunItem _)));
-
 		return true;
 	}
 
@@ -119,10 +107,7 @@ public class ToolGunItem
 	{
 		if (CreateMode)
 		{
-			ServerSpecificSettingsSync.TryGetSettingOfUser(player.ReferenceHub, 0, out SSDropdownSetting dropdownSetting);
-			dropdownSetting.TryGetSyncSelectionText(out string schematicName);
-
-			ToolGunHandler.CreateObject(player, SelectedObjectToSpawn, schematicName);
+			ToolGunHandler.CreateObject(player, SelectedObjectToSpawn, "");
 			return;
 		}
 

@@ -69,9 +69,10 @@ public class Attach : ICommand
         };
 
         var camera = player.Camera;
-        schematicObject.transform.SetLocalPositionAndRotation(
-            new Vector3(0, camera.localPosition.y - player.GameObject.transform.localScale.y, 0) + camera.localPosition,
-            new Quaternion(0f, camera.localRotation.y, 0f, camera.localRotation.w));
+        Vector3 playerFeetWorld = new Vector3(player.Position.x, player.Position.y - player.Scale.y, player.Position.z);
+        schematicObject.transform.SetPositionAndRotation(
+            playerFeetWorld,
+            Quaternion.Euler(0f, camera.rotation.eulerAngles.y, 0f));
         schematicObject.gameObject.transform.parent = player.GameObject.transform;
         AttachedSchematic.Add(attachedSchematic);
     }

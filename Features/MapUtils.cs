@@ -194,6 +194,11 @@ public static class MapUtils
 
 	public static void SetOrUpdateObjectCollider(GameObject gameObject)
 	{
+		if (!gameObject.TryGetComponent(out SchematicObject _))
+		{
+			return;
+		}
+
 		var renderers = gameObject.GetComponentsInChildren<Renderer>();
 		var bounds = renderers[0].bounds;
 		for (var i = 1; i < renderers.Length; ++i)

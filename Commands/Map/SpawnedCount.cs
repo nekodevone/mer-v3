@@ -1,4 +1,5 @@
-﻿using CommandSystem;
+﻿using AdminToys;
+using CommandSystem;
 using NorthwoodLib.Pools;
 using ProjectMER.Features;
 
@@ -20,9 +21,10 @@ public class SpawnedCount : ICommand
         var countBlock = 0;
         foreach (var mapEditorObject in MapUtils.LoadedMaps.Values.SelectMany(mapEditorObjects => mapEditorObjects.Schematics.Values))
         {
+            var count = mapEditorObject.SchematicObject.AdminToyBases.Count(atbase => atbase is PrimitiveObjectToy);
             sB.AppendLine(
-                $"{mapEditorObject.SchematicObject.Name} - Количество примитивов: {mapEditorObject.SchematicObject.AttachedBlocks.Count}");
-            countBlock += mapEditorObject.SchematicObject.AttachedBlocks.Count;
+                $"{mapEditorObject.SchematicObject.Name} - Количество примитивов: {count}");
+            countBlock += count;
         }
 
         sB.AppendLine($"<color=green><b>Заспавнено примитивов всего - {countBlock}</b></color>");
