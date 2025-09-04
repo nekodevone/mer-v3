@@ -6,7 +6,7 @@ namespace ProjectMER.Features.Structs;
 
 public class AttachedSchematic
 {
-    public SchematicObject Schematic { get; set; }
+    public MapEditorObject Schematic { get; set; }
 
     public Player Player { get; set; }
 

@@ -40,26 +40,18 @@ public class Attach : ICommand
             return true;
         }
 
-        if (!ToolGunHandler.TryGetSelectedMapObject(Player.Get(sender)!, out var mapEditorObject))
+        if (!ToolGunHandler.TryGetSelectedMapObject(target, out var mapEditorObject))
         {
             response = "You haven't selected any object!";
             return false;
         }
 
-        var schematic = mapEditorObject.Map.Schematics[mapEditorObject.Id];
-
-        if (schematic == null || schematic.SchematicObject == null)
-        {
-            response = "Не получилось получить схемат!";
-            return false;
-        }
-
-        AttachSchematic(target, schematic.SchematicObject);
+        AttachSchematic(target, mapEditorObject);
         response = "Схемат был привязан к игроку!!";
         return true;
     }
 
-    private static void AttachSchematic(Player player, SchematicObject schematicObject)
+    private static void AttachSchematic(Player player, MapEditorObject schematicObject)
     {
         var attachedSchematic = new AttachedSchematic()
         {
