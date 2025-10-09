@@ -14,6 +14,7 @@ public class SerializableDoor : SerializableObject
 	public bool IsLocked { get; set; } = false;
 	public DoorPermissionFlags RequiredPermissions { get; set; } = DoorPermissionFlags.None;
 	public bool RequireAll { get; set; } = true;
+	public DoorDamageType IgnoreDamageSources { get; set; } = DoorDamageType.None;
 
 	public override GameObject SpawnOrUpdateObject(Room? room = null, GameObject? instance = null)
 	{
@@ -35,6 +36,13 @@ public class SerializableDoor : SerializableObject
 
 		doorVariant.transform.SetPositionAndRotation(position, rotation);
 		doorVariant.transform.localScale = Scale;
+
+		var door = Door.Get(doorVariant);
+
+		if (door is BreakableDoor breakableDoor)
+		{
+			breakableDoor.IgnoreDamageSources = IgnoreDamageSources;
+		}
 
 		_prevType = DoorType;
 		SetupDoor(doorVariant);

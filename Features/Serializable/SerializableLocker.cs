@@ -1,4 +1,5 @@
 ﻿using Interactables.Interobjects.DoorUtils;
+using InventorySystem.Items.Firearms.Attachments;
 using MapGeneration.Distributors;
 using Mirror;
 using ProjectMER.Features.Extensions;
@@ -16,10 +17,7 @@ namespace ProjectMER.Features.Serializable
     {
         public LockerType LockerType { get; set; } = LockerType.Misc;
         [IgnoreToolgunGUI]
-        public Dictionary<int, List<SerializableLockerItem>?> Chambers { get; set; } = new()
-        {
-            { 0, new () { new () } },
-        };
+        public Dictionary<int, List<SerializableLockerItem>?> Chambers { get; set; } = new();
 
         public bool ShuffleChambers { get; set; } = true;
 
@@ -64,37 +62,52 @@ namespace ProjectMER.Features.Serializable
             return lockerVariant.gameObject;
         }
 
-
-        public void SetupLocker(MapGeneration.Distributors.Locker locker)
+        private void SetupLocker(MapGeneration.Distributors.Locker locker)
         {
             Locker.Loot = Array.Empty<LockerLoot>();
             HandleItems();
             IsSpawnedLoot = true;
         }
+        
         private void HandleItems()
         {
-            foreach (LockerChamber lockerChamber in Locker.Chambers)
-                lockerChamber.RequiredPermissions = KeycardPermissions;
-
-            Dictionary<int, List<SerializableLockerItem>> chambersCopy = null;
-            if (ShuffleChambers)
+            if (Locker == null)
             {
-                chambersCopy = new(Chambers.Count);
-                List<List<SerializableLockerItem>> chambersRandomValues = Chambers.Values.OrderBy(x => UnityEngine.Random.value).ToList();
-                for (int i = 0; i < Chambers.Count; i++)
-                {
-                    chambersCopy.Add(i, chambersRandomValues[i]);
-                }
+                Logger.Error("Locker is null in HandleItems()");
+                return;
             }
+
+            if (Locker.Chambers == null || Locker.Chambers.Length == 0)
+            {
+                Logger.Error("Locker.Chambers is null or empty");
+                return;
+            }
+
+            Locker.Loot = new LockerLoot[Locker.Chambers.Length];
 
             for (int i = 0; i < Locker.Chambers.Length; i++)
             {
-                if (i == Chambers.Count)
-                    break;
+                var lockerChamber = Locker.Chambers[i];
+                if (lockerChamber == null)
+                {
+                    Logger.Warn($"Locker chamber {i} is null in prefab");
+                    continue;
+                }
 
-                SerializableLockerItem chosenLoot = Choose(ShuffleChambers ? chambersCopy?[i] : Chambers[i]);
+                lockerChamber.RequiredPermissions = KeycardPermissions;
 
-                Locker.Chambers.ElementAt(i).SpawnItem(chosenLoot.Item, (int)chosenLoot.Count);
+                if (!Chambers.TryGetValue(i, out var chamberItems) || chamberItems == null)
+                    chamberItems = new List<SerializableLockerItem>();
+
+                var chosenLoot = Choose(chamberItems);
+
+                if (chosenLoot == null)
+                {
+                    Logger.Warn($"No loot chosen for chamber {i}");
+                    continue;
+                }
+
+                Locker.Loot[i].TargetItem = chosenLoot.Item;
             }
 
             Locker.OpenedChambers = OpenedChambers;
@@ -103,29 +116,31 @@ namespace ProjectMER.Features.Serializable
         private static SerializableLockerItem Choose(List<SerializableLockerItem>? chambers)
         {
             if (chambers == null || chambers.Count == 0)
-                return null;
-
-            float total = 0;
-
-            foreach (SerializableLockerItem elem in chambers)
             {
-                total += elem.Chance;
+                return new SerializableLockerItem(ItemType.Coin, 0, new List<AttachmentName>(), 0);
             }
 
-            float randomPoint = UnityEngine.Random.value * total;
-
-            for (int i = 0; i < chambers.Count; i++)
+            // Фильтруем предметы без типа
+            var validChambers = chambers.Where(c => c.Item != ItemType.None && c.Chance > 0).ToList();
+            if (validChambers.Count == 0)
             {
-                if (randomPoint < chambers[i].Chance)
-                {
-                    return chambers[i];
-                }
-
-                randomPoint -= chambers[i].Chance;
+                return new SerializableLockerItem(ItemType.Coin, 0, new List<AttachmentName>(), 0);
             }
 
-            return chambers[chambers.Count - 1];
+            var total = validChambers.Sum(elem => elem.Chance);
+            var randomPoint = UnityEngine.Random.value * total;
+
+            foreach (var t in validChambers)
+            {
+                if (randomPoint < t.Chance)
+                    return t;
+
+                randomPoint -= t.Chance;
+            }
+
+            return validChambers[validChambers.Count-1];
         }
+
         private MapGeneration.Distributors.Locker Locker;
 
         private MapGeneration.Distributors.Locker LockerPrefab

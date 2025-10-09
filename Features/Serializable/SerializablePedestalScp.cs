@@ -41,6 +41,9 @@ namespace ProjectMER.Features.Serializable
             {
                 lockerVariant = (instance.gameObject.GetComponent<MapGeneration.Distributors.Locker>());
             }
+            
+            NetworkServer.UnSpawn(lockerVariant.gameObject);
+            NetworkServer.Spawn(lockerVariant.gameObject);
 
             Pedestal = lockerVariant;
 
@@ -66,13 +69,12 @@ namespace ProjectMER.Features.Serializable
         public void SetupLocker(MapGeneration.Distributors.Locker locker)
         {
             Pedestal.Loot = Array.Empty<LockerLoot>();
-            HandleItems();
             IsSpawnedLoot = true;
         }
         private void HandleItems()
         {
-            foreach (LockerChamber lockerChamber in Pedestal.Chambers)
-                lockerChamber.RequiredPermissions = (DoorPermissionFlags)KeycardPermissions;
+            foreach (var lockerChamber in Pedestal.Chambers)
+                lockerChamber.RequiredPermissions = KeycardPermissions;
 
             for (int i = 0; i < Pedestal.Chambers.Length; i++)
             {
