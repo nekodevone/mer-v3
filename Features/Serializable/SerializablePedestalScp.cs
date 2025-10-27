@@ -7,7 +7,7 @@ using ProjectMER.Features.Interfaces;
 using LabApi.Features.Wrappers;
 using UnityEngine;
 using YamlDotNet.Serialization;
-using LockerChamber = MapGeneration.Distributors.LockerChamber;
+using LabApiLocker = LabApi.Features.Wrappers.Locker;
 
 namespace ProjectMER.Features.Serializable
 {
@@ -47,7 +47,7 @@ namespace ProjectMER.Features.Serializable
 
             Pedestal = lockerVariant;
 
-            SetupLocker(lockerVariant);
+            var labApiLocker = LabApiLocker.Get(lockerVariant);
 
             StructurePositionSync = lockerVariant.GetComponent<StructurePositionSync>();
 
@@ -57,6 +57,13 @@ namespace ProjectMER.Features.Serializable
             StructurePositionSync.Network_position = (lockerVariant.transform.position);
             StructurePositionSync.Network_rotationY = (sbyte)Mathf.RoundToInt(lockerVariant.transform.eulerAngles.y / 5.625f);
 
+
+            _prevType = PedestalType;
+
+            labApiLocker.ClearLockerLoot();
+            labApiLocker.ClearAllChambers();
+            labApiLocker.AddLockerLoot(ItemContainer, 1, 100, 1, 1);
+
             _prevType = PedestalType;
 
             NetworkServer.UnSpawn(lockerVariant.gameObject);
@@ -64,25 +71,6 @@ namespace ProjectMER.Features.Serializable
 
             return lockerVariant.gameObject;
         }
-
-
-        public void SetupLocker(MapGeneration.Distributors.Locker locker)
-        {
-            Pedestal.Loot = Array.Empty<LockerLoot>();
-            IsSpawnedLoot = true;
-        }
-        private void HandleItems()
-        {
-            foreach (var lockerChamber in Pedestal.Chambers)
-                lockerChamber.RequiredPermissions = KeycardPermissions;
-
-            for (int i = 0; i < Pedestal.Chambers.Length; i++)
-            {
-                Pedestal.Chambers.ElementAt(i).SpawnItem(ItemContainer, 1);
-                break;
-            }
-        }
-
 
         private MapGeneration.Distributors.Locker Pedestal;
 
