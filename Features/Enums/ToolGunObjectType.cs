@@ -19,5 +19,6 @@ public enum ToolGunObjectType
 	InteractableTeleport = 14,
 	Generator = 15,
 	Pedestal = 16,
-	Waypoint = 17
+	Waypoint = 17,
+	ElevatorChamber = 18
 }

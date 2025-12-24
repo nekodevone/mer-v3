@@ -57,6 +57,8 @@ public class MapSchematic
 	public Dictionary<string, SerializableLocker> Lockers { get; set; } = [];
 
 	public Dictionary<string, SerializableGenerator> Generators { get; set; } = [];
+	
+	public Dictionary<string, SerializableElevatorChamber> ElevatorChambers { get; set; } = [];
 
 	public Dictionary<string, SerializablePedestalScp> Pedestals  { get; set; } = [];
 
@@ -84,6 +86,7 @@ public class MapSchematic
 		Pedestals.AddRange(other.Pedestals);
 		Schematics.AddRange(other.Schematics);
 		Waypoints.AddRange(other.Waypoints);
+		ElevatorChambers.AddRange(other.ElevatorChambers);
 
 		return this;
 	}
@@ -123,6 +126,7 @@ public class MapSchematic
 		Generators.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Pedestals.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 		Waypoints.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
+		ElevatorChambers.ForEach(kVP => SpawnObject(kVP.Key, kVP.Value));
 	}
 
 	public void SpawnObject<T>(string id, T serializableObject) where T : SerializableObject
@@ -219,6 +223,9 @@ public class MapSchematic
 
 		if (Waypoints.TryAdd(id, serializableObject))
 			return true;
+		
+		if (ElevatorChambers.TryAdd(id, serializableObject))
+			return true;
 
 		IsDirty = dirtyPrevValue;
 		return false;
@@ -281,6 +288,9 @@ public class MapSchematic
 			return true;
 
 		if (Waypoints.Remove(id))
+			return true;
+		
+		if (ElevatorChambers.Remove(id))
 			return true;
 
 		IsDirty = dirtyPrevValue;

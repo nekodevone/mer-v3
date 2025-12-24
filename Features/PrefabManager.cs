@@ -1,6 +1,8 @@
 using AdminToys;
+using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Firearms.Attachments;
+using LabApi.Features.Wrappers;
 using MapGeneration.Distributors;
 using Mirror;
 using UnityEngine;
@@ -8,7 +10,9 @@ using CapybaraToy = AdminToys.CapybaraToy;
 using LightSourceToy = AdminToys.LightSourceToy;
 using PrimitiveObjectToy = AdminToys.PrimitiveObjectToy;
 using Locker = MapGeneration.Distributors.Locker;
+using SpawnableCullingParent = AdminToys.SpawnableCullingParent;
 using TextToy = AdminToys.TextToy;
+using WaypointToy = AdminToys.WaypointToy;
 
 namespace ProjectMER.Features;
 
@@ -77,6 +81,8 @@ public static class PrefabManager
 
 	public static WaypointToy Waypoint { get; private set; }
 	public static SpawnableCullingParent CullingParent { get; private set; }
+	
+	public static ElevatorChamber ElevatorChamber { get; private set; }
 
 	public static Scp079Generator Scp079Generator { get; private set; }
 
@@ -85,6 +91,12 @@ public static class PrefabManager
 		foreach (var pair in NetworkClient.prefabs)
 		{
 			var gameObject = pair.Value;
+
+			if (gameObject.TryGetComponent(out ElevatorChamber elevatorChamber))
+			{
+				ElevatorChamber = elevatorChamber;
+				continue;
+			}
 
 			if (gameObject.TryGetComponent(out PrimitiveObjectToy primitiveObjectToy))
 			{
