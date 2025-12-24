@@ -33,7 +33,8 @@ public class ToolGunItem
 		{ ToolGunObjectType.InteractableTeleport, typeof(SerializableInteractableTeleport) },
 		{ ToolGunObjectType.Generator, typeof(SerializableGenerator) },
 		{ ToolGunObjectType.Pedestal, typeof(SerializablePedestalScp) },
-		{ ToolGunObjectType.Waypoint, typeof(SerializableWaypoint) }
+		{ ToolGunObjectType.Waypoint, typeof(SerializableWaypoint) },
+		{ ToolGunObjectType.ElevatorChamber, typeof(SerializableElevatorChamber) }
 	};
 
 	private ToolGunObjectType _selectedObjectToSpawn;
