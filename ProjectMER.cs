@@ -77,9 +77,6 @@ public class ProjectMER : Plugin<Config>
 		CustomHandlersManager.RegisterEventsHandler(PickupEventsHandler);
 		CustomHandlersManager.RegisterEventsHandler(TeleportEventsHandler);
 
-		_harmony = new Harmony($"michal78900.mapEditorReborn-{DateTime.Now.Ticks}");
-		_harmony.PatchAll();
-
 		if (Config!.EnableFileSystemWatcher)
 		{
 			_mapFileSystemWatcher = new FileSystemWatcher(MapsDir)
