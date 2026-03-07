@@ -9,6 +9,7 @@ using ProjectMER.Commands.Modifying.Rotation;
 using ProjectMER.Commands.Modifying.Scale;
 using ProjectMER.Commands.ToolGunLike;
 using ProjectMER.Commands.Utility;
+using ProjectMER.Commands.Utility.Animation;
 
 namespace ProjectMER.Commands;
 
@@ -48,6 +49,7 @@ public class MapEditorParentCommand : ParentCommand
 		RegisterCommand(new Attach());
 		RegisterCommand(new SpawnedCount());
 		RegisterCommand(new Find());
+		RegisterCommand(new Animation());
 		//RegisterCommand(new Lock());
 	}
 

@@ -40,9 +40,20 @@ public class AnimationController
 	/// <summary>
 	/// Plays an animation.
 	/// </summary>
+	public void Play()
+	{
+		foreach (var animator in Animators)
+		{
+			animator.speed = 1f;
+		}
+	}
+
+	/// <summary>
+	/// Plays an animation.
+	/// </summary>
 	/// <param name="stateName">The state to play.</param>
 	/// <param name="animatorIndex">The index of the animator from which get and play the state.</param>
-	public void Play(string stateName, int animatorIndex = 0) => Animators[animatorIndex].Play(stateName);
+	public void Play(string stateName, int animatorIndex = 0) => Animators[animatorIndex].speed = 1f;
 
 	/// <summary>
 	/// Plays an animation.
@@ -51,6 +62,21 @@ public class AnimationController
 	/// <param name="state">The new state.</param>
 	/// <param name="animatorIndex">The index of the animator to modify.</param>
 	public void Play(string animParam, bool state, int animatorIndex = 0) => Animators[animatorIndex].SetBool(animParam, state);
+	
+	/// <summary>
+	/// Plays an animation.
+	/// </summary>
+	/// <param name="stateName">The state to play.</param>
+	/// <param name="animatorName">The name of the animator from which get and play the state.</param>
+	public void Play(string animatorName)
+	{
+		var animator = Animators.FirstOrDefault(x => x.name == animatorName);
+
+		if (animator != null)
+		{
+			animator.speed = 1f;
+		}
+	}
 
 	/// <summary>
 	/// Plays an animation.
@@ -63,15 +89,22 @@ public class AnimationController
 	/// Stops an animation.
 	/// </summary>
 	/// <param name="animatorIndex">The index of the animator from which get and stop the state.</param>
-	public void Stop(int animatorIndex = 0) => Animators[animatorIndex].StopPlayback();
+	public void Stop(int animatorIndex = 0) => Animators[animatorIndex].speed = 0f;
 
 	/// <summary>
 	/// Stops an animation.
 	/// </summary>
 	/// <param name="animatorName">The name of the animator from which get and stop the state.</param>
-	public void Stop(string animatorName) => Animators.FirstOrDefault(x => x.name == animatorName)?.StopPlayback();
+	public void Stop(string animatorName)
+	{
+		var animator = Animators.FirstOrDefault(x => x.name == animatorName);
+		if (animator != null)
+		{
+			animator.speed = 0f;
+		}
+	}
 
-    /// <summary>
+	/// <summary>
     /// Gets a <see cref="AnimationController"/> from the given <see cref="SchematicObject"/>.
     /// </summary>
     /// <param name="schematic">The schematic to check.</param>

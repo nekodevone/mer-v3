@@ -84,7 +84,7 @@ public class Attach : ICommand
     /// </summary>
     private static bool TryGetTarget(ArraySegment<string> arguments, ICommandSender sender, out Player? player)
     {
-        if (!arguments.Any() && Player.TryGet(sender, out player))
+        if (arguments.IsEmpty() && Player.TryGet(sender, out player))
         {
             return true;
         }
