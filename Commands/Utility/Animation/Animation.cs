@@ -18,6 +18,7 @@ public class Animation : ParentCommand
         RegisterCommand(new Play());
         RegisterCommand(new Stop());
         RegisterCommand(new GetAnimator());
+        RegisterCommand(new Speed());
     }
 
     public override string Command => "animation";
