@@ -21,6 +21,13 @@ public class Attach : ICommand
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
+        var player = Player.Get(sender);
+        if (player is null)
+        {
+            response = "This command can't be run from the server console.";
+            return false;
+        }
+
         if (!sender.HasAnyPermission($"mpr.{Command}"))
         {
             response = $"You don't have permission to execute this command. Required permission: mpr.{Command}";
@@ -40,7 +47,7 @@ public class Attach : ICommand
             return true;
         }
 
-        if (!ToolGunHandler.TryGetSelectedMapObject(target, out var mapEditorObject))
+        if (!ToolGunHandler.TryGetSelectedMapObject(player, out var mapEditorObject))
         {
             response = "You haven't selected any object!";
             return false;

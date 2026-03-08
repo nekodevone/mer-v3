@@ -94,7 +94,7 @@ public static class ToolGunHandler
 		}
 	}
 
-	public static void DeleteSchematicObject(MapSchematic mapEditorObject)
+	public static void  DeleteSchematicObject(MapSchematic mapEditorObject)
 	{
 		mapEditorObject.SpawnedObjects.Clear();
 	}
@@ -138,16 +138,10 @@ public static class ToolGunHandler
 
 	public static bool TryGetObjectById(string id, out MapEditorObject mapEditorObject)
 	{
-		foreach (MapSchematic map in MapUtils.LoadedMaps.Values)
+		foreach (var meo in MapUtils.LoadedMaps.Values.SelectMany(map => map.SpawnedObjects.Where(meo => meo.Id == id)))
 		{
-			foreach (MapEditorObject meo in map.SpawnedObjects)
-			{
-				if (meo.Id == id)
-				{
-					mapEditorObject = meo;
-					return true;
-				}
-			}
+			mapEditorObject = meo;
+			return true;
 		}
 
 		mapEditorObject = null!;

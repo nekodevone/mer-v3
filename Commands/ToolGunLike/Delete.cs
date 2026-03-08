@@ -3,6 +3,7 @@ using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using ProjectMER.Features;
 using ProjectMER.Features.Objects;
+using ProjectMER.Features.Serializable;
 using ProjectMER.Features.ToolGun;
 
 namespace ProjectMER.Commands.ToolGunLike;
@@ -65,13 +66,9 @@ public class Delete : ICommand
 					response = "Подобного объекта не существует!";
 					return false;
 				case "schematic":
-
-					foreach (var obj in MapUtils.LoadedMaps.Where
-						         (obj => obj.Value.Schematics.Any
-							         (schematics =>
-								         schematics.Value.SchematicName == slug)))
+					if (MapUtils.LoadedMaps.TryGetValue(slug, out var schematic))
 					{
-						ToolGunHandler.DeleteSchematicObject(obj.Value);
+						ToolGunHandler.DeleteSchematicObject(schematic);
 						response = "Вы успешно удалили объект!";
 						return true;
 					}
@@ -81,12 +78,6 @@ public class Delete : ICommand
 				case "id":
 					if (ToolGunHandler.TryGetObjectById(slug, out MapEditorObject idObject))
 					{
-						if (MapUtils.LockedObjects.Contains(idObject))
-						{
-							response = "This object is locked.";
-							return false;
-						}
-
 						ToolGunHandler.DeleteObject(idObject);
 						response = "You've successfully deleted the object!";
 						return true;

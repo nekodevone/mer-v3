@@ -40,6 +40,7 @@ public class Animation : ParentCommand
         response += "mp animation stop\n";
         response += "mp animation play {animation name} {animator name}";
         response += "mp animation getanimator";
+        response += "mp animation speed (0-1)";
         return false;
     }
 }
